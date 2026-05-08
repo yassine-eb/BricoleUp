@@ -1,0 +1,218 @@
+const tableData = [
+      {id:1, nom:"Sophie Martin", email:"sophie.martin@gmail.com", role:"Client", kyc:"Vérifié", abo:"Gratuit", ville:"Paris (75)", region:"Île-de-France", date:"15 jan. 2025", last:"Il y a 2h", note:"N/A", avis:"", job:"", recent:true},
+      {id:2, nom:"Ahmed Benali", email:"ahmed.benali@gmail.com", role:"Prestataire", kyc:"Vérifié", abo:"Pro", ville:"Marseille (13)", region:"PACA", date:"3 fév. 2025", last:"Il y a 30min", note:"4,9", avis:"47 avis", job:"Électricien", recent:true},
+      {id:3, nom:"Marie Dupont", email:"marie.dupont@outlook.com", role:"Client", kyc:"N/A", abo:"Gratuit", ville:"Lyon (69)", region:"Auvergne-Rhône-Alpes", date:"22 fév. 2025", last:"Il y a 1j", note:"N/A", avis:"", job:"", recent:false},
+      {id:4, nom:"Karim Laouani", email:"karim.laouani@gmail.com", role:"Prestataire", kyc:"En attente", abo:"Gratuit", ville:"Toulouse (31)", region:"Occitanie", date:"8 mars 2025", last:"Il y a 3j", note:"4,2", avis:"12 avis", job:"Plombier", recent:false},
+      {id:5, nom:"Julie Bernard", email:"julie.bernard@yahoo.fr", role:"Client", kyc:"Vérifié", abo:"Gratuit", ville:"Nice (06)", region:"PACA", date:"19 mars 2025", last:"Il y a 5h", note:"N/A", avis:"", job:"", recent:true},
+      {id:6, nom:"Thomas Roux", email:"thomas.roux@gmail.com", role:"Prestataire", kyc:"Rejeté", abo:"Gratuit", ville:"Bordeaux (33)", region:"Nouvelle-Aquitaine", date:"2 avr. 2025", last:"Il y a 1 mois", note:"3,8", avis:"5 avis", job:"Peintre", recent:false},
+      {id:7, nom:"Fatima Ouali", email:"fatima.ouali@gmail.com", role:"Prestataire", kyc:"Vérifié", abo:"Pro", ville:"Nantes (44)", region:"Pays de la Loire", date:"14 avr. 2025", last:"Il y a 1h", note:"4,7", avis:"31 avis", job:"Menuisière", recent:true},
+      {id:8, nom:"Lucas Morin", email:"lucas.morin@gmail.com", role:"Client", kyc:"N/A", abo:"Gratuit", ville:"Strasbourg (67)", region:"Grand Est", date:"28 avr. 2025", last:"Il y a 2j", note:"N/A", avis:"", job:"", recent:false},
+      {id:9, nom:"Nadia Chérif", email:"nadia.cherif@outlook.com", role:"Prestataire", kyc:"En attente", abo:"Gratuit", ville:"Montpellier (34)", region:"Occitanie", date:"5 mai 2025", last:"Il y a 4h", note:"4,5", avis:"8 avis", job:"Décoratrice", recent:true},
+      {id:10, nom:"Pierre Legrand", email:"pierre.legrand@gmail.com", role:"Admin", kyc:"Vérifié", abo:"Pro", ville:"Paris (75)", region:"Île-de-France", date:"1 jan. 2025", last:"Il y a 10min", note:"N/A", avis:"", job:"", recent:true}
+    ];
+
+    let filtered = [...tableData], currentPage = 1, perPage = 10, sortKey = "", sortDir = 1;
+    const tbody = document.getElementById("tableBody");
+    const searchInput = document.getElementById("searchInput");
+    const roleFilter = document.getElementById("roleFilter");
+    const kycFilter = document.getElementById("kycFilter");
+    const aboFilter = document.getElementById("aboFilter");
+    const periodFilter = document.getElementById("periodFilter");
+    const resultBadge = document.getElementById("resultBadge");
+    const pageInfo = document.getElementById("pageInfo");
+    const pager = document.getElementById("pager");
+    const bulkBar = document.getElementById("bulkBar");
+    const bulkCount = document.getElementById("bulkCount");
+
+    function initials(name) { return name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase(); }
+    function roleClass(role) { return role === "Client" ? "role-client" : role === "Admin" ? "role-admin" : "role-prestataire"; }
+    function kycClass(kyc) { return kyc === "Vérifié" ? "kyc-verified" : kyc === "En attente" ? "kyc-pending" : kyc === "Rejeté" ? "kyc-rejected" : "kyc-na"; }
+
+    function render() {
+      const total = filtered.length;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      currentPage = Math.min(currentPage, pages);
+      const start = (currentPage - 1) * perPage;
+      const rows = filtered.slice(start, start + perPage);
+      tbody.innerHTML = rows.map(u => `
+        <tr data-id="${u.id}">
+          <td><input class="row-check" type="checkbox"></td>
+          <td>${String(u.id).padStart(3, "0")}</td>
+          <td><div class="user-cell"><span class="user-avatar ${u.role.toLowerCase()}">${initials(u.nom)}</span><div><div class="user-name">${u.nom}</div><div class="user-email">${u.email}</div>${u.job ? `<span class="job-mini">${u.job}</span>` : ""}</div></div></td>
+          <td><span class="pill ${roleClass(u.role)}">${u.role}</span></td>
+          <td><span class="pill ${kycClass(u.kyc)}"><span class="dot"></span>${u.kyc}</span></td>
+          <td>${u.abo === "Pro" ? `<span class="pill pro-badge">⭐ Pro</span>` : `<span class="muted">Gratuit</span>`}</td>
+          <td class="muted">📍 ${u.ville}</td>
+          <td>${u.date}</td>
+          <td><span class="recent">${u.recent ? `<span class="online-dot"></span>` : ""}${u.last}</span></td>
+          <td>${u.note === "N/A" ? `<span class="muted">N/A</span>` : `<span class="stars">★</span> ${u.note}/5 <span class="muted">(${u.avis})</span>`}</td>
+          <td><div class="actions">
+            <button class="action-btn view-btn" data-view="${u.id}" title="Voir profil">👁</button>
+            <button class="action-btn edit-btn" title="Modifier">✏️</button>
+            <button class="action-btn more-btn" data-more type="button">⋮</button>
+            <div class="dropdown">
+              <button style="color:var(--bleu)">🛡 Vérifier KYC</button>
+              <button style="color:var(--orange)">⭐ Passer en Pro</button>
+              <button data-danger="Suspendre ${u.nom}" style="color:var(--jaune)">⏸ Suspendre</button>
+              <button data-danger="Bannir ${u.nom}" style="color:var(--rouge)">🚫 Bannir</button>
+              <button data-danger="Supprimer ${u.nom}" style="color:var(--rouge);font-weight:900">🗑 Supprimer</button>
+            </div>
+          </div></td>
+        </tr>
+      `).join("");
+      resultBadge.textContent = `${total} utilisateur${total > 1 ? "s" : ""}`;
+      pageInfo.textContent = total ? `Affichage de ${start + 1} à ${Math.min(start + perPage, total)} sur 2 847 utilisateurs` : "Aucun utilisateur trouvé";
+      renderPager(pages);
+      document.getElementById("selectAll").checked = false;
+      updateBulk();
+    }
+
+    function renderPager(pages) {
+      const items = [`<button class="page-btn" ${currentPage === 1 ? "disabled" : ""} data-page="${currentPage - 1}">← Précédent</button>`];
+      [1,2,3].forEach(p => { if (p <= pages) items.push(`<button class="page-btn ${p === currentPage ? "active" : ""}" data-page="${p}">${p}</button>`); });
+      if (pages > 4) items.push(`<span>...</span><button class="page-btn ${pages === currentPage ? "active" : ""}" data-page="${pages}">${pages}</button>`);
+      items.push(`<button class="page-btn" ${currentPage === pages ? "disabled" : ""} data-page="${currentPage + 1}">Suivant →</button>`);
+      pager.innerHTML = items.join("");
+    }
+
+    function applyFilters() {
+      const q = searchInput.value.toLowerCase();
+      filtered = tableData.filter(u => {
+        const text = Object.values(u).join(" ").toLowerCase();
+        return (!q || text.includes(q)) &&
+          (!roleFilter.value || u.role === roleFilter.value) &&
+          (!kycFilter.value || u.kyc === kycFilter.value) &&
+          (!aboFilter.value || u.abo === aboFilter.value);
+      });
+      if (sortKey) sortData();
+      currentPage = 1;
+      render();
+    }
+
+    function sortData() {
+      filtered.sort((a, b) => {
+        let av = a[sortKey], bv = b[sortKey];
+        if (sortKey === "note") { av = av === "N/A" ? 0 : parseFloat(av); bv = bv === "N/A" ? 0 : parseFloat(bv); }
+        if (sortKey === "id") return (av - bv) * sortDir;
+        return String(av).localeCompare(String(bv), "fr") * sortDir;
+      });
+    }
+
+    function updateBulk() {
+      const count = document.querySelectorAll(".row-check:checked").length;
+      bulkBar.classList.toggle("active", count > 0);
+      bulkCount.textContent = `${count} utilisateur${count > 1 ? "s" : ""} sélectionné${count > 1 ? "s" : ""}`;
+    }
+
+    function openModal(id) {
+      document.getElementById("overlay").classList.add("active");
+      document.getElementById(id).classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModals() {
+      document.querySelectorAll(".modal,.overlay").forEach(el => el.classList.remove("active"));
+      document.body.style.overflow = "";
+    }
+
+    function showProfile(id) {
+      const u = tableData.find(item => item.id === Number(id));
+      document.getElementById("profileBody").innerHTML = `
+        <div class="profile-layout">
+          <aside class="profile-side">
+            <div class="big-avatar">${initials(u.nom)}</div>
+            <h3>${u.nom}</h3>
+            <div class="muted">${u.email}</div>
+            <div style="display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:12px 0">
+              <span class="pill ${roleClass(u.role)}">${u.role}</span><span class="pill ${kycClass(u.kyc)}"><span class="dot"></span>${u.kyc}</span>
+            </div>
+            ${u.note !== "N/A" ? `<div><span class="stars">★★★★★</span> ${u.note}/5</div>` : ""}
+            <a href="#" style="display:inline-block;margin-top:10px;color:var(--orange);font-weight:900">Voir profil public →</a>
+            <div class="quick-list">
+              <span>📍 ${u.ville}</span><span>📅 Inscrit le ${u.date}</span><span>🕐 ${u.last}</span><span>💳 ${u.abo}</span><span>📱 +33 6 ** ** ** 78</span>
+            </div>
+          </aside>
+          <section>
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="info">Informations</button>
+              <button class="tab-btn" data-tab="ads">Annonces</button>
+              <button class="tab-btn" data-tab="reviews">Avis</button>
+              <button class="tab-btn" data-tab="activity">Activité</button>
+            </div>
+            <div class="tab-panel active" id="tab-info">
+              <div class="info-grid">
+                <div class="info-box"><small>ID Utilisateur</small>USR-${String(u.id).padStart(5,"0")} <button class="btn" style="padding:3px 7px">copier</button></div>
+                <div class="info-box"><small>Email</small>${u.email}</div>
+                <div class="info-box"><small>Rôle</small><span class="pill ${roleClass(u.role)}">${u.role}</span></div>
+                <div class="info-box"><small>Statut KYC</small><span class="pill ${kycClass(u.kyc)}">${u.kyc}</span> ${u.kyc === "En attente" ? `<button class="btn" style="padding:3px 7px">Vérifier</button>` : ""}</div>
+                <div class="info-box"><small>Abonnement</small>${u.abo} <button class="btn" style="padding:3px 7px">Changer</button></div>
+                <div class="info-box"><small>Inscription</small>${u.date}</div>
+                <div class="info-box"><small>Dernière connexion</small>${u.last} · 14:32</div>
+                <div class="info-box"><small>IP dernière connexion</small>192.168.x.x</div>
+                <div class="info-box"><small>Nb annonces postées</small>${u.role === "Prestataire" ? 18 : 3}</div>
+                <div class="info-box"><small>Nb réservations</small>${u.role === "Prestataire" ? 42 : 7}</div>
+              </div>
+            </div>
+            <div class="tab-panel" id="tab-ads"><div class="mini-list"><div class="mini-item">Cherche plombier · <span class="pill kyc-verified">Active</span> · Aujourd'hui</div><div class="mini-item">Rénovation salon · <span class="pill kyc-pending">En revue</span> · Hier</div><div class="mini-item">Pose luminaire · <span class="pill kyc-na">Clôturée</span> · 12 avr.</div></div></div>
+            <div class="tab-panel" id="tab-reviews"><div class="mini-list"><div class="mini-item"><span class="stars">★★★★★</span> Très professionnel et ponctuel.</div><div class="mini-item"><span class="stars">★★★★☆</span> Bon travail, devis clair.</div><div class="mini-item"><span class="stars">★★★★★</span> Intervention rapide.</div></div></div>
+            <div class="tab-panel" id="tab-activity"><div class="timeline"><div class="timeline-item"><span class="online-dot"></span><div>Connexion depuis Paris · 14:32</div></div><div class="timeline-item"><span class="online-dot"></span><div>Annonce créée : Cherche plombier · 09:15</div></div><div class="timeline-item"><span class="online-dot"></span><div>Profil mis à jour · Hier</div></div><div class="timeline-item"><span class="online-dot"></span><div>Message envoyé · 3j</div></div><div class="timeline-item"><span class="online-dot"></span><div>Devis accepté · 1 semaine</div></div></div></div>
+          </section>
+        </div>`;
+      openModal("profileModal");
+    }
+
+    function exportCSV() {
+      const headers = ["ID","Nom","Email","Rôle","KYC","Abonnement","Ville","Inscrit"];
+      const rows = tableData.map(u => [u.id, u.nom, u.email, u.role, u.kyc, u.abo, u.ville, u.date]);
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], {type: "text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "bricoleup_users.csv"; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    [searchInput, roleFilter, kycFilter, aboFilter, periodFilter].forEach(el => el.addEventListener("input", applyFilters));
+    document.getElementById("resetBtn").addEventListener("click", () => { [searchInput, roleFilter, kycFilter, aboFilter, periodFilter].forEach(el => el.value = ""); applyFilters(); });
+    document.getElementById("perPage").addEventListener("change", e => { perPage = Number(e.target.value); currentPage = 1; render(); });
+    document.getElementById("exportBtn").addEventListener("click", exportCSV);
+    document.getElementById("addUserBtn").addEventListener("click", () => openModal("addModal"));
+    document.getElementById("hamburger").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+    document.getElementById("notifBtn").addEventListener("click", e => { e.stopPropagation(); document.getElementById("notifMenu").classList.toggle("active"); });
+
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".actions")) document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("active"));
+      if (!e.target.closest(".notification-menu") && !e.target.closest("#notifBtn")) document.getElementById("notifMenu").classList.remove("active");
+    });
+
+    document.addEventListener("click", e => {
+      const page = e.target.closest("[data-page]");
+      if (page) { currentPage = Number(page.dataset.page); render(); }
+      const sort = e.target.closest("th.sortable");
+      if (sort) { sortDir = sortKey === sort.dataset.sort ? sortDir * -1 : 1; sortKey = sort.dataset.sort; sortData(); render(); }
+      const more = e.target.closest("[data-more]");
+      if (more) { e.stopPropagation(); more.nextElementSibling.classList.toggle("active"); }
+      const view = e.target.closest("[data-view]");
+      if (view) showProfile(view.dataset.view);
+      const danger = e.target.closest("[data-danger]");
+      if (danger) { document.getElementById("confirmText").textContent = `Êtes-vous sûr de vouloir ${danger.dataset.danger} ?`; openModal("confirmModal"); }
+      const tab = e.target.closest("[data-tab]");
+      if (tab) {
+        document.querySelectorAll(".tab-btn,.tab-panel").forEach(el => el.classList.remove("active"));
+        tab.classList.add("active"); document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
+      }
+    });
+
+    document.getElementById("selectAll").addEventListener("change", e => {
+      document.querySelectorAll(".row-check").forEach(cb => cb.checked = e.target.checked);
+      updateBulk();
+    });
+    tbody.addEventListener("change", e => { if (e.target.classList.contains("row-check")) updateBulk(); });
+    document.getElementById("clearSelection").addEventListener("click", () => { document.querySelectorAll(".row-check,#selectAll").forEach(cb => cb.checked = false); updateBulk(); });
+    document.querySelectorAll(".modal-close,#overlay").forEach(el => el.addEventListener("click", closeModals));
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeModals(); });
+    document.querySelectorAll("input[name='roleNew']").forEach(r => r.addEventListener("change", () => document.getElementById("providerExtra").classList.toggle("active", r.value === "Prestataire" && r.checked)));
+    document.getElementById("kmRange").addEventListener("input", e => document.getElementById("kmValue").textContent = e.target.value);
+    document.getElementById("addForm").addEventListener("submit", e => { e.preventDefault(); closeModals(); alert("Utilisateur créé localement. Connexion backend à brancher."); });
+
+    render();

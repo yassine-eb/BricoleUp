@@ -1,0 +1,1637 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}
+{{ announcement.created_by.username }} - {{ announcement.category.name_fr }} 
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ===== GENERAL ===== */
+    body {
+        background-color: #f9fafb;
+    }
+
+    .details-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* ===== AD SECTION ===== */
+    .ad-section {
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* ===== MAIN GRID ===== */
+    .details-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    @media (max-width: 992px) {
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ===== ANNOUNCEMENT CARD ===== */
+    .announcement-details-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    /* Author Section */
+    .announcement-author-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ec700a;
+        flex-shrink: 0;
+    }
+
+    .author-info h3 {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .author-info p {
+        margin: 2px 0 0 0;
+        font-size: 10px;
+        color: #6b7280;
+    }
+
+    .verified-icon {
+        color: #ec700a;
+        margin-left: 3px;
+        font-size: 12px;
+    }
+
+    /* Category & Price */
+    .announcement-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .announcement-category {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        width: fit-content;
+    }
+
+    .announcement-category.demande-de-prestation {
+        background-color: #e8f7ee;
+        color: #1f8a4c;
+    }
+
+    .announcement-category.offre-de-services {
+        background-color: #eef4ff;
+        color: #3b5bdb;
+    }
+
+    .announcement-category.vente-de-materiel {
+        background-color: #fef5f0;
+        color: #ec700a;
+    }
+
+    .announcement-category.location-de-materiel {
+        background-color: #f0f0f0;
+        color: #495057;
+    }
+
+    .announcement-category.offre-d-emploi {
+        background-color: #fce7f3;
+        color: #be185d;
+    }
+
+    .announcement-price-section {
+        background: linear-gradient(135deg, #fef5f0 0%, #fff5f0 100%);
+        padding: 8px 10px;
+        border-radius: 8px;
+        border-left: 4px solid #ec700a;
+    }
+
+    .price-label {
+        font-size: 10px;
+        color: #6b7280;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+
+    .price-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ec700a;
+    }
+
+    /* Description */
+    .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .announcement-date {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 8px;
+        padding-top: 8px;
+        
+    }
+
+    /* Image Modal */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 1100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.95);
+        overflow: hidden;
+    }
+
+    .image-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal-img {
+        max-width: 100%;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .modal-close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.5);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+        z-index: 1200;
+    }
+
+    .modal-close-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        font-size: 28px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+    }
+
+    .modal-nav-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-nav-btn.prev {
+        left: 20px;
+    }
+
+    .modal-nav-btn.next {
+        right: 20px;
+    }
+
+    /* ===== ACTIONS ===== */
+    .actions-section {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 10px 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(236, 112, 10, 0.2);
+    }
+
+    .action-btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(236, 112, 10, 0.25);
+    }
+
+    .action-btn-secondary {
+        background: white;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+    .action-btn-secondary:hover {
+        background: #f9fafb;
+        border-color: #ec700a;
+        color: #ec700a;
+    }
+
+    .action-btn-icon {
+        padding: 8px;
+        min-width: auto;
+        font-size: 14px;
+    }
+
+    /* ===== RIGHT SIDEBAR ===== */
+    .profile-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+
+    .profile-banner {
+        width: 100%;
+        height: 100px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 8px;
+        margin-bottom: -50px;
+    }
+
+    .profile-picture-section {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-picture {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        border: 4px solid white;
+        object-fit: cover;
+        margin: -45px auto 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-username {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 2px;
+    }
+
+    .profile-location {
+        font-size: 11px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        margin-bottom: 10px;
+    }
+
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        margin: 10px 0;
+        font-size: 11px;
+    }
+
+    .profile-stat {
+        text-align: center;
+    }
+
+    .profile-stat-value {
+        font-weight: 700;
+        color: #ec700a;
+        font-size: 13px;
+    }
+
+    .profile-stat-label {
+        color: #6b7280;
+        font-size: 10px;
+    }
+
+    .profile-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 16px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .status-particulier {
+        background-color: #e8f7ee;
+        color: #1f8a4c;
+        border: 1px solid #bfe8cf;
+    }
+
+    .status-entreprise {
+        background-color: #f0f0f0;
+        color: #495057;
+        border: 1px solid #d6d6d6;
+    }
+
+    .profile-view-btn {
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+
+    .profile-view-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(236, 112, 10, 0.15);
+    }
+
+    /* Skills */
+    .skills-section {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .skills-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .skills-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .skill-badge {
+        background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%);
+        color: #495057;
+        padding: 5px 10px;
+        border-radius: 16px;
+        font-size: 11px;
+        font-weight: 500;
+        border: 1px solid #d6d6d6;
+    }
+
+    /* Dropdown Menu */
+    .dropdown-menu {
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+    }
+
+    .dropdown-item {
+        font-size: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+        background-color: #fef5f0;
+        color: #ec700a;
+    }
+
+    /* Report Modal */
+    .modal-content {
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 16px;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        font-size: 15px;
+        color: #1a1a1a;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .form-control {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .form-control:focus {
+        border-color: #ec700a;
+        box-shadow: 0 0 0 3px rgba(236, 112, 10, 0.1);
+    }
+
+    /* Description Styles */
+    .announcement-description-section {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        
+    }
+
+    .description-content {
+        margin-bottom: 8px;
+    }
+
+    .description-text {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #374151;
+        margin: 0;
+        word-wrap: break-word;
+    }
+
+    .read-more-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .read-more-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #ec700a;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .read-more-link:hover {
+        color: #d45f00;
+        gap: 8px;
+    }
+
+    /* Gallery Styles */
+    .gallery-section {
+        
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        height: 350px;
+        background: #f3f4f6;
+    }
+
+    .image-gallery:has(.gallery-image:only-child) {
+        grid-template-columns: 1fr;
+        height: 350px;
+    }
+
+    .image-gallery:has(.gallery-image:nth-child(2)):not(:has(.gallery-image:nth-child(3))) {
+        grid-template-columns: repeat(2, 1fr);
+        height: 200px;
+    }
+
+    .image-gallery:has(.gallery-image:nth-child(3)):not(:has(.gallery-image:nth-child(4))) {
+        grid-template-columns: repeat(2, 1fr);
+        height: 300px;
+    }
+
+    .image-gallery:has(.gallery-image:nth-child(3)):not(:has(.gallery-image:nth-child(4))) .gallery-image:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+    .image-gallery:has(.gallery-image:nth-child(4)) {
+        grid-template-columns: repeat(2, 1fr);
+        height: 350px;
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease, filter 0.3s ease;
+        display: block;
+    }
+
+    .gallery-image:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+    }
+
+    @media (max-width: 768px) {
+        .details-container {
+            padding: 12px;
+        }
+
+        .image-gallery {
+            height: 280px;
+            gap: 4px;
+        }
+
+        .image-gallery:has(.gallery-image:nth-child(2)):not(:has(.gallery-image:nth-child(3))) {
+            height: 160px;
+        }
+
+        .image-gallery:has(.gallery-image:nth-child(3)):not(:has(.gallery-image:nth-child(4))) {
+            height: 240px;
+        }
+
+        .announcement-details-card,
+        .profile-card,
+        .skills-section {
+            padding: 12px;
+        }
+
+        .modal-nav-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+    }
+</style>
+
+<section class="details-container" style="margin-top: 65px;">
+    <!-- Ad Section -->
+    <div class="ad-section">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+            crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+            style="display:block;width:100%;height:130px;"
+            data-ad-client="ca-pub-5485706271033891"
+            data-ad-slot="1737959128"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="details-grid">
+        
+        <!-- Left: Announcement Details -->
+        <div class="announcement-details-card">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 12px 14px;
+                        border-radius: 10px;
+                        margin-bottom: 10px;
+                        font-size: 13px;
+                        font-weight: 500;
+                        {% if 'success' in message.tags %}
+                            background: #dcfce7; color: #166534; border: 1px solid #86efac;
+                        {% elif 'error' in message.tags %}
+                            background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
+                        {% elif 'warning' in message.tags %}
+                            background: #fef9c3; color: #854d0e; border: 1px solid #fde047;
+                        {% elif 'info' in message.tags %}
+                            background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;
+                        {% else %}
+                            background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;
+                        {% endif %}
+                    ">
+                        <i class="fas 
+                            {% if 'success' in message.tags %}fa-check-circle
+                            {% elif 'error' in message.tags %}fa-times-circle
+                            {% elif 'warning' in message.tags %}fa-exclamation-triangle
+                            {% elif 'info' in message.tags %}fa-info-circle
+                            {% else %}fa-bell
+                            {% endif %}"
+                            style="font-size: 15px; flex-shrink: 0;">
+                        </i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Author -->
+            <div class="announcement-author-section">
+                <img src="{{ announcement.created_by.profile.profile_picture_url }}" alt="{{ announcement.created_by.username }}" class="author-avatar">
+                <div class="author-info">
+                    <h3>
+                        <a href="{% url 'app:account' announcement.created_by.profile.slug %}" target="_blank" style="text-decoration: none; color: inherit;">
+                            {{ announcement.created_by.username }}
+                        </a>
+                        {% if announcement.created_by.profile.is_verified %}
+                            <span class="verified-icon" title="Vérifié">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                        {% endif %}
+                    </h3>
+                    <p>
+                        <i class="bi bi-geo-alt"></i> {{ announcement.city }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Meta Info -->
+            <div class="announcement-meta">
+                <span class="announcement-category category-{{ announcement.category.name_fr|slugify }}">
+                    {{ announcement.category.name_fr }}
+                </span>
+
+                <div class="announcement-price-section">
+                    <div class="price-label">
+                        {% if announcement.category %}
+                            {% if announcement.category.name_fr == "Demande de prestation" %}
+                                Budget
+                            {% elif announcement.category.name_fr == "Offre de services" %}
+                                Tarif
+                            {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                Prix
+                            {% elif announcement.category.name_fr == "Location de matériel" %}
+                                Tarif/jour
+                            {% elif announcement.category.name_fr == "Offre d'emploi" %}
+                                Salaire
+                            {% else %}
+                                Budget
+                            {% endif %}
+                        {% else %}
+                            Budget
+                        {% endif %}
+                    </div>
+                    <div class="price-value">
+                        {% if announcement.a_convenir %}
+                            À convenir
+                        {% else %}
+                            {{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="announcement-description-section">
+                <div class="announcement-description" id="descriptionContainer">
+                    <div class="description-content">
+                        <p id="shortDescription" class="description-text">
+                            {{ announcement.description|truncatewords:30 }}
+                        </p>
+                        <p id="fullDescription" class="description-text" style="display: none;">
+                            {{ announcement.description|linebreaksbr }}
+                        </p>
+                    </div>
+                    
+                    {% if announcement.description|length > 200 %}
+                        <div class="read-more-container">
+                            <a href="#" id="readMoreLink" class="read-more-link">
+                                Lire la suite <i class="bi bi-chevron-down"></i>
+                            </a>
+                            <a href="#" id="readLessLink" class="read-more-link" style="display: none;">
+                                Afficher moins <i class="bi bi-chevron-up"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                
+            </div>
+
+            <!-- Gallery -->
+            {% if announcement.image1 or announcement.image2 or announcement.image3 or announcement.image4 %}
+            <div class="gallery-section">
+                <div class="image-gallery">
+                    {% if announcement.image1 %}
+                        <img src="{{ announcement.image1.url }}" alt="Announcement" class="gallery-image" data-index="0">
+                    {% endif %}
+                    {% if announcement.image2 %}
+                        <img src="{{ announcement.image2.url }}" alt="Announcement" class="gallery-image" data-index="1">
+                    {% endif %}
+                    {% if announcement.image3 %}
+                        <img src="{{ announcement.image3.url }}" alt="Announcement" class="gallery-image" data-index="2">
+                    {% endif %}
+                    {% if announcement.image4 %}
+                        <img src="{{ announcement.image4.url }}" alt="Announcement" class="gallery-image" data-index="3">
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            <div class="announcement-date">
+                    <i class="bi bi-calendar-event"></i> {{ announcement.created_at|date:"d/m/Y à H:i" }}
+                </div>
+            <!-- Image Modal -->
+            <div class="image-modal" id="imageModal">
+                <div class="image-modal-content">
+                    <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+                    <button class="modal-nav-btn prev" id="prevBtn">&#10094;</button>
+                    <img class="image-modal-img" id="modalImage" src="" alt="">
+                    <button class="modal-nav-btn next" id="nextBtn">&#10095;</button>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-section">
+                <!-- Row 1: Make Offer (Full Width) -->
+                {% if request.user != announcement.created_by %}
+                    {% if request.user.is_authenticated %}
+                        {% if user_offer %}
+                            <!-- Offer Summary Card -->
+                            <div style="border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden;">
+    
+                                <!-- Header -->
+                                <div style="background: #f9fafb; padding: 10px 14px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-size: 12px; font-weight: 700; color: #1a1a1a;">
+                                        <i class="fas fa-file-alt" style="color: #ec700a; margin-right: 5px;"></i>
+                                        Mon offre
+                                    </span>
+
+                                    <!-- Status Badge -->
+                                    {% if user_offer.status == 'pending' %}
+                                        <span style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">
+                                            <i class="fas fa-clock" style="font-size: 10px;"></i> En attente
+                                        </span>
+                                    {% elif user_offer.status == 'accepted' %}
+                                        <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">
+                                            <i class="fas fa-check-circle" style="font-size: 10px;"></i> Acceptée
+                                        </span>
+                                    {% elif user_offer.status == 'refused' %}
+                                        <span style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">
+                                            <i class="fas fa-times-circle" style="font-size: 10px;"></i> Refusée
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Body -->
+                                <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
+
+                                    <!-- Price -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="font-size: 11px; color: #6b7280; font-weight: 500;">
+                                            <i class="bi bi-tag" style="margin-right: 4px;"></i> Prix proposé
+                                        </span>
+                                        <span style="font-size: 14px; font-weight: 700; color: #ec700a;">
+                                            {{ user_offer.price|floatformat:2 }} {{ announcement.city.country.currency }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Message -->
+                                    <div style="background: #f9fafb; border-radius: 8px; padding: 10px 12px; border: 1px solid #f0f0f0;">
+                                        <p style="font-size: 11px; color: #6b7280; margin: 0 0 6px; font-weight: 600;">
+                                            <i class="bi bi-chat-left-text" style="margin-right: 4px;"></i> Message
+                                        </p>
+
+                                        <!-- Short (truncated) -->
+                                        <p id="offerShort" style="font-size: 12px; color: #374151; margin: 0; line-height: 1.6; word-wrap: break-word;">
+                                            {{ user_offer.message|truncatechars:200 }}
+                                        </p>
+
+                                        <!-- Full (with line breaks) -->
+                                        <p id="offerFull" style="font-size: 12px; color: #374151; margin: 0; line-height: 1.6; word-wrap: break-word; display: none;">
+                                            {{ user_offer.message|linebreaksbr }}
+                                        </p>
+
+                                        {% if user_offer.message|length > 200 %}
+                                            <button onclick="toggleOfferMessage()" id="offerToggleBtn"
+                                                style="margin-top: 8px; background: none; border: none; padding: 0; font-size: 11px; font-weight: 600; color: #ec700a; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                                <i class="bi bi-chevron-down" id="offerToggleIcon"></i> Lire la suite
+                                            </button>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Date -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="font-size: 11px; color: #9ca3af;">
+                                            <i class="bi bi-calendar-event" style="margin-right: 4px;"></i>
+                                            Envoyée le {{ user_offer.created_at|date:"d/m/Y à H:i" }}
+                                        </span>
+                                    </div>
+                                    <!-- If accepted: message button -->
+                                    {% if user_offer.status == 'accepted' %}
+                                    <a href="{% url 'app:messages_details' announcement.created_by.profile.slug %}"
+                                    style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; background: linear-gradient(135deg, #ec700a, #d45f00); color: white; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none;">
+                                        <i class="fas fa-comment-dots" style="font-size: 11px;"></i> Envoyer un message
+                                    </a>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <script>
+                                function toggleOfferMessage() {
+                                    const short = document.getElementById('offerShort');
+                                    const full = document.getElementById('offerFull');
+                                    const btn = document.getElementById('offerToggleBtn');
+                                    const icon = document.getElementById('offerToggleIcon');
+                                    const isExpanded = full.style.display !== 'none';
+
+                                    if (isExpanded) {
+                                        full.style.display = 'none';
+                                        short.style.display = 'block';
+                                        btn.innerHTML = '<i class="bi bi-chevron-down" id="offerToggleIcon"></i> Lire la suite';
+                                    } else {
+                                        short.style.display = 'none';
+                                        full.style.display = 'block';
+                                        btn.innerHTML = '<i class="bi bi-chevron-up" id="offerToggleIcon"></i> Afficher moins';
+                                    }
+                                }
+                            </script>
+
+                        {% else %}
+                            <button class="action-btn action-btn-primary action-btn-full" data-bs-toggle="modal" data-bs-target="#offerModal">
+                                <i class="fas fa-hand"></i>
+                                Faire une offre
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'app:user_login' %}" class="action-btn action-btn-primary action-btn-full">
+                            <i class="fas fa-hand"></i>
+                            Faire une offre
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <!-- Row 2: Save & Share (Side by side) -->
+                <div class="action-buttons-row">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% if is_favorite %}{% url 'app:remove_from_favorites' announcement.id %}{% else %}{% url 'app:add_to_favorites' announcement.id %}{% endif %}" class="action-btn action-btn-secondary action-btn-icon-large" title="{% if is_favorite %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}">
+                            <i class="bi bi-bookmark{% if is_favorite %}-fill{% endif %}" style="color: {% if is_favorite %}#ec700a{% endif %};"></i>
+                            <span>{% if is_favorite %}Enregistré{% else %}Enregistrer{% endif %}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'app:user_login' %}" class="action-btn action-btn-secondary action-btn-icon-large" title="Enregistrer">
+                            <i class="bi bi-bookmark"></i>
+                            <span>Enregistrer</span>
+                        </a>
+                    {% endif %}
+
+                    <button class="action-btn action-btn-secondary action-btn-icon-large" id="shareBtn" title="Partager">
+                        <i class="bi bi-share"></i>
+                        <span>Partager</span>
+                    </button>
+                </div>
+                {% if request.user == announcement.created_by %}
+
+                    {% if announcement_offers %}
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            
+                            <!-- Header -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 13px; font-weight: 700; color: #1a1a1a;">
+                                    <i class="fas fa-file-alt" style="color: #ec700a; margin-right: 5px;"></i>
+                                    Offres reçues
+                                </span>
+                                <span style="background: #fef5f0; color: #ec700a; border: 1px solid #fbd5b5; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">
+                                    {{ announcement_offers.count }}
+                                </span>
+                            </div>
+
+                            <!-- Offer Cards -->
+                            {% for offer in announcement_offers %}
+                            <div style="border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 25px;;">
+                                
+                                <!-- Offer Header -->
+                                <div style="background: #f9fafb; padding: 10px 14px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                                    
+                                    <!-- Sender Info -->
+                                    <!-- Sender Info -->
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <a href="{% url 'app:account' offer.sender.profile.slug %}" target="_blank">
+                                            <img src="{{ offer.sender.profile.profile_picture_url }}"
+                                                alt="{{ offer.sender.username }}"
+                                                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #ec700a;">
+                                        </a>
+                                        <div>
+                                            <p style="margin: 0; font-size: 12px; font-weight: 700; color: #1a1a1a;">
+                                                <a href="{% url 'app:account' offer.sender.profile.slug %}" target="_blank" style="text-decoration: none; color: inherit;">
+                                                    {{ offer.sender.username }}
+                                                </a>
+                                                {% if offer.sender.profile.is_verified %}
+                                                    <i class="fas fa-check-circle" style="color: #ec700a; font-size: 10px;"></i>
+                                                {% endif %}
+                                            </p>
+                                            <p style="margin: 0; font-size: 10px; color: #9ca3af;">
+                                                {{ offer.created_at|date:"d/m/Y à H:i" }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status Badge -->
+                                    {% if offer.status == 'pending' %}
+                                        <span style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap;">
+                                            <i class="fas fa-clock" style="font-size: 10px;"></i> En attente
+                                        </span>
+                                    {% elif offer.status == 'accepted' %}
+                                        <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap;">
+                                            <i class="fas fa-check-circle" style="font-size: 10px;"></i> Acceptée
+                                        </span>
+                                    {% elif offer.status == 'refused' %}
+                                        <span style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap;">
+                                            <i class="fas fa-times-circle" style="font-size: 10px;"></i> Refusée
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Offer Body -->
+                                <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+
+                                    <!-- Price -->
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="font-size: 11px; color: #6b7280; font-weight: 500;">
+                                            <i class="bi bi-tag" style="margin-right: 4px;"></i> Prix proposé
+                                        </span>
+                                        <span style="font-size: 14px; font-weight: 700; color: #ec700a;">
+                                            {{ offer.price|floatformat:2 }} {{ announcement.city.country.currency }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Message -->
+                                    <div style="background: #f9fafb; border-radius: 8px; padding: 10px 12px; border: 1px solid #f0f0f0;">
+                                        <p style="font-size: 11px; color: #6b7280; margin: 0 0 6px; font-weight: 600;">
+                                            <i class="bi bi-chat-left-text" style="margin-right: 4px;"></i> Message
+                                        </p>
+
+                                        <!-- Short -->
+                                        <p id="short-{{ forloop.counter }}" style="font-size: 12px; color: #374151; margin: 0; line-height: 1.6; word-wrap: break-word;">
+                                            {{ offer.message|truncatechars:200 }}
+                                        </p>
+
+                                        <!-- Full -->
+                                        <p id="full-{{ forloop.counter }}" style="font-size: 12px; color: #374151; margin: 0; line-height: 1.6; word-wrap: break-word; display: none;">
+                                            {{ offer.message|linebreaksbr }}
+                                        </p>
+
+                                        {% if offer.message|length > 200 %}
+                                            <button onclick="toggleOfferMsg({{ forloop.counter }})" id="btn-{{ forloop.counter }}"
+                                                style="margin-top: 8px; background: none; border: none; padding: 0; font-size: 11px; font-weight: 600; color: #ec700a; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                                <i class="bi bi-chevron-down"></i> Lire la suite
+                                            </button>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Action Buttons (only for pending offers) -->
+                                    {% if offer.status == 'pending' %}
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <a href="{% url 'app:accept_offer' offer.id %}"
+                                        onclick="return confirm('Accepter l\'offre de {{ offer.sender.username }} ?')"
+                                        style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; background: linear-gradient(135deg, #16a34a, #15803d); color: white; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none;">
+                                            <i class="fas fa-check" style="font-size: 11px;"></i> Accepter
+                                        </a>
+                                        <a href="{% url 'app:reject_offer' offer.id %}"
+                                        onclick="return confirm('Refuser l\'offre de {{ offer.sender.username }} ?')"
+                                        style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none;">
+                                            <i class="fas fa-times" style="font-size: 11px;"></i> Refuser
+                                        </a>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- If accepted: message button -->
+                                    {% if offer.status == 'accepted' %}
+                                    <a href="{% url 'app:messages_details' offer.sender.profile.slug %}"
+                                    style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; background: linear-gradient(135deg, #ec700a, #d45f00); color: white; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none;">
+                                        <i class="fas fa-comment-dots" style="font-size: 11px;"></i> Envoyer un message
+                                    </a>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <script>
+                                function toggleOfferMsg(id) {
+                                    const short = document.getElementById('short-' + id);
+                                    const full = document.getElementById('full-' + id);
+                                    const btn = document.getElementById('btn-' + id);
+                                    const isExpanded = full.style.display !== 'none';
+
+                                    if (isExpanded) {
+                                        full.style.display = 'none';
+                                        short.style.display = 'block';
+                                        btn.innerHTML = '<i class="bi bi-chevron-down"></i> Lire la suite';
+                                    } else {
+                                        short.style.display = 'none';
+                                        full.style.display = 'block';
+                                        btn.innerHTML = '<i class="bi bi-chevron-up"></i> Afficher moins';
+                                    }
+                                }
+                            </script>
+                        </div>
+
+                    {% else %}
+                        <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 10px; border: 1px dashed #e5e7eb;">
+                            <i class="fas fa-inbox" style="font-size: 24px; color: #d1d5db; margin-bottom: 8px; display: block;"></i>
+                            <p style="font-size: 12px; color: #9ca3af; margin: 0;">Aucune offre reçue pour le moment.</p>
+                        </div>
+                    {% endif %}
+
+                {% endif %}
+            </div>
+
+            
+
+            <style>
+                /* ===== ACTIONS SECTION ===== */
+                .actions-section {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-top: 12px;
+                    padding-top: 12px;
+                    border-top: 1px solid #f0f0f0;
+                }
+
+                .action-btn-full {
+                    width: 100%;
+                }
+
+                .action-buttons-row {
+                    display: flex;
+                    gap: 10px;
+                    width: 100%;
+                }
+
+                .action-btn-icon-large {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    padding: 10px 12px;
+                }
+
+                .action-btn-icon-large span {
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+
+                /* ===== BOTTOM REPORT/DELETE SECTION ===== */
+                .actions-bottom-section {
+                    margin-top: 16px;
+                    padding-top: 16px;
+                    border-top: 1px solid #e5e7eb;
+                }
+
+                .action-btn-danger-full {
+                    width: 100%;
+                    padding: 10px;
+                    background-color: #fee2e2;
+                    color: #dc2626;
+                    border: 1px solid #fecaca;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                }
+
+                .action-btn-danger-full:hover {
+                    background-color: #fecaca;
+                    border-color: #f87171;
+                }
+
+                .action-btn-danger-full:active {
+                    transform: scale(0.98);
+                }
+            </style>
+        </div>
+
+        <!-- Right: Profile Card -->
+        <div class="profile-sidebar">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-banner"
+                    style="{% if profile.cover_picture_url %}background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%), url('{{ profile.cover_picture_url }}');{% else %}background-color: #f0f0f0;{% endif %}">
+                </div>
+
+                <div class="profile-picture-section">
+                    <img src="{{ profile.profile_picture_url }}" alt="{{ profile.user.username }}" class="profile-picture">
+                    <div class="profile-username">
+                        {{ profile.user.username }}
+                        {% if profile.is_verified %}
+                            <i class="fas fa-check-circle" style="color: #ec700a; font-size: 11px;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="profile-location">
+                        <i class="bi bi-geo-alt"></i> {{ profile.city }}
+                    </div>
+
+                    <div class="profile-status status-{{ profile.statut }}">
+                        {% if profile.statut == 'particulier' %}
+                            <i class="fas fa-user"></i> Particulier
+                        {% elif profile.statut == 'entreprise' %}
+                            <i class="fas fa-building"></i> Entreprise
+                        {% endif %}
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <div class="profile-stat-value">
+                                {% if profile.review_count > 0 %}
+                                        {{ profile.average_rating|floatformat:1 }}
+                                    {% else %}—{% endif %}
+                                    </div>
+                            <div class="profile-stat-label"><i class="fas fa-star" style="color:#ec700a;"></i> Note</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="profile-stat-value">{{ profile.review_count }}</div>
+                            <div class="profile-stat-label">Avis</div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'app:account' announcement.created_by.profile.slug %}" class="profile-view-btn">
+                        <i class="fas fa-user" style="font-size: 11px;"></i> Voir le profil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            {% if announcement.skills.all %}
+            <div class="skills-section">
+                
+                <div class="skills-list">
+                    {% for skill in announcement.skills.all %}
+                        <span class="skill-badge">{{ skill.name_fr }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Report/Delete Section (Under Competences) -->
+            <div class="actions-bottom-section">
+                {% if request.user == announcement.created_by %}
+                    <button class="action-btn-danger-full" onclick="confirmDelete('{% url 'app:delete_announcement' announcement.id %}')">
+                        <i class="fas fa-trash-alt"></i> Supprimer cette annonce
+                    </button>
+                {% else %}
+                    <button class="action-btn-danger-full" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        <i class="fas fa-flag"></i> Signaler cette annonce
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        
+    </div>
+
+    <!-- Ad Section -->
+    <div class="ad-section mt-4">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+            crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+            style="display:block;width:100%;height:130px;"
+            data-ad-client="ca-pub-5485706271033891"
+            data-ad-slot="1737959128"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+</section>
+
+<!-- Offer Modal -->
+<div class="modal fade" id="offerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; padding: 16px;">
+                <div>
+                    <h5 class="modal-title" style="font-weight: 700; font-size: 15px; color: #1a1a1a;">
+                        Faire une offre
+                    </h5>
+                    <p style="font-size: 11px; color: #6b7280; margin: 2px 0 0 0;">
+                        à {{ announcement.created_by.username }}
+                        {% if announcement.created_by.profile.is_verified %}
+                            <i class="fas fa-check-circle" style="color: #ec700a; font-size: 10px;"></i>
+                        {% endif %}
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form action="{% url 'app:submit_offer' announcement.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+                <div class="modal-body" style="padding: 16px;">
+
+                    <!-- Price hint from announcement -->
+                    {% if not announcement.a_convenir %}
+                    <div style="background: linear-gradient(135deg, #fef5f0, #fff5f0); border-left: 3px solid #ec700a; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px;">
+                        <span style="font-size: 11px; color: #6b7280;">
+                            {% if announcement.category.name_fr == "Demande de prestation" %}Budget demandé
+                            {% elif announcement.category.name_fr == "Offre de services" %}Tarif affiché
+                            {% elif announcement.category.name_fr == "Vente de matériel" %}Prix demandé
+                            {% elif announcement.category.name_fr == "Location de matériel" %}Tarif/jour
+                            {% elif announcement.category.name_fr == "Offre d'emploi" %}Salaire proposé
+                            {% else %}Budget{% endif %}
+                        </span>
+                        <span style="font-size: 13px; font-weight: 700; color: #ec700a; margin-left: 6px;">
+                            {{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Price Field -->
+                    <div style="margin-bottom: 14px;">
+                        <label for="offerPrice" style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
+                            Votre Prix <span style="color: #dc2626;">*</span>
+                        </label>
+                        <div style="position: relative;">
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                id="offerPrice"
+                                name="price"
+                                class="form-control"
+                                placeholder="Ex : 150.00"
+                                style="padding-right: 50px;"
+                                required
+                            >
+                            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #6b7280; font-weight: 600;">
+                                {{ announcement.city.country.currency }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Message Field -->
+                    <div style="margin-bottom: 14px;">
+                        <label for="offerMessage" style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
+                            Message <span style="color: #dc2626;">*</span>
+                        </label>
+                        <textarea
+                            id="offerMessage"
+                            name="message"
+                            class="form-control"
+                            rows="5"
+                            required
+                            maxlength="2000"
+                            placeholder="Présentez-vous et expliquez votre offre..."
+                            style="resize: vertical; min-height: 100px;"
+                            oninput="updateCharCount(this)"
+                        ></textarea>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                            <span id="charCount" style="font-size: 11px; color: #9ca3af;">0 / 2000</span>
+                        </div>
+                    </div>
+
+                    <script>
+                        function updateCharCount(textarea) {
+                            const count = textarea.value.length;
+                            const counter = document.getElementById('charCount');
+                            counter.textContent = `${count} / 2000`;
+
+                            if (count >= 2000) {
+                                counter.style.color = '#dc2626';
+                            } else if (count >= 1600) {
+                                counter.style.color = '#f59e0b';
+                            } else {
+                                counter.style.color = '#9ca3af';
+                            }
+                        }
+                    </script>
+
+
+                    <p style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
+                        <i class="bi bi-info-circle"></i> Soyez précis pour maximiser vos chances d'être sélectionné.
+                    </p>
+                </div>
+
+                <div class="modal-footer" style="border-top: 1px solid #e5e7eb; padding: 12px 16px; gap: 8px;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" id="submitOfferBtn" class="btn btn-sm" style="background: linear-gradient(135deg, #ec700a, #d45f00); color: white; font-weight: 600; border: none; padding: 8px 20px; border-radius: 8px;">
+                        <i class="fas fa-paper-plane" style="font-size: 11px;"></i> Envoyer l'offre
+                    </button>
+                </div>
+            </form>
+
+            <script>
+                let selectedFiles = [];
+
+                const iconMap = {
+                    'pdf':  { icon: 'bi-file-earmark-pdf',  color: '#dc2626' },
+                    'doc':  { icon: 'bi-file-earmark-word', color: '#2563eb' },
+                    'docx': { icon: 'bi-file-earmark-word', color: '#2563eb' },
+                    'png':  { icon: 'bi-file-earmark-image',color: '#16a34a' },
+                    'jpg':  { icon: 'bi-file-earmark-image',color: '#16a34a' },
+                    'jpeg': { icon: 'bi-file-earmark-image',color: '#16a34a' },
+                };
+
+                function getExt(name) {
+                    return name.split('.').pop().toLowerCase();
+                }
+
+                function formatSize(bytes) {
+                    return bytes < 1024 * 1024
+                        ? (bytes / 1024).toFixed(1) + ' Ko'
+                        : (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+                }
+
+                function renderFiles() {
+                    const list = document.getElementById('fileList');
+                    const error = document.getElementById('fileError');
+                    list.innerHTML = '';
+                    error.style.display = 'none';
+
+                    selectedFiles.forEach((file, i) => {
+                        const ext = getExt(file.name);
+                        const { icon, color } = iconMap[ext] || { icon: 'bi-file-earmark', color: '#6b7280' };
+
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display:flex;align-items:center;gap:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;';
+                        item.innerHTML = `
+                            <i class="bi ${icon}" style="font-size:18px;color:${color};flex-shrink:0;"></i>
+                            <div style="flex:1;min-width:0;">
+                                <p style="margin:0;font-size:12px;font-weight:600;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${file.name}</p>
+                                <p style="margin:0;font-size:10px;color:#9ca3af;">${formatSize(file.size)}</p>
+                            </div>
+                            <button type="button" onclick="removeFile(${i})" style="background:none;border:none;color:#9ca3af;cursor:pointer;padding:2px;font-size:16px;line-height:1;" title="Supprimer">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        `;
+                        list.appendChild(item);
+                    });
+
+                    syncInput();
+                }
+
+                function removeFile(index) {
+                    selectedFiles.splice(index, 1);
+                    renderFiles();
+                }
+
+                function addFiles(newFiles) {
+                    const error = document.getElementById('fileError');
+                    const combined = [...selectedFiles];
+
+                    for (const file of newFiles) {
+                        if (combined.length >= 4) {
+                            error.style.display = 'block';
+                            break;
+                        }
+                        // Avoid duplicates
+                        if (!combined.find(f => f.name === file.name && f.size === file.size)) {
+                            combined.push(file);
+                        }
+                    }
+
+                    selectedFiles = combined;
+                    renderFiles();
+                }
+
+                function syncInput() {
+                    // Rebuild a DataTransfer to keep the actual file input in sync
+                    const dt = new DataTransfer();
+                    selectedFiles.forEach(f => dt.items.add(f));
+                    document.getElementById('docInput').files = dt.files;
+                }
+
+                function handleFileSelect(files) {
+                    addFiles(Array.from(files));
+                }
+
+                function handleDragOver(e) {
+                    e.preventDefault();
+                    const zone = document.getElementById('dropZone');
+                    zone.style.borderColor = '#ec700a';
+                    zone.style.background = '#fef5f0';
+                }
+
+                function handleDragLeave(e) {
+                    const zone = document.getElementById('dropZone');
+                    zone.style.borderColor = '#e5e7eb';
+                    zone.style.background = '#fafafa';
+                }
+
+                function handleDrop(e) {
+                    e.preventDefault();
+                    handleDragLeave(e);
+                    addFiles(Array.from(e.dataTransfer.files));
+                }
+            </script>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Signaler cette annonce</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% url 'app:report_annonce' announcement.id %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <label for="reportMessage" class="form-label">Raison du signalement</label>
+                    <textarea class="form-control" id="reportMessage" name="message" rows="4" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                    {% if request.user.is_authenticated %}
+                        <button type="submit" class="btn btn-danger btn-sm">Signaler</button>
+                    {% else %}
+                        <a href="{% url 'app:user_login' %}" class="btn btn-danger btn-sm">Signaler</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Image Gallery Modal
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const closeBtn = document.getElementById('modalCloseBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const galleryImages = Array.from(document.querySelectorAll('.gallery-image'));
+    let currentIndex = 0;
+
+    galleryImages.forEach((img, index) => {
+        img.addEventListener('click', () => {
+            currentIndex = index;
+            openModal();
+        });
+    });
+
+    function openModal() {
+        modalImage.src = galleryImages[currentIndex].src;
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        openModal();
+    });
+    nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+        openModal();
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft') prevBtn.click();
+        if (e.key === 'ArrowRight') nextBtn.click();
+    });
+
+    // Read More/Less
+    document.addEventListener('DOMContentLoaded', function() {
+        const readMoreLink = document.getElementById('readMoreLink');
+        const readLessLink = document.getElementById('readLessLink');
+        const shortDescription = document.getElementById('shortDescription');
+        const fullDescription = document.getElementById('fullDescription');
+
+        if (readMoreLink) {
+            readMoreLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                shortDescription.style.display = 'none';
+                fullDescription.style.display = 'block';
+                readMoreLink.style.display = 'none';
+                readLessLink.style.display = 'inline-flex';
+            });
+        }
+
+        if (readLessLink) {
+            readLessLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                shortDescription.style.display = 'block';
+                fullDescription.style.display = 'none';
+                readMoreLink.style.display = 'inline-flex';
+                readLessLink.style.display = 'none';
+            });
+        }
+    });
+
+    // Share Button
+    document.getElementById('shareBtn').addEventListener('click', () => {
+        const url = window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Découvrez cette annonce !',
+                text: 'Découvrez cette annonce BricoleUp',
+                url: url
+            });
+        } else {
+            alert('Copiez l\'URL : ' + url);
+        }
+    });
+
+    // Delete Confirmation
+    function confirmDelete(url) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
+            window.location.href = url;
+        }
+    }
+</script>
+
+{% endblock %}

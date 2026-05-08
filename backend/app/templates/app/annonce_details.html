@@ -1,0 +1,886 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}
+{{ announcement.created_by.username }} - {{ announcement.category.name_fr }} 
+{% endblock %}
+
+{% block content %}
+
+<style>
+.profile-section {
+    padding: 15px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+</style>
+
+<section class=" d-flex flex-column justify-content-center align-items-center" style="margin-top: 65px; ">
+
+        <div class="container " >
+
+            <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+                <div class="col-12 justify-content-center align-items-center " >
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                        crossorigin="anonymous"></script>
+                    <!-- annonce_details_1 -->
+                    <ins class="adsbygoogle"
+                        style="display:block;width:100%;height:130px;"
+                        data-ad-client="ca-pub-5485706271033891"
+                        data-ad-slot="1737959128"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+
+
+                
+                </div> 
+            </div> 
+
+            <div class="row mb-1" >
+                <div class="col-lg-7 col-md-12 col-12 mb-3  justify-content-center">
+                    <div class="profile-section mb-3">
+                        <div class="row">
+                            <div class="d-flex align-items-center">
+                            <a style="font-size:15px;" href="{% url 'app:account' announcement.created_by.profile.slug %}" target="_blank" class="d-flex align-items-center">
+                                <img src="{{ announcement.created_by.profile.profile_picture_url }}" style="width:50px; height:50px; object-fit:cover;" class="rounded-circle me-2">
+                                
+                                <div class="d-flex flex-column">
+                                    <span style="
+                                            display: inline-block;
+                                            max-width: 100%;   /* adjust as needed */
+                                            white-space: nowrap;
+                                            overflow: hidden;
+                                            text-overflow: ellipsis;
+                                            ">{{ announcement.created_by.username}}
+                                            {% if profile.is_verified %}
+                                                        <i class="fas fa-check-circle" style="color: #0dc0c7;" title="Vérifié"></i>
+                                                    {% endif %}</span>
+                                    <span style="font-size:14px; font-weight:semi-bold;">
+                                        <i class="bi bi-geo-alt"></i> {{ announcement.city }}
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                        
+                                
+                          
+                            
+                        </div>
+                        <div class="modal fade" id="reportAnnonceModal" tabindex="-1" aria-labelledby="reportAnnonceModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" >
+                                <div class="modal-content" style="background-color: white;">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="reportAnnonceModalLabel">
+                                            Signaler cette annonce
+
+
+                                        
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{% url 'app:report_annonce' announcement.id %}" method="post">
+                                            {% csrf_token %}
+                                            <div class="mb-3">
+                                                <label for="reportMessage" class="form-label">
+                                                    Raison de signalement
+
+
+                                                
+                                                </label>
+                                                <textarea class="form-control" id="reportMessage" name="message" rows="4" required></textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Annuler
+
+
+                                                    
+                                                </button>
+                                                {% if request.user.is_authenticated %}
+                                                <button type="submit" class="btn btn-danger">
+                                                    Signaler
+
+
+                                                    
+                                                </button>
+                                                {% else %}
+                                                <a href="{% url 'app:user_login' %}" >
+                                                    <button type="button" class="btn btn-danger">
+                                                        Signaler
+
+
+                                                        
+                                                    </button>
+                                                </a>
+                                                {% endif %}
+                                                
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span class="category-badge category-{{ announcement.category.name_fr|slugify }}">
+                            {{ announcement.category.name_fr }}
+                        </span>
+                        
+                                    
+                            <span style="font-size:14px; font-weight:bold;">
+                                {% if announcement.category %}
+                                            {% if announcement.category.name_fr == "Demande de prestation" %}
+                                                Budget :
+                                            {% elif announcement.category.name_fr == "Offre de services" %}
+                                                Tarif :
+                                            {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                                Prix de vente :
+                                            {% elif announcement.category.name_fr == "Location de matériel" %}
+                                                Tarif de location par jour :
+                                            {% elif announcement.category.name_fr == "Offre d’emploi" %}
+                                                Rémunération par mois :
+                                            {% else %}
+                                                Budget :
+                                            {% endif %}
+                                        {% else %}
+                                            Budget :
+                                        {% endif %}
+                                {% if announcement.a_convenir %}
+                                    À convenir
+                                {% else %}
+                                    {{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}
+                                {% endif %}
+                            </span>
+                            <div class="mb-1 mt-1 ">
+                                {{ announcement.description|linebreaksbr }}
+                            </div>
+                            
+
+                                    
+                            
+                            <a style="font-size:12px;">{{ announcement.created_at|date:"d/m/Y H:i" }}</a>
+                            {% if announcement.image3 or announcement.image4 %}
+                            <div class="image-ggallery two-rows">
+                            {% else %}
+                            <div class="image-ggallery one-row">
+                            {% endif %}
+
+                            {% if announcement.image1 %}
+                                <img src="{{ announcement.image1.url }}" class="ggallery-image img-fluid clickable-img" data-src="{{ announcement.image1.url }}">
+                            {% endif %}
+                            {% if announcement.image2 %}
+                                <img src="{{ announcement.image2.url }}" class="ggallery-image img-fluid clickable-img" data-src="{{ announcement.image2.url }}">
+                            {% endif %}
+                            {% if announcement.image3 %}
+                                <img src="{{ announcement.image3.url }}" class="ggallery-image img-fluid clickable-img" data-src="{{ announcement.image3.url }}">
+                            {% endif %}
+                            {% if announcement.image4 %}
+                                <img src="{{ announcement.image4.url }}" class="ggallery-image img-fluid clickable-img" data-src="{{ announcement.image4.url }}">
+                            {% endif %}
+                            </div>
+
+                            <!-- Modal -->
+                            <div id="imageModal" class="modal" style="background-color: rgba(0, 0, 0, 0.9);">
+                            <div class="modal-content">
+                                <span class="close-btn">&times;</span>
+                                <button class="nav-btn prev-btn">&#10094;</button>
+                                <img id="modal-image" class="modal-image" src="" alt="">
+                                <button class="nav-btn next-btn">&#10095;</button>
+                            </div>
+                            </div>
+
+                            <script>
+                                const modal = document.getElementById("imageModal");
+                                const modalImage = document.getElementById("modal-image");
+                                const closeBtn = document.querySelector(".close-btn");
+                                const prevBtn = document.querySelector(".prev-btn");
+                                const nextBtn = document.querySelector(".next-btn");
+
+                                // Get all gallery images
+                                const galleryImages = Array.from(document.querySelectorAll(".ggallery-image"));
+                                let currentIndex = 0;
+
+                                // Open modal on image click
+                                galleryImages.forEach((img, index) => {
+                                img.addEventListener("click", () => {
+                                    currentIndex = index;
+                                    openModal(galleryImages[currentIndex].getAttribute("data-src") || galleryImages[currentIndex].src);
+                                });
+                                });
+
+                                function openModal(src) {
+                                modal.style.display = "block";
+                                modalImage.src = src;
+                                }
+
+                                // Close modal
+                                function closeModal() {
+                                modal.style.display = "none";
+                                }
+
+                                // Navigate left/right
+                                function showNext() {
+                                currentIndex = (currentIndex + 1) % galleryImages.length;
+                                openModal(galleryImages[currentIndex].src);
+                                }
+
+                                function showPrev() {
+                                currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+                                openModal(galleryImages[currentIndex].src);
+                                }
+
+                                // Event listeners
+                                closeBtn.onclick = closeModal;
+                                nextBtn.onclick = showNext;
+                                prevBtn.onclick = showPrev;
+
+                                window.onclick = (e) => { if (e.target === modal) closeModal(); };
+                                window.addEventListener("keydown", (e) => {
+                                if (e.key === "Escape") closeModal();
+                                if (e.key === "ArrowRight") showNext();
+                                if (e.key === "ArrowLeft") showPrev();
+                                });
+                            </script>
+
+
+                        
+
+                        </div>
+                    
+                    <div class="row mt-2 mb-0 d-flex justify-content-between align-items-center">
+                    
+                        
+                        <div class="d-flex align-items-center gap-1">
+                            
+                                <div style="width:100%;">
+                                    {% if request.user != announcement.created_by %}
+                                        <a 
+                                            {% if request.user.is_authenticated %}
+                                                href="{% url 'app:messages_details' announcement.created_by.profile.slug %}" 
+                                            {% else %}
+                                                href="{% url 'app:user_login' %}"
+                                            {% endif %}
+                                            style="width:100%;"
+                                        >
+                                            <button class="btn btn-message w-100">
+                                                <i class="fas fa-hand"></i>
+                                                Faire une offre
+                                            </button>
+                                        </a>
+                                    
+                                    {% else %}
+                                        <!-- EMPTY SPACE to keep layout -->
+                                        <div style="height: 42px;"></div>
+                                    {% endif %}
+                                </div>
+
+
+                                <!-- RIGHT SIDE (Actions) -->
+                                <div class="d-flex align-items-center gap-2 ms-2">
+                                                        
+                            
+                            
+                                <!-- Add to Favorites -->
+                                {% if request.user.is_authenticated %}
+
+
+                                    {% if is_favorite %}
+                                    <a href="{% url 'app:remove_from_favorites' announcement.id %}" >
+
+                                        <!-- Add to Favorites -->
+                                        <button class="btn  favorite-button p-1"  title="
+                                            Supprimer des favoris
+                                            ">
+                                            <i class="bi bi-heart-fill fs-5 " style="color:#ec700a;"></i>
+                                        </button>
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'app:add_to_favorites' announcement.id %}" >
+
+                                        <!-- Add to Favorites -->
+                                        <button class="btn  favorite-button p-1" title="
+                                            Ajouter aux favoris
+                                            ">
+                                            <i class="bi bi-heart fs-5"></i>
+                                        </button>
+                                    </a>
+
+                                    {% endif %}
+                                {% else %}
+                                <a href="{% url 'app:user_login' %}" >
+
+                                    <!-- Add to Favorites -->
+                                    <button class="btn  favorite-button p-1"  title="
+                                        Ajouter aux favoris
+                                    ">
+                                        <i class="bi bi-heart fs-5"></i>
+                                    </button>
+                                </a>
+
+                                {% endif %}
+                                <button id="share-button" class="btn  p-1" title="
+                                    Partager 
+                                    ">
+                                    <i class="bi bi-share fs-5"></i>
+                                </button>
+
+
+                                <input type="hidden" id="annonce-url" value="{% url 'app:annonce_details' announcement.id %}">
+
+                                <script>
+                                    document.getElementById('share-button').addEventListener('click', function () {
+                                        // Get the dynamically generated URL from the hidden input
+                                        const annonceUrl = document.getElementById('annonce-url').value;
+
+                                        if (navigator.share) {
+                                            // Utiliser l'API Web Share pour partager
+                                            navigator.share({
+                                                title: 'Découvrez cette annonce !',
+                                                text: 'J\'ai trouvé cette annonce intéressante pour vous :',
+                                                url: annonceUrl
+                                            })
+                                            .then(() => console.log('Annonce partagée avec succès !'))
+                                            .catch((error) => console.error('Erreur lors du partage de l\'annonce :', error));
+                                        } else {
+                                            // Alternative pour les navigateurs qui ne prennent pas en charge l'API Web Share
+                                            alert('Le partage n\'est pas pris en charge sur ce navigateur. Vous pouvez copier manuellement l\'URL : ' + annonceUrl);
+                                        }
+                                        
+                                    });
+                                </script>
+                                
+                                <div class="dropdown">
+                                        <button class="btn  p-2" type="button" id="moreActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical fs-5"></i>
+                                        </button>
+                                        <!-- Dropdown menu with the "Signaler" option -->
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="moreActions">
+                                            {% if request.user == announcement.created_by %}
+                                                <li>
+                                                    <button class="btn btn-danger ms-2 w-100" id="delete-button" 
+                                                            onclick="confirmDelete('{% url 'app:delete_announcement' announcement.id %}')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+
+                                                    <script>
+                                                        function confirmDelete(url) {
+                                                            const message = 'Êtes-vous sûr de vouloir supprimer cette annonce ?';
+                                                            if (confirm(message)) {
+                                                                window.location.href = url;
+                                                            }
+                                                        }
+                                                    </script>
+
+                                                </li>
+
+
+                                            {% else %}
+                                                <li>
+                                                    <a class="dropdown-item text-danger" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#reportAnnonceModal">
+                                                        Signaler
+
+
+                                            
+                                                    </a>
+
+                                                </li>
+                                                
+                                            {% endif %}
+                                        </ul>
+                                </div>
+                                </div>
+                        </div>
+
+                           
+                    </div>
+                    
+
+                   
+
+                </div>
+                
+                   
+                </div>
+                <div class="col-lg-5 col-md-12 col-12 mb-5 ">
+                    <div class="profile-section mb-3">
+                        <!-- Banner -->
+                        <div class="profile-banner" 
+                            style="
+                                position: relative;
+                                border-radius: 12px 12px 0 0;
+                                background-size: cover;
+                                background-position: center;
+                                {% if profile.cover_picture_url %}
+                                    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%), url('{{ profile.cover_picture_url }}');
+                                {% else %}
+                                    background-color: #f0f0f0;
+                                    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+                                {% endif %}
+                                ">
+                            
+                        </div>
+                        <!-- Profile Info Section -->
+                        <div class="profile-main">
+                            <!-- Profile picture -->
+                            <div class="profile-picture">
+                                <img src="{{ profile.profile_picture_url }}" alt="{{ profile.user.username }}">
+                            </div>
+
+                            <!-- User Info -->
+                            <div class="profile-info">
+                                <div class="row">
+                          
+
+                                        <div class="username mb-0">
+                                            {{ profile.user.username }}
+                                            {% if profile.is_verified %}
+                                            <i class="fas fa-check-circle verified-icon" title="Vérifié"></i>
+                                            {% endif %}
+                                        </div>
+                                  
+                                        <div><i class="bi bi-geo-alt"></i> 
+                                            {% if profile.city %}{{ profile.city }}{% endif %}
+                                        </div>
+
+                                        <!-- Stats -->
+                                        <div >
+                                            <i class="fas fa-star" style="color:#ec700a;"></i> {{ profile.average_rating|floatformat:1 }}/5
+                                            ({{ profile.review_count }} 
+                                                avis)
+                                        </div>
+                                        <!-- Statut -->
+                                        <div class=" mt-2">
+                                            <span class="profile-statut statut-{{ profile.statut }}">
+                                                {% if profile.statut == 'particulier' %}
+                                                    <i class="fas fa-user me-1"></i> {{ profile.get_statut_display }}
+                                                {% elif profile.statut == 'entreprise' %}
+                                                    <i class="fas fa-building me-1"></i> {{ profile.get_statut_display }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+
+
+
+
+                                        <style>
+                                            .profile-statut {
+                                                display: inline-flex;
+                                                align-items: center;
+                                                font-weight: 600;
+                                                padding: 4px 10px;
+                                                border-radius: 12px;
+                                                font-size: 0.85rem;
+                                            }
+
+                                            /* Statut colors */
+                                            .statut-particulier {
+                                                background-color: #e6f4ea; /* light green */
+                                                color: #198754; /* green text */
+                                                border: 1px solid #b7e4c7;
+                                            }
+
+                                            .statut-entreprise {
+                                                background-color: #f0f0f0; /* light gray */
+                                                color: #495057; /* dark gray text */
+                                                border: 1px solid #d6d6d6;
+                                            }
+                                        </style>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mb-0  ">
+                            <div class="col-12 d-flex">
+                                <!-- Left: Verification Status -->
+                                <div class="d-flex align-items-center  w-100">
+                                    <a href="{% url 'app:account' announcement.created_by.profile.slug %}" class="btn btn-message">
+                                        <i class="fas fa-user"></i> Voir le profil
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="skills-container mt-2">
+                                {% for skill in announcement.skills.all %}
+                                
+                                        <span class="profile-statut statut-entreprise" style="border-radius:8px;">
+                                                {{ skill.name_fr }}
+                                            
+                                        </span> 
+                                    
+                                {% endfor %}
+
+                            </div>
+                        
+                </div>
+            </div>
+        
+    
+    </div>
+</section>
+<style>
+
+    .description-clamp {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4; /* Limit to 4 lines */
+        overflow: hidden;
+        position: relative;
+    }
+
+    .clamp-link {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: white; /* matches your container background */
+        padding-left: 4px;
+        font-weight: bold;
+        color: #0d6efd;
+        text-decoration: none;
+    }
+    .image-ggallery {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        height: 200px; /* fixed container height */
+    }
+
+    .image-ggallery.one-row {
+        grid-template-rows: 200px; /* 1 row for 2 images */
+    }
+
+    .image-ggallery.two-rows {
+        grid-template-rows: 100px 100px; /* 2 rows for 3 or 4 images */
+    }
+
+    .image-ggallery .ggallery-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    /* Responsive image grid */
+    .image-ggallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    height: 200px;
+    }
+
+    .image-ggallery.one-row {
+    grid-template-rows: 200px;
+    }
+
+    .image-ggallery.two-rows {
+    grid-template-rows: 100px 100px;
+    }
+
+    .image-ggallery .ggallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    }
+
+    .image-ggallery .ggallery-image:hover {
+    transform: scale(1.03);
+    }
+
+    /* Modal Styles */
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    
+    overflow: hidden;
+    transition: opacity 0.3s ease-in-out;
+    }
+
+    .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    border-radius: 15px;
+    max-width: 90%;
+    max-height: 90%;
+    
+    }
+
+    .modal-image {
+    width: auto;
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    }
+
+    .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #fff;
+    font-size: 35px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    z-index: 1200;
+    }
+
+    .close-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    }
+    /* Navigation buttons (inside modal) */
+    .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    z-index: 1200;
+    }
+
+    .nav-btn:hover {
+    background: rgba(0,0,0,0.8);
+    }
+
+    /* Left and right placement */
+    .prev-btn {
+    left: 15px;
+    }
+
+    .next-btn {
+    right: 15px;
+    }
+
+    /* Hide navigation buttons on small screens if desired */
+    @media (max-width: 575.98px) {
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+    }
+
+
+
+
+</style>
+<style>
+    .profile-container {
+        font-family: 'Arial', sans-serif;
+        
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Banner */
+    .profile-banner {
+        width: 100%;
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    /* Main profile section */
+    .profile-main {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 5px 5px 10px 5px;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    /* Profile picture overlapping banner */
+    .profile-picture {
+        flex: 0 0 150px;
+        margin-top: -75px; /* half of image height to overlap */
+    }
+    .profile-picture img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        object-fit: cover;
+    }
+    @media (max-width: 576px) {
+        .profile-picture {
+            flex: 0 0 120px; /* match the smaller image width */
+        }
+
+        .profile-picture img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+        }
+
+    }
+
+    
+
+    /* Profile info */
+    .profile-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Username and title */
+    .username {
+        font-size: 24px;
+        font-weight: bold;
+        align-items: center;
+    }
+    .verified-icon { color: #0dc0c7; }
+    .title {
+        font-size: 18px;
+        color: #555;
+    }
+
+    /* Statut */
+    .profile-statut {
+        display: inline-block;
+        padding: 4px 10px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 6px;
+    }
+
+    /* Buttons */
+    .profile-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .btn-edit, .btn-message {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #ec700a;
+        border: none;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+    }
+    .btn-edit:hover, .btn-message:hover { background-color: #5bb7b2; } 
+
+    
+
+</style>
+<style>
+    .profile-card {
+            
+        width: 100%;
+        max-width: 350px;
+
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .profile-img img {
+        height: 150px;
+        width: 150px;
+        object-fit: cover;
+    }
+    
+    .profile-item {
+        margin-bottom: 10px;
+    }
+    
+    .profile-label {
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    
+    .profile-value {
+        font-weight: normal;
+    }
+    
+    .profile-actions .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+
+
+
+
+
+
+    
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; /* Space between skill items */
+    }
+
+                                            .profile-statut {
+                                                display: inline-flex;
+                                                align-items: center;
+                                                font-weight: 600;
+                                                padding: 4px 10px;
+                                                border-radius: 12px;
+                                                font-size: 0.85rem;
+                                            }
+
+                                            /* Statut colors */
+                                            .statut-particulier {
+                                                background-color: #e6f4ea; /* light green */
+                                                color: #198754; /* green text */
+                                                border: 1px solid #b7e4c7;
+                                            }
+
+                                            .statut-entreprise {
+                                                background-color: #f0f0f0; /* light gray */
+                                                color: #495057; /* dark gray text */
+                                                border: 1px solid #d6d6d6;
+                                            }
+                                        </style>
+<!-- Bootstrap JS and dependencies (jQuery and Popper.js) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+

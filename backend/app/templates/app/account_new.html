@@ -1,0 +1,1254 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}{{ profile.user.username }}{% endblock %}
+{% block content %}
+
+<section style="background-color: #f4f5f7; margin-top: 65px; min-height: 100vh; padding-bottom: 60px;">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-12 mb-3">
+
+            <!-- ===== PROFILE CARD ===== -->
+            <div class="profile-card-main">
+
+                <!-- Banner -->
+                <div class="profile-banner-wrap clickable-cover"
+                    style="
+                        {% if profile.cover_picture_url %}
+                            background-image: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.55) 100%), url('{{ profile.cover_picture_url }}');
+                        {% else %}
+                            background: linear-gradient(135deg, #1B3C6B 0%, #ec700a 100%);
+                        {% endif %}
+                    ">
+                </div>
+
+                <!-- Cover Modal -->
+                <div class="modal fade" id="coverModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-image">
+                        <div class="modal-content bg-dark border-0">
+                            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                            <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                                <img src="{{ profile.cover_picture_url }}" class="modal-image-content" alt="Cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Body -->
+                <div class="profile-body">
+                    <!-- Avatar -->
+                    <div class="profile-avatar-wrap">
+                        <img src="{{ profile.profile_picture_url }}" alt="{{ profile.user.username }}" class="profile-avatar clickable-avatar">
+                    </div>
+
+                    <!-- Avatar Modal -->
+                    <div class="modal fade" id="avatarModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-image">
+                            <div class="modal-content bg-dark border-0">
+                                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                                <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                                    <img src="{{ profile.profile_picture_url }}" class="modal-image-content" alt="{{ profile.user.username }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info & Actions -->
+                    <div class="profile-info-row">
+                        <!-- Left: Info -->
+                        <div class="profile-info-left">
+                            <div class="profile-username-row">
+                                <h1 class="profile-username">{{ profile.user.username }}</h1>
+                                {% if profile.is_verified %}
+                                    <span class="verified-chip" title="Vérifié"><i class="fas fa-check"></i></span>
+                                {% endif %}
+                            </div>
+
+                            <div class="profile-meta">
+                                {% if profile.city %}
+                                    <span class="meta-item"><i class="bi bi-geo-alt-fill"></i> {{ profile.city }}</span>
+                                {% endif %}
+                                <span class="meta-item">
+                                    <i class="fas fa-star" style="color:#ec700a;"></i>
+                                    {% if profile.review_count > 0 %}
+                                        {{ profile.average_rating|floatformat:1 }}/5
+                                    {% else %}
+                                        —/5
+                                    {% endif %}
+                                    <span class="meta-sub">({{ profile.review_count }} avis)</span>
+                                </span>
+                                <span class="statut-badge statut-{{ profile.statut }}">
+                                    {% if profile.statut == 'particulier' %}
+                                        <i class="fas fa-user"></i> Particulier
+                                    {% elif profile.statut == 'entreprise' %}
+                                        <i class="fas fa-building"></i> Entreprise
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Actions -->
+                        <div class="profile-actions-col">
+                            {% if request.user == profile.user %}
+                                <!-- Own profile: only Modifier -->
+                                <a href="{% url 'app:account_edit' %}" class="paction-main">
+                                    <i class="fas fa-pencil-alt"></i> Modifier le profil
+                                </a>
+                            {% else %}
+                                <!-- Row 1: Favoris + Partager -->
+                                <div class="paction-row">
+                                    {% if request.user.is_authenticated %}
+                                        {% if is_favorite %}
+                                            <a href="{% url 'app:remove_from_favorites_profiles' profile.id %}" class="paction-secondary active">
+                                                <i class="bi bi-heart-fill"></i> Favori ✓
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'app:add_to_favorites_profiles' profile.id %}" class="paction-secondary">
+                                                <i class="bi bi-heart"></i> Favoris
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="paction-secondary">
+                                            <i class="bi bi-heart"></i> Favoris
+                                        </a>
+                                    {% endif %}
+                                    <button id="share-button" class="paction-secondary">
+                                        <i class="bi bi-share"></i> Partager
+                                    </button>
+                                </div>
+
+                                <!-- Row 2: Message -->
+                                <a href="{% if request.user.is_authenticated %}{% url 'app:messages_details' profile.slug %}{% else %}{% url 'app:user_login' %}{% endif %}" class="paction-main">
+                                    <i class="fas fa-comment"></i> Envoyer un message
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nav Tabs -->
+                <div class="profile-tabs">
+                    <button class="tab-btn active" data-target="section-accueil">Accueil</button>
+                    <button class="tab-btn" data-target="section-avis">Avis <span class="tab-count">{{ profile.review_count }}</span></button>
+                    <button class="tab-btn" data-target="section-annonces">Annonces</button>
+                    <button class="tab-btn" data-target="section-galerie">Réalisations</button>
+                </div>
+            </div>
+
+            <!-- ===== SECTIONS ===== -->
+
+            <!-- ACCUEIL -->
+            <div id="section-accueil" class="tab-section active mt-4">
+                <div class="row g-4">
+                    <!-- Left: Bio + Skills + Map -->
+                    <div class="col-lg-7">
+                        <div class="content-card">
+                            {% if profile.bio %}
+                            <div class="section-block">
+                                <h6 class="section-label">Présentation</h6>
+                                <p class="bio-text">{{ profile.bio|linebreaksbr }}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if profile.skills.all %}
+                            <div class="section-block">
+                                <h6 class="section-label">Services</h6>
+                                <div class="skills-wrap">
+                                    {% for skill in profile.skills.all %}
+                                        <span class="skill-tag">{{ skill.name_fr }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if profile.latitude and profile.longitude %}
+                            <div class="section-block">
+                                <h6 class="section-label">
+                                    {% if profile.type == "towork" %}Zone d'intervention{% else %}Zone de recherche{% endif %}
+                                </h6>
+                                <div class="map-wrap">{{ map|safe }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Right: Infos + Verifications + Rating -->
+                    <div class="col-lg-5">
+                        <div class="content-card">
+                            <div class="section-block">
+                                <h6 class="section-label">Informations</h6>
+
+                                <div class="info-row">
+                                    <span class="info-key">Statut</span>
+                                    <span class="statut-badge statut-{{ profile.statut }}">
+                                        {% if profile.statut == 'particulier' %}
+                                            <i class="fas fa-user"></i> {{ profile.get_statut_display }}
+                                        {% elif profile.statut == 'entreprise' %}
+                                            <i class="fas fa-building"></i> {{ profile.get_statut_display }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                {% if profile.statut == "particulier" %}
+                                    <div class="info-row"><span class="info-key">Civilité</span><span>{{ profile.gender|default:"—" }}</span></div>
+                                    <div class="info-row"><span class="info-key">Prénom</span><span>{{ profile.prenom|default:"—" }}</span></div>
+                                    <div class="info-row"><span class="info-key">Nom</span><span>{{ profile.nom|default:"—" }}</span></div>
+                                {% elif profile.statut == "entreprise" %}
+                                    <div class="info-row"><span class="info-key">Nom commercial</span><span>{{ profile.nom_commercial|default:"—" }}</span></div>
+                                    <div class="info-row"><span class="info-key">SIRET</span><span>{{ profile.siret|default:"—" }}</span></div>
+                                {% endif %}
+                            </div>
+
+                            <div class="section-block">
+                                <h6 class="section-label">Vérifications</h6>
+                                <div class="verif-list">
+                                    <div class="verif-item">
+                                        <span class="verif-icon {% if profile.is_email_verified %}ok{% else %}no{% endif %}">
+                                            <i class="fas fa-{% if profile.is_email_verified %}check{% else %}times{% endif %}"></i>
+                                        </span>
+                                        Adresse e-mail
+                                    </div>
+                                    <div class="verif-item">
+                                        <span class="verif-icon {% if profile.is_phone_verified %}ok{% else %}no{% endif %}">
+                                            <i class="fas fa-{% if profile.is_phone_verified %}check{% else %}times{% endif %}"></i>
+                                        </span>
+                                        Numéro de téléphone
+                                    </div>
+                                    <div class="verif-item">
+                                        <span class="verif-icon {% if profile.is_identity_verified %}ok{% else %}no{% endif %}">
+                                            <i class="fas fa-{% if profile.is_identity_verified %}check{% else %}times{% endif %}"></i>
+                                        </span>
+                                        Identité
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-block">
+                                <h6 class="section-label">Note globale</h6>
+                                <div class="rating-summary">
+                                    <div class="rating-big">
+                                        <i class="fas fa-star" style="color:#ec700a;"></i>
+                                        <span>{% if profile.review_count > 0 %}{{ profile.average_rating|floatformat:1 }}{% else %}—{% endif %}/5</span>
+                                        <small>({{ profile.review_count }})</small>
+                                    </div>
+                                    <div class="rating-bars">
+                                        {% for r in rating_data %}
+                                        <div class="rbar-row">
+                                            <span class="rbar-label">{{ r.star }}★</span>
+                                            <div class="rbar-track">
+                                                <div class="rbar-fill" style="width: {{ r.percent }}%;"></div>
+                                            </div>
+                                            <span class="rbar-count">{{ r.count }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if request.user != profile.user %}
+                            <button class="report-btn mt-2" data-bs-toggle="modal" data-bs-target="#reportProfileModal">
+                                <i class="fas fa-flag"></i> Signaler ce profil
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AVIS -->
+            <div id="section-avis" class="tab-section mt-4">
+                <div class="row g-4">
+                    {% if request.user != profile.user %}
+                    <div class="col-lg-7">
+                        <div class="content-card">
+                            <h6 class="section-label">Laisser un avis</h6>
+                            <form method="post" action="{% url 'app:submit_review' profile.slug %}">
+                                {% csrf_token %}
+                                <fieldset class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5" required>
+                                    <label for="star5">★</label>
+                                    <input type="radio" id="star4" name="rating" value="4">
+                                    <label for="star4">★</label>
+                                    <input type="radio" id="star3" name="rating" value="3">
+                                    <label for="star3">★</label>
+                                    <input type="radio" id="star2" name="rating" value="2">
+                                    <label for="star2">★</label>
+                                    <input type="radio" id="star1" name="rating" value="1">
+                                    <label for="star1">★</label>
+                                </fieldset>
+                                <textarea name="comment" rows="4" class="form-control mt-3" placeholder="Votre avis..." required></textarea>
+                                <button type="submit" class="paction-main mt-3" style="width:100%; border:none; cursor:pointer;">
+                                    Soumettre l'avis
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="col-lg-5">
+                        <div class="content-card">
+                            <div class="rating-summary">
+                                <div class="rating-big">
+                                    <i class="fas fa-star" style="color:#ec700a;"></i>
+                                    <span>{% if profile.review_count > 0 %}{{ profile.average_rating|floatformat:1 }}{% else %}—{% endif %}/5</span>
+                                    <small>({{ profile.review_count }})</small>
+                                </div>
+                                <div class="rating-bars mt-3">
+                                    {% for r in rating_data %}
+                                    <div class="rbar-row">
+                                        <span class="rbar-label">{{ r.star }}★</span>
+                                        <div class="rbar-track">
+                                            <div class="rbar-fill" style="width: {{ r.percent }}%;"></div>
+                                        </div>
+                                        <span class="rbar-count">{{ r.count }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews List -->
+                <div class="row mt-4">
+                    {% for review in reviews %}
+                    <div class="col-12 col-lg-6 mb-3">
+                        <div class="review-card">
+                            <div class="review-header">
+                                <a href="{% url 'app:account' review.reviewer.profile.slug %}" class="review-user">
+                                    <img src="{{ review.reviewer.profile.profile_picture_url }}" alt="{{ review.reviewer.username }}" class="review-avatar">
+                                    <span class="review-name">{{ review.reviewer.username }}</span>
+                                </a>
+                                <div class="review-rating">
+                                    {{ review.rating|floatformat:1 }}/5 <i class="fas fa-star" style="color:#ec700a;"></i>
+                                </div>
+                            </div>
+                            <p class="review-comment">{{ review.comment }}</p>
+                            <div class="review-footer">
+                                <small>{{ review.timestamp|date:"d/m/Y" }}</small>
+                                {% if request.user == profile.user or request.user == review.reviewer %}
+                                    <a href="{% url 'app:delete_review' review.id %}" class="review-delete">Supprimer</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ANNONCES -->
+            <div id="section-annonces" class="tab-section mt-4">
+                {% if request.user == profile.user %}
+                <a href="{% url 'app:create_announcement' %}" class="paction-main mb-4" style="display:inline-flex; text-decoration:none;">
+                    <i class="fas fa-plus"></i> Publier une annonce
+                </a>
+                {% endif %}
+
+                <div class="announcements-grid mt-3">
+                    {% for announcement in announcements %}
+                    <div class="announcement-card" onclick="window.open('{% url 'app:annonce_details' announcement.id %}', '_blank')">
+                        <div class="announcement-gallery {% if not announcement.image3 and not announcement.image4 %}single{% endif %}">
+                            {% if announcement.image1 %}
+                                <img src="{{ announcement.image1.url }}" alt="">
+                            {% else %}
+                                <div class="gallery-placeholder"><i class="fas fa-image"></i></div>
+                            {% endif %}
+                            {% if announcement.image2 %}<img src="{{ announcement.image2.url }}" alt="">{% endif %}
+                            {% if announcement.image3 %}<img src="{{ announcement.image3.url }}" alt="">{% endif %}
+                            {% if announcement.image4 %}<img src="{{ announcement.image4.url }}" alt="">{% endif %}
+                        </div>
+                        <div class="announcement-content">
+                            <span class="announcement-category category-{{ announcement.category.name_fr|slugify }}">{{ announcement.category.name_fr }}</span>
+                            <div class="announcement-price">
+                                <span class="announcement-price-label">
+                                    {% if announcement.category.name_fr == "Demande de prestation" %}Budget:
+                                    {% elif announcement.category.name_fr == "Offre de services" %}Tarif:
+                                    {% elif announcement.category.name_fr == "Vente de matériel" %}Prix:
+                                    {% elif announcement.category.name_fr == "Location de matériel" %}Tarif/jour:
+                                    {% elif announcement.category.name_fr == "Offre d'emploi" %}Salaire:
+                                    {% else %}Budget:{% endif %}
+                                </span>
+                                {% if announcement.a_convenir %}<span>À convenir</span>
+                                {% else %}<span>{{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}</span>{% endif %}
+                            </div>
+                            <div class="announcement-description">{{ announcement.description|linebreaksbr }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Aucune annonce pour l'instant.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- GALERIE -->
+            <div id="section-galerie" class="tab-section mt-4">
+                {% if request.user == profile.user %}
+                <a href="{% url 'app:create_project' %}" class="paction-main mb-4" style="display:inline-flex; text-decoration:none;">
+                    <i class="fas fa-plus"></i> Ajouter une réalisation
+                </a>
+                {% endif %}
+
+                <div class="projects-grid mt-3">
+                    {% for projet in projets %}
+                    <div class="project-card" onclick="window.open('{% url 'app:project_details' projet.id %}', '_blank')">
+                        <div class="project-gallery {% if not projet.image3 and not projet.image4 %}single{% endif %}">
+                            {% if projet.image1 %}<img src="{{ projet.image1.url }}" alt="">{% endif %}
+                            {% if projet.image2 %}<img src="{{ projet.image2.url }}" alt="">{% endif %}
+                            {% if projet.image3 %}<img src="{{ projet.image3.url }}" alt="">{% endif %}
+                            {% if projet.image4 %}<img src="{{ projet.image4.url }}" alt="">{% endif %}
+                        </div>
+                        <div class="project-content">
+                            <div class="project-desc">{{ projet.description|linebreaksbr }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Aucune réalisation pour l'instant.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Signaler ce profil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% url 'app:report_profile' profile.id %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <label class="form-label">Raison du signalement</label>
+                    <textarea class="form-control" name="message" rows="4" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    {% if request.user.is_authenticated %}
+                        <button type="submit" class="btn btn-danger">Signaler</button>
+                    {% else %}
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="btn btn-danger">Signaler</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="profile-url" value="{% url 'app:account' profile.slug %}">
+
+<style>
+/* ===== PROFILE CARD MAIN ===== */
+.profile-card-main {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+
+/* Banner */
+.profile-banner-wrap {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: filter 0.3s ease;
+}
+
+.profile-banner-wrap:hover {
+    filter: brightness(1.05);
+}
+
+/* Body */
+.profile-body {
+    padding: 0 24px 20px;
+}
+
+/* Avatar */
+.profile-avatar-wrap {
+    margin-top: -60px;
+    margin-bottom: 16px;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    object-fit: cover;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.04);
+}
+
+/* Info Row */
+.profile-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.profile-info-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-username-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.profile-username {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.verified-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #ec700a;
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+}
+
+.profile-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    font-size: 13px;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.meta-sub {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+/* Statut Badge */
+.statut-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.statut-particulier {
+    background-color: #e8f7ee;
+    color: #1f8a4c;
+    border: 1px solid #bfe8cf;
+}
+
+.statut-entreprise {
+    background-color: #f0f0f0;
+    color: #495057;
+    border: 1px solid #d6d6d6;
+}
+
+/* Actions Column */
+.profile-actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.paction-row {
+    display: flex;
+    gap: 8px;
+}
+
+.paction-secondary {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 12px;
+    background: white;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paction-secondary:hover {
+    border-color: #ec700a;
+    color: #ec700a;
+    background: #fef5f0;
+}
+
+.paction-secondary.active {
+    background: #fef5f0;
+    color: #ec700a;
+    border-color: #ec700a;
+}
+
+.paction-main {
+    width: 100%;
+    padding: 11px 16px;
+    background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(236, 112, 10, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.paction-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(236, 112, 10, 0.3);
+    color: white;
+}
+
+/* Tabs */
+.profile-tabs {
+    display: flex;
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.tab-btn:hover {
+    background: #f0f0f0;
+    color: #1a1a1a;
+}
+
+.tab-btn.active {
+    color: #ec700a;
+    border-bottom: 3px solid #ec700a;
+    background: white;
+}
+
+.tab-count {
+    background: #e5e7eb;
+    color: #6b7280;
+    border-radius: 20px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tab-btn.active .tab-count {
+    background: #fef5f0;
+    color: #ec700a;
+}
+
+/* Tab Sections */
+.tab-section {
+    display: none;
+}
+
+.tab-section.active {
+    display: block;
+}
+
+/* Content Cards */
+.content-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.section-block {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.section-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+}
+
+.bio-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #374151;
+    margin: 0;
+}
+
+/* Skills */
+.skills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill-tag {
+    background: #f4f5f7;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.skill-tag:hover {
+    background: #fef5f0;
+    border-color: #ec700a;
+    color: #ec700a;
+}
+
+/* Map */
+.map-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Info rows */
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f9fafb;
+    font-size: 13px;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-key {
+    font-weight: 600;
+    color: #6b7280;
+    min-width: 120px;
+    font-size: 12px;
+}
+
+/* Verifications */
+.verif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.verif-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #374151;
+}
+
+.verif-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.verif-icon.ok {
+    background: #e8f7ee;
+    color: #1f8a4c;
+}
+
+.verif-icon.no {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Rating */
+.rating-summary {}
+
+.rating-big {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.rating-big small {
+    font-size: 13px;
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.rating-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rbar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.rbar-label {
+    width: 24px;
+    text-align: right;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.rbar-track {
+    flex: 1;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rbar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ec700a 0%, #f59e0b 100%);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+}
+
+.rbar-count {
+    width: 20px;
+    font-weight: 700;
+    color: #374151;
+}
+
+/* Report button */
+.report-btn {
+    width: 100%;
+    padding: 10px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.report-btn:hover {
+    background: #fecaca;
+    border-color: #f87171;
+}
+
+/* Review Cards */
+.review-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.review-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ec700a;
+}
+
+.review-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.review-rating {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ec700a;
+}
+
+.review-comment {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.review-delete {
+    color: #dc2626;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Announcements Grid */
+.announcements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.announcement-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.announcement-card:hover {
+    border-color: #ec700a;
+    box-shadow: 0 8px 20px rgba(236, 112, 10, 0.1);
+    transform: translateY(-3px);
+}
+
+.announcement-gallery {
+    height: 160px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.announcement-gallery.single {
+    grid-template-columns: 1fr;
+}
+
+.announcement-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.announcement-card:hover .announcement-gallery img {
+    transform: scale(1.05);
+}
+
+.gallery-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    color: #9ca3af;
+    font-size: 28px;
+}
+
+.announcement-content {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.announcement-category {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 16px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+    width: fit-content;
+}
+
+.announcement-category.demande-de-prestation { background:#e8f7ee; color:#1f8a4c; }
+.announcement-category.offre-de-services { background:#eef4ff; color:#3b5bdb; }
+.announcement-category.vente-de-materiel { background:#fef5f0; color:#ec700a; }
+.announcement-category.location-de-materiel { background:#f0f0f0; color:#495057; }
+.announcement-category.offre-d-emploi { background:#fce7f3; color:#be185d; }
+
+.announcement-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ec700a;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.announcement-price-label {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.announcement-description {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    flex: 1;
+    min-height: 54px;
+}
+
+/* Projects Grid */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.project-card:hover {
+    border-color: #ec700a;
+    box-shadow: 0 8px 20px rgba(236, 112, 10, 0.1);
+    transform: translateY(-3px);
+}
+
+.project-gallery {
+    height: 160px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.project-gallery.single { grid-template-columns: 1fr; }
+
+.project-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-gallery img { transform: scale(1.05); }
+
+.project-content {
+    padding: 14px;
+}
+
+.project-desc {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+/* Star Rating Form */
+.star-rating {
+    direction: rtl;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 2rem;
+}
+
+.star-rating input { display: none; }
+
+.star-rating label {
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ec700a;
+}
+
+/* Modal Image */
+.modal-image {
+    --bs-modal-width: 90vw;
+    max-width: 90vw;
+}
+
+.modal-image-content {
+    display: block;
+    max-height: 85vh;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+@media (min-width: 992px) {
+    .modal-image { --bs-modal-width: 800px; max-width: 800px; }
+    .modal-image-content { max-height: 80vh; max-width: 700px; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-body { padding: 0 16px 16px; }
+    .profile-info-row { flex-direction: column; }
+    .profile-actions-col { width: 100%; min-width: unset; }
+    .paction-main { width: 100%; }
+    .profile-username { font-size: 18px; }
+    .profile-avatar { width: 90px; height: 90px; }
+    .profile-avatar-wrap { margin-top: -45px; }
+    .content-card { padding: 16px; }
+    .tab-btn { font-size: 11px; padding: 12px 4px; }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Tab switching
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const tabSections = document.querySelectorAll(".tab-section");
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabBtns.forEach(b => b.classList.remove("active"));
+            tabSections.forEach(s => s.classList.remove("active"));
+            btn.classList.add("active");
+            const target = document.getElementById(btn.dataset.target);
+            if (target) target.classList.add("active");
+        });
+    });
+
+    // Cover modal
+    const coverBanner = document.querySelector(".clickable-cover");
+    if (coverBanner) {
+        const coverModal = new bootstrap.Modal(document.getElementById("coverModal"));
+        coverBanner.addEventListener("click", () => coverModal.show());
+    }
+
+    // Avatar modal
+    const avatar = document.querySelector(".clickable-avatar");
+    if (avatar) {
+        const avatarModal = new bootstrap.Modal(document.getElementById("avatarModal"));
+        avatar.addEventListener("click", () => avatarModal.show());
+    }
+
+    // Share button
+    const shareBtn = document.getElementById("share-button");
+    const profileUrl = document.getElementById("profile-url")?.value;
+    if (shareBtn) {
+        shareBtn.addEventListener("click", () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Découvrez ce profil !',
+                    text: 'J\'ai trouvé ce profil intéressant pour vous :',
+                    url: profileUrl
+                }).catch(console.error);
+            } else {
+                alert('Copiez l\'URL : ' + profileUrl);
+            }
+        });
+    }
+});
+</script>
+
+{% endblock content %}

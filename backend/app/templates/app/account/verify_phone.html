@@ -1,0 +1,351 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Numéro de téléphone - Confiance & Vérification
+{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/css/intlTelInput.css">
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container">
+    <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+        <div class="col-12 justify-content-center align-items-center " >
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                crossorigin="anonymous"></script>
+            <!-- annonce_details_1 -->
+            <ins class="adsbygoogle"
+                style="display:block;width:100%;height:130px;"
+                data-ad-client="ca-pub-5485706271033891"
+                data-ad-slot="1737959128"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div> 
+    </div>
+    
+    
+    <div class="row justify-content-center mt-2  mb-5">
+            <div class=" col-12 col-lg-6  mb-5 p-3" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+              
+
+                    <!-- Error Message -->
+                    {% if error_message %}
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i> {{ error_message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                    
+                <h6 class="mb-4 fw-bold text-dark">
+                        <i class="fas fa-shield"></i> Identifiants & Vérification
+                    </h6>
+                    <div class="list-group-item list-group-item-action d-flex align-items-center mb-2">
+                            <i class="fas fa-phone text-secondary me-3"></i>
+                            <div class="flex-grow-1">Numéro de téléphone {{ profile.city.country.code}} {{profile.profile.phone_number}} </div>
+
+                            {% if profile.is_phone_verified %}
+                            <i class="fas fa-check-circle text-success ms-1"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle text-danger ms-1"></i>
+                        {% endif %}
+                        </div>
+                
+                <form method="POST" action="{% url 'app:verify_phone' %}" enctype="multipart/form-data" onsubmit="showSettingsLoader(event)">  
+                    {% csrf_token %}
+                   
+                    <input type="text" class="form-control" value="{{  profile.phone_number }}" readonly>
+                    <div class="d-flex justify-content-end">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#editPhoneModal">
+                            modifier
+                        </a>
+                    </div>
+                    
+                 
+                    {% if not profile.is_phone_verified %}
+                        
+                        <div class="mt-4 d-flex">
+                            <button id="send-code-btn" class="btn btn-message w-100">
+                                Vérifier mon Numéro
+                            </button>
+                        </div>
+                        <div id="recaptcha-container" class="mt-3"></div>
+
+                        <!-- OTP SECTION (hidden at first) -->
+                        <div id="otp-section" class="mt-3 d-none">
+                            <label class="form-label">Code SMS</label>
+                            <input type="text" id="otp-code" class="form-control" maxlength="6" placeholder="123456">
+                            <button id="confirm-code-btn" class="btn btn-success mt-2 w-100">Confirmer le code</button>
+                        </div>
+                    {% endif %}
+            
+
+
+                        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+                        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+                        <script>
+                            const firebaseConfig = {
+                                apiKey: "AIzaSyAS-Tb8xuiUjkFwsJCEgBDsvmZiGttP2cY",
+                                authDomain: "phone-bricoleup.firebaseapp.com",
+                                projectId: "phone-bricoleup",
+                                storageBucket: "phone-bricoleup.firebasestorage.app",
+                                messagingSenderId: "1047489432044",
+                                appId: "1:1047489432044:web:fd0dc985756a7e060818c9"
+                            };
+
+                            
+
+                            firebase.initializeApp(firebaseConfig);
+                        </script>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+
+                                const phoneNumber = "{{ profile.phone_number }}";
+
+                                const sendBtn = document.getElementById("send-code-btn");
+                                const confirmBtn = document.getElementById("confirm-code-btn");
+                                const otpSection = document.getElementById("otp-section");
+                                const otpInput = document.getElementById("otp-code");
+
+                                // ✅ initialize ONCE (not on click)
+                                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+                                    'recaptcha-container',
+                                    { size: 'invisible' }
+                                );
+
+                                sendBtn?.addEventListener("click", function () {
+
+                                    sendBtn.disabled = true;
+                                    sendBtn.innerText = "Envoi du SMS...";
+
+                                    firebase.auth().signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+                                        .then(function (confirmationResult) {
+                                            window.confirmationResult = confirmationResult;
+                                            otpSection.classList.remove("d-none");
+                                            sendBtn.classList.add("d-none");
+                                        })
+                                        .catch(function (error) {
+                                            console.error(error);
+                                            alert("Erreur SMS : " + error.message);
+
+                                            sendBtn.disabled = false;
+                                            sendBtn.innerText = "Vérifier mon Numéro";
+
+                                            window.recaptchaVerifier.reset();
+                                        });
+                                });
+                                confirmBtn?.addEventListener("click", function () {
+                                        const code = otpInput.value.trim();
+                                        if (code.length !== 6) {
+                                            alert("Entrez le code à 6 chiffres");
+                                            return;
+                                        }
+
+                                        confirmBtn.disabled = true;
+                                        confirmBtn.innerText = "Vérification...";
+
+                                        window.confirmationResult.confirm(code)
+                                            .then(result => result.user.getIdToken())
+                                            .then(idToken => {
+                                                return fetch("{% url 'app:verify_phone_token' %}", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "X-CSRFToken": "{{ csrf_token }}"
+                                                    },
+                                                    body: JSON.stringify({ token: idToken })
+                                                });
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.status === "success") {
+                                                    location.reload();
+                                                } else {
+                                                    throw new Error(data.message);
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                                alert("Erreur : " + error.message);
+                                                confirmBtn.disabled = false;
+                                                confirmBtn.innerText = "Confirmer le code";
+                                            });
+                                    });
+                                    
+                        });
+                        </script>
+                </form> 
+                <div class="modal fade" id="editPhoneModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+
+                            <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modifier le numéro</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <form id="updatePhoneForm" method="POST" action="{% url 'app:update_phone' %}">
+                                {% csrf_token %}
+
+                                <div class="modal-body">
+                                    
+                                    <div class="col-lg-12 col-12 ">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-telephone" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Nouveau numéro de téléphone</span>
+                                        </label>
+                                        
+                                        
+                                        <input id="mobile" type="tel" name="mobile" class="form-control"
+                                            required style="border-radius: 8px; padding: 12px 14px; padding-left: 60px;">
+
+                                        <input type="hidden" name="mobile_full" id="mobile_full">
+                                        <input type="hidden" name="mobile_country" id="mobile_country">
+                                    </div>
+                                    <div id="phoneError" class="invalid-feedback" style="display:none;">
+                                        Numéro de téléphone invalide
+                                    </div>
+                                    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+                                    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
+                                    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/utils.js"></script>
+
+
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.querySelector("#mobile");
+    const form = document.querySelector("#updatePhoneForm"); // ✅ correct form
+
+    const fullInput = document.querySelector("#mobile_full");
+    const countryInput = document.querySelector("#mobile_country");
+    const errorDiv = document.getElementById("phoneError");
+
+    const iti = window.intlTelInput(input, {
+        initialCountry: "fr",
+        preferredCountries: ["fr", "be", "lu", "ch", "ma", "dz", "tn"],
+        nationalMode: false,
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/utils.js"
+    });
+
+    form.addEventListener("submit", function(e){
+
+        // ❌ invalid → BLOCK submit
+        if (!iti.isValidNumber()) {
+            e.preventDefault();
+
+            input.classList.add("is-invalid");
+            errorDiv.style.display = "block";
+            return;
+        }
+
+        // ✅ valid → clean + allow submit
+        input.classList.remove("is-invalid");
+        errorDiv.style.display = "none";
+
+        fullInput.value = iti.getNumber();
+        countryInput.value = iti.getSelectedCountryData().iso2;
+    });
+
+    // 🔥 remove error while typing
+    input.addEventListener("input", () => {
+        input.classList.remove("is-invalid");
+        errorDiv.style.display = "none";
+    });
+
+});
+                                    </script>
+
+                                    
+
+                                    
+
+                                    <div class="col-12 mt-3">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-lock" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Mot de passe</span>
+                                        </label>
+                                        <div style="position: relative;">
+                                            <input type="password" name="password2" id="password2" class="form-control" style="border-radius: 8px; padding: 12px 14px;"
+                                                placeholder="Entrez votre mot de passe"
+                                                required>
+
+                                            <button type="button" id="togglePassword" class="btn-toggle-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af;">
+                                                <i class="bi bi-eye-slash" id="eyeIcon2"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            let togglePassword2 = document.getElementById("togglePassword");
+                                            let passwordInput2 = document.getElementById("password2");
+                                            let eyeIcon2 = document.getElementById("eyeIcon2");
+                                        
+                                            togglePassword2.addEventListener("click", function (e) {
+                                                e.preventDefault();
+                                                if (passwordInput2.type === "password") {
+                                                    passwordInput2.type = "text";
+                                                    eyeIcon2.classList.remove("bi-eye-slash");
+                                                    eyeIcon2.classList.add("bi-eye");
+                                                } else {
+                                                    passwordInput2.type = "password";
+                                                    eyeIcon2.classList.remove("bi-eye");
+                                                    eyeIcon2.classList.add("bi-eye-slash");
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-message w-100">
+                                        Enregistrer
+                                    </button>
+                                </div>
+
+                            </form>
+
+                            </div>
+                        </div>
+                    </div>     
+            </div> 
+       
+    </div> 
+
+
+</div> 
+</section>
+
+
+<style>
+    .btn-edit, .btn-message {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #ec700a;
+        border: none;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+    }
+    .btn-edit:hover, .btn-message:hover { background-color: #f47a17;} 
+
+</style>
+
+{% endblock %}
+
+

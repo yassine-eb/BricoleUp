@@ -1,0 +1,111 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Contact - BricoleUp{% endblock %}
+
+{% block content %}
+
+        
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center mt-5" >
+        <div class="col-lg-5 col-12 mt-5">
+            <div class="row justify-content-center align-items-center">
+                <div class="row mt-5 mb-1 p-3" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                    
+                    <form action="{% url 'app:contact' %}" method="post" class="custom-form contact-form" role="form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-12 text-center mb-3">
+                                <h6 style="font-size: 28px; font-weight: bold; ">
+                                    <span style="color: black;">
+                                        Formulaire de Contact
+
+                                    </span>
+                                    <span>Bricole</span><span style="color:#ec700a;">Up</span>
+                                </h6>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="form-floating">
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="Name" required="">
+                                    <label for="floatingInput">
+                                            Nom
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="form-floating">
+                                    <input type="email" name="email" id="email" pattern="[^ @]*@[^ @]*" class="form-control" placeholder="Email address" required="">
+                                    <label for="floatingInput">
+                                            Adresse e-mail
+                                        
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-12">
+                                <div class="form-floating">
+                                    <input type="text" name="subject" id="subject" class="form-control" placeholder="Subject" required="">
+                                    <label for="floatingInput">
+                                            Sujet
+                                    </label>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Message"></textarea>
+                                    <label for="floatingTextarea">
+                                            Message
+                                    
+                                    </label>
+                                </div>
+                            </div>
+                            {% if messages %}
+                                <div class="col-lg-12 col-12 mt-3">
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ messages }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if messages_succ %}
+                                <div class="col-lg-12 col-12 mt-3">
+                                    <div class="alert alert-success" role="alert">
+                                        {{ messages_succ }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="col-lg-12 col-12 ">
+                                <button type="submit" class="form-control w-100">
+                                        Soumettre
+                                
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7 col-12 mt-5">
+
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-12 justify-content-center align-items-center" >
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                            crossorigin="anonymous"></script>
+                        <!-- login_register -->
+                        <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-5485706271033891"
+                            data-ad-slot="6291083708"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                        </div>
+                    </div>
+
+                </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

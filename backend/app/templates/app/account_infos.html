@@ -1,0 +1,526 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Informations du compte
+{% endblock %}
+
+{% block content %}
+
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container ">
+
+            <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+                <div class="col-12 justify-content-center align-items-center " >
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                        crossorigin="anonymous"></script>
+                    <!-- annonce_details_1 -->
+                    <ins class="adsbygoogle"
+                        style="display:block;width:100%;height:130px;"
+                        data-ad-client="ca-pub-5485706271033891"
+                        data-ad-slot="1737959128"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+
+
+                
+                </div> 
+            </div> 
+    <div class="row justify-content-center">
+       
+        <div class="col-12 col-lg-8 mb-5">
+            
+            
+            <div class="row mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+               <h6 style="font-size: 24px;font-weight: bold;">
+                        Informations du compte
+                    </h6>
+                <form  method="POST" action="{% url 'app:account_infos' %}" onsubmit="showSettingsLoader(event)">
+                    {% csrf_token %}
+
+                    
+                    {% if message_succ %}
+                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> {{ message_succ }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+
+                    <!-- Error Message -->
+                    {% if message %}
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                    
+                    
+
+                    <div class="row mt-1 mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="input-title">Nom d'utilisateur <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ profile.user.username }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="input-title">Adresse e-mail <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="email" class="form-control" style="border-radius: 8px;" 
+                                    value="{{ profile.user.email }}" 
+                                    placeholder="Email" 
+                                    required>
+
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="phone_number" class="input-title">Téléphone mobile <span class="text-danger">*</span></label>
+                            <input type="tel"
+                                                
+                                                placeholder="06XXXXXXXX"
+                                                inputmode="numeric"
+                                                pattern="[0-9]{10}"
+                                                maxlength="10"
+                                                required
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10);"
+                                                
+                                    name="phone_number" id="phone_number" class="form-control" style="border-radius: 8px;" 
+                                    value="{{ profile.phone_number|default_if_none:''  }}">
+                                    
+                        </div>
+                        <div class="col-md-6 mb-3">
+    <label class="input-title">
+        Ville <span class="text-danger">*</span>
+    </label>
+
+    <!-- City Select Button -->
+    <a href="" class="form-control"
+            id="selectedCityBtn"
+            data-bs-toggle="modal"
+            data-bs-target="#cityModal">
+            <i class="fas fa-map-marker-alt me-2"></i>
+        {% if profile.city %}
+            {{ profile.city }}
+        {% else %}
+            Ville
+        {% endif %}
+</a>
+
+    <!-- Hidden input to store selected city -->
+    <input type="hidden" name="location" id="selectedCityInput"
+           value="{% if profile.city %}{{ profile.city.id }}{% endif %}">
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="cityModal" tabindex="-1" aria-labelledby="cityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choisir une ville</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="citySearchModal" class="form-control mb-2" placeholder="Rechercher une ville...">
+                <div id="cityList" style="height:300px; overflow-y:auto;">
+                    {% for city in cities %}
+                        <div class="city-option d-none p-2" data-city-id="{{ city.id }}" style="cursor: pointer;">
+                            {{ city }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const citySearch = document.getElementById("citySearchModal");
+    const cityOptions = document.querySelectorAll("#cityList .city-option");
+    const selectedCityInput = document.getElementById("selectedCityInput");
+    const selectedCityBtn = document.getElementById("selectedCityBtn");
+    const cityModalEl = document.getElementById("cityModal");
+    const cityModal = new bootstrap.Modal(cityModalEl);
+
+    // 🔍 Filter cities with STARTS WITH
+    citySearch.addEventListener("input", function () {
+        const filter = citySearch.value.toLowerCase().trim();
+        cityOptions.forEach(option => {
+            const text = option.textContent.toLowerCase().trim();
+            if (filter === "") {
+                option.classList.add("d-none"); // hide all if input empty
+            } else if (text.startsWith(filter)) {
+                option.classList.remove("d-none"); // show match
+            } else {
+                option.classList.add("d-none"); // hide non-match
+            }
+        });
+    });
+
+    // 🏙 Select a city
+    cityOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            const cityId = this.getAttribute("data-city-id");
+            const cityName = this.textContent.trim();
+
+            selectedCityBtn.innerHTML = `<i class="fas fa-map-marker-alt me-2"></i> ${cityName}`;
+            selectedCityInput.value = cityId;
+
+            cityModal.hide();
+        });
+    });
+
+    // 🔄 Reset search when modal opens
+    cityModalEl.addEventListener("shown.bs.modal", function () {
+        citySearch.value = "";
+        cityOptions.forEach(option => option.classList.add("d-none")); // hide all initially
+        citySearch.focus();
+    });
+});
+</script>
+
+                    
+                        <div class="col-md-6 mb-3">
+                            <label for="statut" class="input-title">Statut <span class="text-danger">*</span></label>
+                            <select class="form-select" id="statut" name="statut">
+                                <option value="particulier" {% if profile.statut == "particulier" %}selected{% endif %}>Particulier</option>
+                                <option value="entreprise" {% if profile.statut == "entreprise" %}selected{% endif %}>Entreprise</option>
+                            </select>
+                        </div>
+                   
+                        
+                                    <!-- Civilité -->
+                                    <div class="col-md-6 mb-3 statut-fields particulier-field">
+                                        <label for="gender" class="input-title">Civilité</label>
+                                        <select name="gender" id="gender" class="form-select">
+                                            <option value="" {% if not profile.gender %}selected{% endif %}>
+                                                Non précisée
+                                            </option>
+                                            <option value="M." {% if profile.gender == "M." %}selected{% endif %}>
+                                                M.
+                                            </option>
+                                            <option value="Mme" {% if profile.gender == "Mme" %}selected{% endif %}>
+                                                Mme
+                                            </option>
+                                            <option value="Autre" {% if profile.gender == "Autre" %}selected{% endif %}>
+                                                Autre
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <!-- Nom commercial -->
+                                    <div class="col-md-6 mb-3 statut-fields entreprise-field">
+                                        <label for="nom_commercial" class="input-title">Nom commercial</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="nom_commercial"
+                                            name="nom_commercial"
+                                            value="{{ profile.nom_commercial|default:'' }}"
+                                        >
+                                    </div>
+
+                                    <!-- Prénom -->
+                                    <div class="col-md-6 mb-3 statut-fields particulier-field">
+                                        <label for="prenom" class="input-title">Prénom</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="prenom"
+                                            name="prenom"
+                                            value="{{ profile.prenom|default:'' }}"
+                                        >
+                                    </div>
+
+                                    <!-- Nom -->
+                                    <div class="col-md-6 mb-3 statut-fields particulier-field">
+                                        <label for="nom" class="input-title">Nom</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="nom"
+                                            name="nom"
+                                            value="{{ profile.nom|default:'' }}"
+                                        >
+                                    </div>
+
+                              
+
+                       
+                                    
+                                    
+                                    
+
+                                    <!-- SIRET -->
+                                    <div class="col-md-6 mb-3 statut-fields entreprise-field">
+                                        <label for="siret" class="input-title">Numéro SIRET</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="siret"
+                                            name="siret"
+                                            value="{{ profile.siret|default:'' }}"
+                                        >
+                                    </div>
+                                    
+
+                                           
+                          
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                const statutSelect = document.getElementById('statut');
+
+                                function toggleFields() {
+                                    const value = statutSelect.value;
+
+                                    document.querySelectorAll('.statut-fields').forEach(el => el.style.display = 'none');
+
+                                    if (value === 'particulier') {
+                                        document.querySelectorAll('.particulier-field').forEach(el => el.style.display = 'block');
+                                    } else if (value === 'entreprise') {
+                                        document.querySelectorAll('.entreprise-field').forEach(el => el.style.display = 'block');
+                                    }
+                                }
+
+                                statutSelect.addEventListener('change', toggleFields);
+                                toggleFields();
+                            });
+
+                            </script>
+                       
+                        
+                    </div>
+                    
+                    
+
+
+
+
+                    <div class="row text-center mb-2 align-items-stretch">
+                        <!-- Work Button -->
+                        <div class="col-6 mb-3">
+                            <div class="btn-choice d-flex flex-column align-items-center justify-content-center
+                                {% if profile.type == 'towork' %}selected{% endif %}"
+                                id="workBtn" onclick="selectOption('work')">
+                                <img src="{% static 'app/images/towork.png' %}" alt="Work Icon" style="width: 35px; height: 35px;">
+                            
+                                        Je propose mes services
+                                
+
+                            
+                            </div>
+                        </div>
+
+                        <!-- Hire Button -->
+                        <div class="col-6 mb-3">
+                            <div class="btn-choice d-flex flex-column align-items-center justify-content-center
+                                {% if profile.type == 'tohire'  %}selected{% endif %}"
+                                id="hireBtn" onclick="selectOption('hire')">
+                                <img src="{% static 'app/images/tohire.png' %}" alt="Hire Icon" style="width: 35px; height: 35px;">
+                                Je suis client
+
+
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden input for user choice -->
+                    <input type="hidden" name="user_choice" id="userChoice" value="{{ profile.type }}">
+
+                    <script>
+                        function selectOption(option) {
+                            document.getElementById("workBtn").classList.remove("selected");
+                            document.getElementById("hireBtn").classList.remove("selected");
+
+                            if (option === "work") {
+                                document.getElementById("workBtn").classList.add("selected");
+                            } else if (option === "hire") {
+                                document.getElementById("hireBtn").classList.add("selected");
+                            }
+
+                            document.getElementById("userChoice").value = option;
+                        }
+                    </script>
+
+                
+                <!-- Vérification -->
+                    <!-- <h6 style="font-size: 22px;font-weight: bold;">
+                            Mes informations vérifiées
+                    
+                    </h6>
+
+                    <div>
+                        <div id="emailStatus" class="mt-2 mb-2 text-success"></div>
+                    </div>
+
+                    <div class="mb-3 d-flex gap-3">
+                        <button id="verifyEmailBtn" class="btn btn-outline-primary" type="button" onclick="verifyEmail()">
+                                Vérifier mon e-mail
+                        
+                        </button>
+
+                        <button class="btn btn-outline-primary" type="button">
+                                Vérifier mon téléphone mobile
+                        
+                        </button>
+                    </div>
+
+                    <script>
+                        function verifyEmail() {
+                            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                            const statusDiv = document.getElementById("emailStatus");
+                            const verifyButton = document.getElementById("verifyEmailBtn");
+
+                            // Show loading spinner on button
+                            verifyButton.innerHTML = `
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Envoi...
+                            `;
+                            verifyButton.disabled = true;
+
+                            fetch("{% url 'app:verify_email_request' %}", {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRFToken": csrfToken,
+                                    "Content-Type": "application/x-www-form-urlencoded",
+                                },
+                                body: new URLSearchParams({ language: "fr" })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                verifyButton.innerHTML = "Vérifier mon e-mail";
+                                verifyButton.disabled = false;
+
+                                if (data.success) {
+                                    statusDiv.textContent = data.message;
+                                    statusDiv.classList.remove('text-danger');
+                                    statusDiv.classList.add('text-success');
+                                } else {
+                                    statusDiv.textContent = data.message;
+                                    statusDiv.classList.remove('text-success');
+                                    statusDiv.classList.add('text-danger');
+                                }
+                            })
+                            .catch(error => {
+                                verifyButton.innerHTML = "Vérifier mon e-mail";
+                                verifyButton.disabled = false;
+
+                                console.error("Erreur:", error);
+                                statusDiv.textContent = "Une erreur s'est produite lors de l'envoi.";
+                                statusDiv.classList.remove('text-success');
+                                statusDiv.classList.add('text-danger');
+                            });
+                        }
+                    </script> -->
+
+                    <!-- Success Message -->
+                    
+
+
+                    <!-- Submit -->
+                    <div class="mt-4">
+                    <button id="settingsSubmitBtn" type="submit" class="btn custom-btn w-100">
+                        Enregistrer
+                    </button>
+                    </div>
+
+                </form>
+                <script>
+                    function showSettingsLoader(event) {
+                        const btn = document.getElementById("settingsSubmitBtn");
+                        event.preventDefault();
+
+                        // Determine loader text based on language
+                        let loaderText = `Sauvegarde...`;
+
+                        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        ${loaderText}`;
+                        btn.disabled = true;
+                        event.target.submit();
+                    }
+                </script>
+
+            </div>
+        </div>
+    </div>
+    <style>
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-choice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 80px;
+            
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        
+            text-decoration: none;
+            
+        }
+
+        
+
+        /* Selected State */
+        .btn-choice.selected {
+            background-color: #ec700a; /* Green when selected */
+        
+        }
+
+
+        
+    </style>
+    
+</div>
+</section>
+<style>
+   
+      .input-title{                        
+        font-weight:bold;
+        display: inline-block;
+        color: #13547a;
+      }
+       .city-option {
+            padding: 8px 12px;
+            border-bottom: 1px solid #ddd; /* line separator */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .city-option:last-child {
+            border-bottom: none; /* remove line on last item */
+        }
+
+        .city-option:hover {
+            background-color: #f0f0f0; /* subtle hover */
+        }
+
+        .dropdown-menu {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0; /* remove default padding */
+            border-radius: 5px;
+        }
+
+        .dropdown-menu .dropdown-item {
+            display: block; /* ensure full width */
+            width: 100%;
+        }
+      
+        
+    </style>
+
+
+{% endblock %}

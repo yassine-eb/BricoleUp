@@ -1,0 +1,179 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<title>{% block title %}Plan du site{% endblock %}</title>
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+
+            <div class="col-lg-12 col-12 mb-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">BricoleUp</a></li>
+
+                        <li class="breadcrumb-item active" aria-current="page">Plan du site</li>
+                    </ol>
+                </nav>
+
+                <h2 class="text-white text-center" style="font-size: 32px; font-weight: bold;">
+                    BricoleUp : Plan du site</h2>
+
+                
+            </div>
+
+            
+
+        </div>
+    </div>
+</header>
+
+
+
+<section class="explore-section section-padding" id="section_2">
+    <div class="container">
+        <div class="col-12 text-center mb-4">
+            <h6 style="font-size: 28px;font-weight: bold;">
+                
+                Annonces par Service
+             
+            </h6>
+        </div>
+        <div class="row">
+            {% for skill in skills %}
+                <div class="col-3 mb-3">
+                    <form method="POST" action="{% url 'app:annonces' %}"  class="skill-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="skills" value="{{ skill.id }}">
+                        <button type="submit" class="btn btn-link p-0 skill-button">{{ skill.name_fr }}</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% comment %} <div class="row">
+            <div class="col-3 mb-3"><a href="">Aide à domicile</a></div>
+            <div class="col-3 mb-3"><a href="">Bricolage</a></div>
+            <div class="col-3 mb-3"><a href="">Carrelage</a></div>
+            <div class="col-3 mb-3"><a href="">Charpenterie</a></div>
+            <div class="col-3 mb-3"><a href="">Chauffage</a></div>
+            <div class="col-3 mb-3"><a href="">Couture</a></div>
+            <div class="col-3 mb-3"><a href="">Déménagement</a></div>
+            <div class="col-3 mb-3"><a href="">Électricité</a></div>
+            <div class="col-3 mb-3"><a href="">Jardinage</a></div>
+            <div class="col-3 mb-3"><a href="">Jointure</a></div>
+            <div class="col-3 mb-3"><a href="">Maçonnerie</a></div>
+            <div class="col-3 mb-3"><a href="">Ménage</a></div>
+            <div class="col-3 mb-3"><a href="">Menuiserie</a></div>
+            <div class="col-3 mb-3"><a href="">Peinture</a></div>
+            <div class="col-3 mb-3"><a href="">Piscine</a></div>
+            <div class="col-3 mb-3"><a href="">Plâtrerie</a></div>
+            <div class="col-3 mb-3"><a href="">Plomberie</a></div>
+            <div class="col-3 mb-3"><a href="">Rénovation</a></div>
+            <div class="col-3 mb-3"><a href="">Sanitaire</a></div>
+            <div class="col-3 mb-3"><a href="">Serrurerie</a></div>
+        </div> {% endcomment %}
+        <div class="col-12 text-center mb-4">
+            <h6 style="font-size: 28px;font-weight: bold;">
+                
+                    Prestataires par Service
+            
+            </h6>
+        </div>
+        <div class="row">
+            {% for skill in skills %}
+                <div class="col-3 mb-3">
+                    <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="skills" value="{{ skill.id }}">
+                        <button type="submit" class="btn btn-link p-0 skill-button">{{ skill.name_fr }}</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+       {% comment %}  <div class="row">
+                <div class="col-3 mb-3"><a href="">Aides à domicile</a></div>
+                <div class="col-3 mb-3"><a href="">Agents de ménage</a></div>
+                <div class="col-3 mb-3"><a href="">Bricoleurs</a></div>
+                <div class="col-3 mb-3"><a href="">Carreleurs</a></div>
+                <div class="col-3 mb-3"><a href="">Charpentiers</a></div>
+                <div class="col-3 mb-3"><a href="">Chauffagistes</a></div>
+                <div class="col-3 mb-3"><a href="">Couturiers</a></div>
+                <div class="col-3 mb-3"><a href="">Déménageurs</a></div>
+                <div class="col-3 mb-3"><a href="">Électriciens</a></div>
+                <div class="col-3 mb-3"><a href="">Jardiniers</a></div>
+                <div class="col-3 mb-3"><a href="">Jointeurs</a></div>
+                <div class="col-3 mb-3"><a href="">Maçons</a></div>
+                <div class="col-3 mb-3"><a href="">Menuisiers</a></div>
+                <div class="col-3 mb-3"><a href="">Peintres</a></div>
+                <div class="col-3 mb-3"><a href="">Piscinistes</a></div>
+                <div class="col-3 mb-3"><a href="">Plâtriers</a></div>
+                <div class="col-3 mb-3"><a href="">Plombiers</a></div>
+                <div class="col-3 mb-3"><a href="">Rénovateurs</a></div>
+                <div class="col-3 mb-3"><a href="">Sanitaristes</a></div>
+                <div class="col-3 mb-3"><a href="">Serruriers</a></div>
+            </div> 
+            
+            <div class="col-12 text-center mb-4">
+                <h6 style="font-size: 28px;font-weight: bold;">
+                    🔝 Top Destinations
+                </h6>
+
+                <h6 style="font-size: 22px;font-weight: bold;">
+                    Trouvez un bricoleur qualifié près de chez vous</h2>
+            </div>
+            
+
+            <div class="row">
+                <div class="col-4 mb-3"><a href="/bricoleurs/paris" class="d-block text-decoration-none">Bricoleurs à Paris</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/marseille" class="d-block text-decoration-none">Bricoleurs à Marseille</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/lyon" class="d-block text-decoration-none">Bricoleurs à Lyon</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/toulouse" class="d-block text-decoration-none">Bricoleurs à Toulouse</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/nice" class="d-block text-decoration-none">Bricoleurs à Nice</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/nantes" class="d-block text-decoration-none">Bricoleurs à Nantes</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/strasbourg" class="d-block text-decoration-none">Bricoleurs à Strasbourg</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/montpellier" class="d-block text-decoration-none">Bricoleurs à Montpellier</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/bordeaux" class="d-block text-decoration-none">Bricoleurs à Bordeaux</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/lille" class="d-block text-decoration-none">Bricoleurs à Lille</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/rennes" class="d-block text-decoration-none">Bricoleurs à Rennes</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/reims" class="d-block text-decoration-none">Bricoleurs à Reims</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/saint-etienne" class="d-block text-decoration-none">Bricoleurs à Saint-Étienne</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/le-havre" class="d-block text-decoration-none">Bricoleurs à Le Havre</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/toulon" class="d-block text-decoration-none">Bricoleurs à Toulon</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/grenoble" class="d-block text-decoration-none">Bricoleurs à Grenoble</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/dijon" class="d-block text-decoration-none">Bricoleurs à Dijon</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/angers" class="d-block text-decoration-none">Bricoleurs à Angers</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/nimes" class="d-block text-decoration-none">Bricoleurs à Nîmes</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/villeurbanne" class="d-block text-decoration-none">Bricoleurs à Villeurbanne</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/saint-denis" class="d-block text-decoration-none">Bricoleurs à Saint-Denis</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/clermont-ferrand" class="d-block text-decoration-none">Bricoleurs à Clermont-Ferrand</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/le-mans" class="d-block text-decoration-none">Bricoleurs à Le Mans</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/aix-en-provence" class="d-block text-decoration-none">Bricoleurs à Aix-en-Provence</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/brest" class="d-block text-decoration-none">Bricoleurs à Brest</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/tours" class="d-block text-decoration-none">Bricoleurs à Tours</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/amiens" class="d-block text-decoration-none">Bricoleurs à Amiens</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/limoges" class="d-block text-decoration-none">Bricoleurs à Limoges</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/annecy" class="d-block text-decoration-none">Bricoleurs à Annecy</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/perpignan" class="d-block text-decoration-none">Bricoleurs à Perpignan</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/besancon" class="d-block text-decoration-none">Bricoleurs à Besançon</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/caen" class="d-block text-decoration-none">Bricoleurs à Caen</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/orleans" class="d-block text-decoration-none">Bricoleurs à Orléans</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/metz" class="d-block text-decoration-none">Bricoleurs à Metz</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/bayonne" class="d-block text-decoration-none">Bricoleurs à Bayonne</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/mulhouse" class="d-block text-decoration-none">Bricoleurs à Mulhouse</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/avignon" class="d-block text-decoration-none">Bricoleurs à Avignon</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/rouen" class="d-block text-decoration-none">Bricoleurs à Rouen</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/la-rochelle" class="d-block text-decoration-none">Bricoleurs à La Rochelle</a></div>
+                <div class="col-4 mb-3"><a href="/bricoleurs/valence" class="d-block text-decoration-none">Bricoleurs à Valence</a></div>
+            </div>
+            <p>Besoin d’un bricoleur ailleurs ? Découvrez nos <a href="/bricoleurs">autres villes en France</a>.</p>
+        {% endcomment %}
+    </div>
+</section>
+
+
+
+{% endblock %}

@@ -1,0 +1,179 @@
+ 
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Abonnement
+{% endblock %}
+
+{% block content %}
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center h-100"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container mt-5">
+
+
+    <div class="row justify-content-center">
+       <div class="col-12 col-lg-8 mb-5">
+    <h6 style="font-size: 24px; font-weight: bold;">Mon Abonnement</h6>
+
+    <div class="row mt-4">
+
+        <!-- STANDARD PLAN -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border">
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">Standard</h5>
+                    <p class="text-center text-muted">Gratuit</p>
+
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2">✅ Publier 1 annonce par mois</li>
+                        <li class="mb-2">✅ Répondre à 5 annonces par mois</li>
+                        <li class="mb-2">✅ Publier 3 projets par mois</li>
+                        <li class="mb-2 text-danger">❌ Pas de nouvelle conversation possible</li>
+                        <li class="mb-2">✅ Tout le monde peut envoyer un message</li>
+                        <li class="mb-2 text-danger">❌ Publicités affichées</li>
+                        <li class="mb-2">⚠️ Visibilité standard dans les recherches et annonces</li>
+                    </ul>
+
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-outline-secondary" disabled>
+                            Abonnement actuel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PREMIUM PLAN -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold text-primary">Premium</h5>
+                    <p class="text-center text-muted">4,99€/mois - sans engagement</p>
+
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2">✅ Réponses illimitées aux annonces</li>
+                        <li class="mb-2">✅ Publications illimitées d’annonces</li>
+                        <li class="mb-2">✅ Publications illimitées de projets</li>
+                        <li class="mb-2">✅ Démarrer de nouvelles conversations</li>
+                        <li class="mb-2">✅ Tout le monde peut envoyer un message</li>
+                        <li class="mb-2 text-success">✨ Aucune publicité</li>
+                        <li class="mb-2 text-success">🚀 Profil et annonces mis en avant dans la recherche</li>
+                    </ul>
+
+                    <div class="d-grid mt-4">
+                        <a href="" class="btn btn-primary">
+                            Passer au Premium
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+        <div class="col-12 col-lg-8 mb-5">
+            
+            
+            <div class="row mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+               <h6 style="font-size: 24px;font-weight: bold;">
+                        Mon Abonnement
+                </h6>
+               
+    
+    <div class="row mt-4">
+        <!-- Table Header -->
+        <div class="col-4 fw-bold">&nbsp;</div>
+        <div class="col-4 text-center fw-bold">Standard
+            <p class="text-center text-muted">Gratuit</p>
+
+        </div>
+        <div class="col-4 text-center fw-bold text-primary">Premium
+             <p class="text-center text-muted">4,99€/mois - sans engagement</p></div>
+    </div>
+
+    <!-- Feature 1 -->
+    <div class="row border-top py-2">
+        <div class="col-4">Publier des annonces</div>
+        <div class="col-4 text-center">1 / mois</div>
+        <div class="col-4 text-center">Illimité</div>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="row border-top py-2">
+        <div class="col-4">Répondre aux annonces</div>
+        <div class="col-4 text-center">5 / mois</div>
+        <div class="col-4 text-center">Illimité</div>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="row border-top py-2">
+        <div class="col-4">Publier des projets</div>
+        <div class="col-4 text-center">3</div>
+        <div class="col-4 text-center">Illimité</div>
+    </div>
+
+    
+
+    <!-- Feature 6 -->
+    <div class="row border-top py-2">
+        <div class="col-4">affichage de Publicités</div>
+        <div class="col-4 text-center text-danger">✅</div>
+        <div class="col-4 text-center text-success">❌</div>
+    </div>
+    <div class="row border-top py-2">
+        <div class="col-4">Commencer une conversation avec un autre utilisateurs</div>
+        <div class="col-4 text-center text-danger">❌</div>
+        <div class="col-4 text-center text-success">✅</div>
+    </div>
+    <!-- Feature 7 -->
+    <div class="row border-top py-2">
+        <div class="col-4">Visibilité</div>
+        <div class="col-4 text-center">Standard</div>
+        <div class="col-4 text-center text-primary">Mise en avant</div>
+    </div>
+    <!-- Feature 4 -->
+     <div class="row border-top py-2">
+        <div class="col-4"><strong>Parametres avancéés</strong></div>
+        <div class="col-4 text-center text-danger">❌</div>
+        <div class="col-4 text-center text-success">✅</div>
+    </div>
+    <div class="row border-top py-2">
+        <div class="col-4">Affichage sur mon profil Numéro de téléphone</div>
+        <div class="col-4 text-center text-danger">❌</div>
+        <div class="col-4 text-center text-success">A configurer</div>
+    </div>
+    <div class="row border-top py-2">
+        <div class="col-4">Affichage sur mon profil Adresse email</div>
+        <div class="col-4 text-center text-danger">❌</div>
+        <div class="col-4 text-center text-success">A configurer</div>
+    </div>
+    <div class="row border-top py-2">
+        <div class="col-4">Notifications </div>
+        <div class="col-4 text-center text-danger">❌</div>
+        <div class="col-4 text-center text-success">A configurer</div>
+    </div>
+    
+
+    <!-- CTA -->
+    <div class="row mt-4">
+        <div class="col-4"></div>
+        <div class="col-4 d-grid">
+            <button class="btn btn-outline-secondary" disabled>Abonnement actuel</button>
+        </div>
+        <div class="col-4 d-grid">
+            <a href="" class="btn btn-primary">Passer au Premium</a>
+        </div>
+    </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,105 @@
+<div class="fav-page">
+
+  <!-- Header -->
+  <div class="fav-header">
+    <h1 class="fav-title">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#F97316" stroke="#F97316" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Mes favoris & J'aime
+    </h1>
+    <p class="fav-subtitle">Retrouvez les profils que vous avez sauvegardés et les annonces que vous avez aimées.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="fav-tabs">
+    <button class="fav-tab" [class.active]="activeTab()==='favoris'" (click)="setTab('favoris')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Profils favoris
+      <span class="fav-count">{{ favoris().length }}</span>
+    </button>
+    <button class="fav-tab" [class.active]="activeTab()==='likes'" (click)="setTab('likes')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+      Annonces aimées
+      <span class="fav-count">{{ likedCards().length }}</span>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="fav-loading">
+      <div class="fav-spinner"></div>
+      <span>Chargement…</span>
+    </div>
+  }
+
+  <!-- TAB FAVORIS : profils -->
+  @if (!loading() && activeTab() === 'favoris') {
+    @if (favoris().length === 0) {
+      <div class="fav-empty">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <p>Aucun profil favori pour l'instant.</p>
+        <span>Ajoutez des prestataires depuis leurs profils.</span>
+      </div>
+    } @else {
+      <div class="fav-grid">
+        @for (f of favoris(); track f.slug) {
+          <div class="fav-card">
+            <button class="fav-remove" (click)="removeFavori(f.slug)" title="Retirer des favoris">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="fav-card-avatar" [style.background]="colorFor(f.username || f.slug)">
+              @if (f.profile_picture_url) {
+                <img [src]="f.profile_picture_url" [alt]="f.username">
+              } @else {
+                {{ initials(f.username || f.slug) }}
+              }
+            </div>
+            <div class="fav-card-name">{{ f.username || f.slug }}</div>
+            @if (f.statut) {
+              <div class="fav-card-meta">{{ f.statut }}</div>
+            }
+            @if (f.average_rating) {
+              <div class="fav-card-rating">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#FBBF24" stroke="#FBBF24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {{ f.average_rating | number:'1.1-1' }} / 5
+              </div>
+            }
+            <button class="fav-card-btn" (click)="voirProfil(f.slug)">Voir le profil →</button>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- TAB LIKES : annonces -->
+  @if (!loading() && activeTab() === 'likes') {
+    @if (likedCards().length === 0) {
+      <div class="fav-empty">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/></svg>
+        <p>Aucune annonce aimée pour l'instant.</p>
+        <span>Appuyez sur J'aime sur les annonces du feed.</span>
+      </div>
+    } @else {
+      <div class="fav-list">
+        @for (card of likedCards(); track card.id) {
+          <div class="fav-ann-card">
+            <div class="fav-ann-left">
+              <span class="fav-ann-badge" [class.offre]="card.type==='offre'" [class.demande]="card.type==='demande'">
+                {{ card.type === 'offre' ? '⚡ Offre' : '🌐 Demande' }}
+              </span>
+              <div class="fav-ann-desc">{{ card.desc }}</div>
+              <div class="fav-ann-meta">
+                <span>{{ card.username }}</span>
+                @if (card.city) { <span>📍 {{ card.city }}</span> }
+                @if (card.budget) { <span>💶 {{ card.budget }}</span> }
+              </div>
+            </div>
+            <button class="fav-ann-remove" (click)="removeLike(card.id)" title="Retirer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>

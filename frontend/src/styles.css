@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #f9fafb;
+}
+
+/* Snackbar personnalisé */
+.snack-success .mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #16a34a;
+}
+
+.snack-error .mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #dc2626;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ═══════════════════════════════════════
+   MOBILE GLOBAL — max 768px
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Padding corps pour barre mobile basse */
+  body { padding-bottom: 70px; }
+
+  /* ── Feed principal ── */
+  .main-container { padding: 0 !important; }
+  .feed-col { padding: 12px 12px 0 !important; }
+  .greeting-block { padding: 0 !important; margin-bottom: 14px !important; }
+  .greeting-text { font-size: 1.1rem !important; }
+
+  /* Filtres chips scroll horizontal */
+  .filters-block { padding: 0 !important; margin-bottom: 12px !important; }
+  .chips-scroll { gap: 6px !important; padding: 2px 0 !important; }
+  .chip { padding: 5px 12px !important; font-size: .75rem !important; }
+  .btn-voir-thematiques { display: none !important; }
+
+  /* Cards feed */
+  .fc-card { padding: 14px !important; border-radius: 14px !important; margin-bottom: 10px !important; }
+  .fc-footer-offre, .fc-actions { gap: 6px !important; flex-wrap: wrap !important; }
+  .fc-btn-primary { font-size: .8rem !important; padding: 8px 12px !important; }
+  .fc-btn-ghost { font-size: .78rem !important; padding: 7px 10px !important; }
+  .fc-desc { font-size: .85rem !important; }
+  .fc-img-grid { gap: 4px !important; }
+
+  /* Load more */
+  .btn-load-more { width: 100% !important; }
+
+  /* ── Modals PU ── */
+  .pu-modal { width: 100% !important; max-width: 100% !important;
+    top: auto !important; bottom: 0 !important;
+    left: 0 !important; transform: none !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92vh !important; padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+  .pu-modal.pu-open { animation: mobileSlideUp .25s ease forwards !important; }
+  @keyframes mobileSlideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+  .pu-modal-large { max-height: 96vh !important; }
+  .pu-cat-grid { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
+  .pu-row2 { grid-template-columns: 1fr !important; }
+  .pu-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+  /* Modals contact */
+  .contact-modal { width: 100% !important; max-width: 100% !important;
+    top: auto !important; bottom: 0 !important;
+    left: 0 !important; transform: none !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92vh !important;
+    animation: mobileSlideUp .25s ease forwards !important;
+  }
+  .contact-overlay { z-index: 999 !important; }
+
+  /* ── Page Login ── */
+  .login-left { display: none !important; }
+  .login-right { width: 100% !important; background: #0f172a !important; padding: 24px 20px !important; }
+  .login-card {
+    background: #fff !important; border-radius: 20px !important;
+    padding: 28px 22px !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important;
+    max-width: 100% !important;
+  }
+
+  /* ── Page Messages ── */
+  .msg-page { height: calc(100vh - 52px) !important; }
+  .msg-left { width: 100% !important; border-right: none !important; }
+  .msg-left.conv-open { display: none !important; }
+  .msg-right { display: none !important; }
+  .msg-right.conv-open { display: flex !important; width: 100% !important; }
+
+  /* ── Page Favoris ── */
+  .fav-page { padding: 20px 14px 20px !important; }
+  .fav-grid { grid-template-columns: repeat(2,1fr) !important; gap: 12px !important; }
+
+  /* ── Admin ── */
+  .ann-page, .db-wrap, .content { padding: 16px !important; }
+  .ann-toolbar { flex-direction: column !important; align-items: stretch !important; }
+  .ann-toolbar-left, .ann-toolbar-right { width: 100% !important; }
+  .ann-search-wrap { width: 100% !important; }
+  .kpi-grid, .ann-kpi-grid, .db-kpi-grid { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
+
+  /* ── Modal messages ── */
+  .msg-page .chat-head { padding: 10px 14px !important; }
+  .chat-head-right button:first-child { display: none !important; }
+
+  /* ── Dashboard (Tailwind) ── */
+  .max-w-7xl { padding-left: 14px !important; padding-right: 14px !important; }
+  .grid.grid-cols-4 { grid-template-columns: repeat(2,1fr) !important; }
+  .grid.grid-cols-3 { grid-template-columns: repeat(2,1fr) !important; }
+  .grid.grid-cols-2 { grid-template-columns: 1fr !important; }
+  .flex.gap-4.flex-wrap { flex-direction: column !important; }
+
+  /* ── Landing mobile ── */
+  .landing-hero-actions { flex-direction: column !important; }
+  .hero-cta-row { flex-direction: column !important; gap: 10px !important; }
+}
+
+@media (max-width: 480px) {
+  /* Cards encore plus compactes */
+  .fc-card { padding: 12px !important; }
+  .fc-username { font-size: .85rem !important; }
+  .fc-badge-offre, .fc-badge-demande, .fc-badge-skill { font-size: .68rem !important; padding: 2px 7px !important; }
+  .fav-grid { grid-template-columns: 1fr !important; }
+  .kpi-grid, .ann-kpi-grid, .db-kpi-grid { grid-template-columns: 1fr !important; }
+  .db-charts-row, .db-charts-row:nth-child(even) { grid-template-columns: 1fr !important; }
+
+  /* Login */
+  .login-card { padding: 22px 16px !important; }
+  .card-title { font-size: 1.3rem !important; }
+}
+
+/* Angular Material overrides */
+.mat-mdc-form-field { width: 100%; }
+.mat-mdc-raised-button { border-radius: 0.75rem !important; }
+
+@layer utilities {
+  .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+}

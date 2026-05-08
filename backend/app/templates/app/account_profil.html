@@ -1,0 +1,290 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}
+    Profil - {{ user.username }}
+{% endblock %}
+  <!-- Wrapper -->
+                                
+{% block content %}
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container ">
+    <div class="row justify-content-center mb-5 mt-5">
+
+        <div class="col-12 col-lg-6 mb-5">
+            
+            <div class=" mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            
+                <div class="list-group list-group-flush">
+
+                    <!-- Profile -->
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:account' user.profile.slug %}">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ user.profile.profile_picture_url }}"
+                                class="rounded-circle me-2"
+                                style="height:40px;width:40px;object-fit:cover;">
+
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-dark">{{ user.username }}</div>
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt"></i> {{ user.profile.city }}
+                                </small>
+                            </div>
+
+                            {% if not user.profile.latitude or not user.profile.longitude or not user.profile.city or not user.profile.bio or not user.profile.skills %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-chevron-right text-secondary"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <!-- Account -->
+                    <h6 class="mt-3 mb-1 fw-bold text-dark">
+                        <i class="fas fa-user"></i> Mon compte
+                    </h6>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:account_edit' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-user-pen text-secondary me-3"></i>
+
+                            <div class="flex-grow-1">
+                                {% if not user.profile.latitude or not user.profile.longitude or not user.profile.city or not user.profile.bio or not user.profile.skills or not user.profile.profile_picture_url or not user.profile.cover_picture_url %}
+                                    Compléter mon profil
+                                {% else %}
+                                    Modifier mon profil
+                                {% endif %}
+                            </div>
+
+                            {% if not user.profile.latitude or not user.profile.longitude or not user.profile.city or not user.profile.bio or not user.profile.skills or not user.profile.profile_picture_url or not user.profile.cover_picture_url %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:zone_d_intervention' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-map-marker-alt text-secondary me-3"></i>
+                            <div class="flex-grow-1">
+                                {% if user.profile.type == "towork" %}
+                                Zone d'intervention
+                                {% else %}
+                                Zone de recherche
+                                {% endif %}
+                            </div>
+
+                            {% if not user.profile.latitude or not user.profile.longitude %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+                    
+
+                    <!-- <a class="list-group-item list-group-item-action" href="{% url 'app:my_announcements' user.profile.slug %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-bullhorn text-secondary me-3"></i>
+                            
+                            <div class="flex-grow-1">Mes annonces</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:my_projects' user.profile.slug %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-tools text-secondary me-3"></i>
+                            
+                            <div class="flex-grow-1">Mes réalisations</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+                     -->
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:my_favorites' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-heart text-secondary me-3"></i>
+                            
+                            <div class="flex-grow-1">Mes Favoris</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+                    <!-- Messages -->
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:messages' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-comment-dots text-secondary me-3"></i>
+                            
+                            <div class="flex-grow-1">Messages</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+
+                    
+
+                    
+
+                    <!-- Announcements -->
+                    <h6 class="mt-3 mb-1 fw-bold text-dark">
+                        <i class="fas fa-plus-circle"></i> Publier
+                    </h6>
+
+                    <!-- Projects -->
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:create_project' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-tools text-secondary me-3"></i>
+                            <div class="flex-grow-1">Ajouter une réalisation</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:create_announcement' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-bullhorn text-secondary me-3"></i>
+                            <div class="flex-grow-1">Publier une annonce</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+
+                   
+                    <!-- <h6 class="mt-3 mb-1 fw-bold text-dark">
+                        <i class="fas fa-handshake"></i> Mes offres
+                    </h6>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:sent_offers' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-paper-plane text-secondary me-3"></i>
+                            <div class="flex-grow-1">Envoyées</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:received_offers' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-file-import text-secondary me-3"></i>
+                            <div class="flex-grow-1">Reçues</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a> -->
+
+
+                    
+
+                    <!-- Verification -->
+                    <h6 class="mt-3 mb-1 fw-bold text-dark">
+                        <i class="fas fa-shield"></i> Identifiants & Vérification
+                    </h6>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:verify_email' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope text-secondary me-3"></i>
+                            <div class="flex-grow-1">Adresse e-mail</div>
+
+                            {% if not user.profile.is_email_verified %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:verify_phone' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-phone text-secondary me-3"></i>
+                            <div class="flex-grow-1">Numéro de téléphone</div>
+
+                            {% if not user.profile.is_phone_verified %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="{% url 'app:verify_identity' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-id-card text-secondary me-3"></i>
+                            <div class="flex-grow-1">Identité</div>
+
+                            {% if not user.profile.is_identity_verified %}
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+                    <!-- Settings 
+                      <h6 class="mt-3 mb-1 fw-bold text-dark">
+                        <i class="fas fa-sliders"></i> Paramètres
+                    </h6>
+
+                    <a class="list-group-item list-group-item-action" href="">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-eye text-secondary me-3"></i>
+                            <div class="flex-grow-1">Visibilité & Confidentialité</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-bell text-secondary me-3"></i>
+                            <div class="flex-grow-1">Notifications</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a>-->
+                    <!-- Support & FAQ 
+                    <h6 class="mt-3 mb-1 fw-bold text-dark">
+                        <i class="fas fa-circle-question"></i> Aide
+                    </h6>
+
+                    <a class="list-group-item list-group-item-action" href="">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-book text-secondary me-3"></i>
+                            <div class="flex-grow-1"> Support & FAQ</div>
+                            <i class="fas fa-chevron-right text-secondary ms-2"></i>
+                        </div>
+                    </a> -->
+
+                    
+                    <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+                        <div class="col-12 justify-content-center align-items-center " >
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                                crossorigin="anonymous"></script>
+                            <!-- annonce_details_1 -->
+                            <ins class="adsbygoogle"
+                                style="display:block;width:100%;height:130px;"
+                                data-ad-client="ca-pub-5485706271033891"
+                                data-ad-slot="1737959128"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+
+
+                        
+                        </div> 
+                    </div>
+
+                    <hr class="my-2">
+
+
+                    <!-- Logout -->
+                    <a class="list-group-item list-group-item-action text-danger" href="{% url 'app:logout' %}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-right-from-bracket me-3"></i>
+                            <div class="flex-grow-1">Déconnexion</div>
+                            <i class="fas fa-chevron-right text-danger ms-2"></i>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div> 
+        </div>
+    </div> 
+     
+</div>
+</section>
+
+{% endblock %}

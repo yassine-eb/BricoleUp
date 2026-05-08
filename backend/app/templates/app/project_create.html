@@ -1,0 +1,502 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+Ajouter une réalisation - BricoleUp
+{% endblock %}
+
+
+{% block content %}
+       
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container ">
+<div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+                <div class="col-12 justify-content-center align-items-center " >
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                        crossorigin="anonymous"></script>
+                    <!-- annonce_details_1 -->
+                    <ins class="adsbygoogle"
+                        style="display:block;width:100%;height:130px;"
+                        data-ad-client="ca-pub-5485706271033891"
+                        data-ad-slot="1737959128"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+
+
+                
+                </div> 
+            </div> 
+
+    <div class="row justify-content-center">
+       
+        <div class="col-12 col-lg-8 mb-5">
+            
+            
+            <div class="row mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+               <h6 style="font-size: 24px;font-weight: bold;" class="mb-4">
+                        Ajouter une réalisation
+                </h6>
+                <form  method="POST" enctype="multipart/form-data" id="announcementForm" action="{% url 'app:create_project' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                                
+
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center ">
+                                                <h6 class="mb-0">Décrivez votre réalisation :</h6>
+                                                <small id="charCount" class="text-muted">0/1200</small>
+                                            </div>
+
+                                            
+                                            <textarea type="text" id="description" name="description" class="form-control" maxlength="1200" oninput="updateCharacterCount()" 
+                                                placeholder="" rows="5" required></textarea>
+                                            
+                                                
+                                                <script>
+                                                    function updateCharacterCount() {
+                                                        const bioTextarea = document.getElementById('description');
+                                                        const charCountDisplay = document.getElementById('charCount');
+                                                        const writtenChars = bioTextarea.value.length;
+                                                        
+                                                        // Update the character count display
+                                                        charCountDisplay.textContent = `${writtenChars}/1200`;
+                                                    }
+                                                    
+                                                    // Initialize character count on page load
+                                                    document.addEventListener('DOMContentLoaded', updateCharacterCount);
+                                                </script>
+
+                                        </div>
+                                        
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-lg-6 col-12  mb-3">
+                                   
+                                        <h6 style="font-size:20px;font-weight:bold" class="mb-2">Services :</h6>
+                                        
+
+                                        <!-- Button to open modal -->
+                                        <a href=""
+                                                                        class="btn d-flex align-items-center border rounded text-dark text-decoration-none me-1 flex-grow-1"
+                                                                        
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#skillsModal">
+                                                                    <i class="fas fa-tools me-2"></i>
+                                                                    <span class="inline">
+                                                                    
+                                                                        Sélectionner des services
+                                                                    </span>
+                                                                </a>
+
+                                        <!-- Hidden input for form submission -->
+                                        <input type="hidden" name="skills" id="selectedSkillsInput" value="{% for skill in profile.skills.all %}{{ skill.id }},{% endfor %}">
+                                                                <div class="d-flex align-items-center gap p-1">
+                                            <div id="selectedServices" class="skills-container mt-2 mb-2">
+                                                {% for skill in profile.skills.all %}
+                                                    <div class="selected-skill" data-skill-id="{{ skill.id }}">
+                                                        {{ skill.name_fr }}
+                                                        <span class="remove-skill" onclick="removeSkill('{{ skill.id }}')">✖</span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="skillsModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Choisir des services</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="text" id="serviceSearchModal" class="form-control mb-2" placeholder="Rechercher un service...">
+                                            <div id="skillsList" style="height:300px; overflow-y:auto;">
+                                                {% for skill in skills %}
+                                                <div class="form-check skill-item" data-name="{{ skill.name_fr|lower }}">
+                                                <input class="form-check-input skill-checkbox me-3 ms-1"
+                                                        type="checkbox"
+                                                        value="{{ skill.id }}"
+                                                        id="skill{{ skill.id }}"
+                                                        {% if skill in profile.skills.all %}checked{% endif %}>
+                                                <label class="form-check-label" for="skill{{ skill.id }}">
+                                                    {{ skill.name_fr }}
+                                                </label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" style="background-color: #ec700a; border: none;" id="saveSkillsBtn">Valider</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                        <style>
+                                                            /* Scroll container */
+                                                        .skills-scroll {
+                                                            height: 300px;
+                                                            overflow-y: auto;
+                                                            
+                                                        }
+
+
+                                                        .skills-scroll::-webkit-scrollbar-thumb {
+                                                            background-color: #d0d0d0;
+                                                            border-radius: 10px;
+                                                        }
+                                                        .skills-scroll::-webkit-scrollbar-thumb:hover {
+                                                            background-color: #b8b8b8;
+                                                        }
+
+                                                        /* Each skill row */
+                                                        .skill-item {
+                                                            display: flex;
+                                                            align-items: center;
+                                                            padding: 8px 12px;
+                                                            border-radius: 8px;
+                                                            margin-bottom: 6px;
+                                                            transition: background-color 0.2s ease, transform 0.05s ease;
+                                                            cursor: pointer;
+                                                        }
+
+                                                        /* Hover effect */
+                                                        .skill-item:hover {
+                                                            background-color: #f5f7fa;
+                                                        }
+
+                                                        /* Checkbox spacing */
+                                                        .skill-item .form-check-input {
+                                                            margin-right: 10px;
+                                                            cursor: pointer;
+                                                        }
+
+                                                        /* Label takes full width so whole row clickable */
+                                                        .skill-item .form-check-label {
+                                                            cursor: pointer;
+                                                            
+                                                        }
+
+                                                        /* Highlight when checked */
+                                                        .skill-checkbox:checked + .form-check-label {
+                                                            font-weight: 600;
+                                                            color: #ec700a;
+                                                        }
+
+                                                        .skill-checkbox:checked {
+                                                            background-color: #ec700a;
+                                                            border-color: #ec700a;
+                                                        }
+
+                                                        </style>
+                                                        <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const searchInput = document.getElementById("serviceSearchModal");
+                                        const skillItems = document.querySelectorAll("#skillsList .skill-item");
+                                        const selectedContainer = document.getElementById("selectedServices");
+                                        const hiddenInput = document.getElementById("selectedSkillsInput");
+                                        const saveBtn = document.getElementById("saveSkillsBtn");
+                                        const skillsModalEl = document.getElementById("skillsModal");
+                                        const skillsModal = new bootstrap.Modal(skillsModalEl);
+
+                                        // Filter skills as user types (starts with)
+                                        searchInput.addEventListener("input", function () {
+                                            const filter = searchInput.value.toLowerCase().trim();
+                                            skillItems.forEach(item => {
+                                                const text = item.dataset.name;
+                                                if (filter === "" || text.startsWith(filter)) {
+                                                    item.classList.remove("d-none");
+                                                } else {
+                                                    item.classList.add("d-none");
+                                                }
+                                            });
+                                        });
+
+                                        // Save selected skills
+                                        saveBtn.addEventListener("click", function () {
+                                            selectedContainer.innerHTML = "";
+                                            let selectedIds = [];
+
+                                            skillItems.forEach(item => {
+                                                const checkbox = item.querySelector(".skill-checkbox");
+                                                if (checkbox.checked) {
+                                                    const label = item.querySelector("label").textContent.trim();
+                                                    selectedIds.push(checkbox.value);
+
+                                                    const skillDiv = document.createElement("div");
+                                                    skillDiv.className = "selected-skill";
+                                                    skillDiv.setAttribute("data-skill-id", checkbox.value);
+                                                    skillDiv.innerHTML = `${label} <span class="remove-skill" onclick="removeSkill('${checkbox.value}')">✖</span>`;
+
+                                                    selectedContainer.appendChild(skillDiv);
+                                                }
+                                            });
+
+                                            hiddenInput.value = selectedIds.join(",");
+                                            skillsModal.hide();
+                                        });
+
+                                        // Remove skill
+                                        window.removeSkill = function(skillId) {
+                                            const skillDiv = document.querySelector(`.selected-skill[data-skill-id="${skillId}"]`);
+                                            if (skillDiv) skillDiv.remove();
+
+                                            const checkbox = document.getElementById(`skill${skillId}`);
+                                            if (checkbox) checkbox.checked = false;
+
+                                            const remainingIds = Array.from(document.querySelectorAll("#selectedServices .selected-skill"))
+                                                                    .map(div => div.getAttribute("data-skill-id"));
+                                            hiddenInput.value = remainingIds.join(",");
+                                        };
+
+                                        // Pre-check modal checkboxes based on selected skills
+                                        const preselected = hiddenInput.value.split(",").filter(id => id);
+                                        preselected.forEach(id => {
+                                            const checkbox = document.getElementById(`skill${id}`);
+                                            if (checkbox) checkbox.checked = true;
+                                        });
+                                    });
+                                    </script>
+                                    <div class="col-lg-6 col-12  mb-3">
+                                        <h6>Ajoutez des photos :</h6>
+
+                                        <div class="row g-2">
+                                            {% for i in "1234"|make_list %}
+                                            <div class="col-3">
+                                                <div class="image-upload-wrapper" onclick="document.getElementById('image{{ i }}').click()">
+                                                    <input type="file" name="image{{ i }}" id="image{{ i }}" class="d-none" accept="image/*" onchange="previewImage(this, 'preview{{ i }}')">
+                                                    <img id="preview{{ i }}" src="{% static 'app/images/placeholder.png' %}" class="img-thumbnail img-placeholder" alt="">
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+
+                                        <style>
+                                            .image-upload-wrapper {
+                                                position: relative;
+                                                width: 100%;
+                                                aspect-ratio: 1 / 1; /* 👈 ensures perfect square */
+                                                border: 2px dashed #ccc;
+                                                border-radius: 8px;
+                                                overflow: hidden;
+                                                cursor: pointer;
+                                                display: flex;
+                                                justify-content: center;
+                                                align-items: center;
+                                                background-color: #f9f9f9;
+                                                transition: border-color 0.3s ease-in-out;
+                                            }
+
+                                            .image-upload-wrapper:hover {
+                                                border-color: #ec700a;
+                                            }
+
+                                            .img-placeholder {
+                                                width: 100%;
+                                                height: 100%;
+                                                object-fit: cover; /* 👈 image always fills square */
+                                                border-radius: 8px;
+                                            }
+
+                                            .d-none {
+                                                display: none;
+                                            }
+                                        </style>
+
+                                        <script>
+                                            function previewImage(input, previewId) {
+                                                const file = input.files[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = e => document.getElementById(previewId).src = e.target.result;
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }
+                                        </script>
+                                    
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div id="errorMessage" class="alert alert-danger d-none"></div>
+
+                                <button type="submit" id="submitButton" class="btn custom-btn w-100 mt-5" >
+                                    Ajouter
+                                </button>
+                    
+                </form>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        document.getElementById("announcementForm").addEventListener("submit", function (event) {
+                            event.preventDefault(); // Prevent default form submission
+                    
+                            let form = this;
+                            let submitButton = form.querySelector("button[type=submit]");
+                            let originalButtonText = submitButton.innerHTML;
+                            let errorMessageDiv = document.getElementById("errorMessage");
+                    
+                    
+                            // **Multilingual loading text**
+                            let loadingText = `
+                                <span class="spinner-border spinner-border-sm"></span> 
+                                
+                                    Publication en cours...
+                                
+                            `;
+                    
+                            // **Replace submit button with loading spinner**
+                            submitButton.innerHTML = loadingText;
+                            submitButton.disabled = true;
+                    
+                            let formData = new FormData(form);
+                    
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest",
+                                },
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.href = data.redirect_url; // Redirect on success
+                                } else {
+                                    errorMessageDiv.classList.remove("d-none");
+                                    errorMessageDiv.innerHTML = data.error_message;
+                                    submitButton.innerHTML = originalButtonText; // Restore button text
+                                    submitButton.disabled = false; // Re-enable button
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                errorMessageDiv.classList.remove("d-none");
+                                errorMessageDiv.innerHTML = "Une erreur s'est produite. Veuillez réessayer.";
+                                submitButton.innerHTML = originalButtonText;
+                                submitButton.disabled = false;
+                            });
+                        });
+                    });
+                    
+                </script>
+            </div>
+        </div>
+     
+    </div>
+    
+</div>
+</section>
+
+
+<style>
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .selected-skill {
+            background-color: #ec700a;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .remove-skill {
+            cursor: pointer;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        .dropdown-menu {
+            height: 200px;
+            overflow-y: auto;
+            
+        }
+
+    
+
+        .dropdown-box {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .checkbox-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        }
+        .checkbox-list li {
+        margin-bottom: 5px;
+        }
+        .checkbox-list label {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        cursor:pointer;
+        }
+        .checkbox-list input[type="checkbox"] {
+        margin-right: 10px;
+        cursor:pointer;
+        }
+        .city-option {
+            display: flex;
+            align-items: center;
+            
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            
+        }
+        
+        .city-option:hover {
+            background-color: #ec700a; /* Light hover effect */
+        }
+        
+        .skill-option {
+            display: flex;
+            align-items: center;
+            
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            
+        }
+        
+        .skill-option:hover {
+            background-color: #ec700a; /* Light hover effect */
+        }
+
+    </style> 
+    <style>
+        .form-label{
+        font-weight: bold;
+        
+        color: #333;
+        }
+        .form-section {
+        background-color: #f9f9f9;
+        padding: 2rem;
+        border-radius: 10px;
+        }
+        .btn-primary {
+        background-color: #ec700a;
+        border: none;
+        }
+        .btn-primary:hover {
+        background-color: #5bbab0;
+        }
+    </style>
+{% endblock %}

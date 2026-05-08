@@ -1,0 +1,734 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+Annonces - BricoleUp
+{% endblock %}
+
+{% block meta %}
+    <meta name="author" content="BricoleUp">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="BricoleUp">
+    <meta property="og:description" content="Consultez les annonces disponibles près de chez vous sur BricoleUp - Marketplace de prestations de services, vente et location de matériel.">
+    <meta property="og:url" content="https://bricoleup.com/annonces/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="BricoleUp">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "url": "https://bricoleup.com/annonces/",
+        "name": "BricoleUp",
+        "description": "Consultez les annonces disponibles près de chez vous sur BricoleUp - Marketplace de prestations de services, vente et location de matériel.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "BricoleUp"
+        }
+    }
+    </script>
+{% endblock %}
+
+
+
+
+
+{% block content %}
+
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script>
+    // Add CSRF token to all HTMX requests
+    document.body.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+  </script>
+<section class="section-padding d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;">
+
+    <div class="container">
+        
+        <div class="row justify-content-center align-items-center" >
+            <div class="col-12 justify-content-center align-items-center mt-5" >
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                            crossorigin="anonymous"></script>
+                        <!-- annonces_1 -->
+                        <ins class="adsbygoogle"
+                            style="display:block;width:100%;height:120px;"
+                            data-ad-client="ca-pub-5485706271033891"
+                            data-ad-slot="3784101173"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+
+                    </div> 
+            <div class="col-lg-12 col-12 mt-5">
+                
+                <form 
+                    id="annoncesSearchForm"
+                    hx-post="{% url 'app:annonces' %}"
+                    hx-target="#annoncesResultsSection"
+                    hx-swap="innerHTML"
+                    hx-indicator="#annoncesLoadingIndicator"
+
+                    >
+                    {% csrf_token %}
+                    <div class="p-2 bg-white rounded shadow-sm border mt-4" style="border-radius: 8px;">
+                        <div class="row g-2 align-items-center">
+                            <!-- Service Search -->
+                            <div class="col-12 col-md-5">
+                            <a href=""
+                                    class="btn d-flex align-items-center border rounded text-dark text-decoration-none me-1 flex-grow-1"
+                                    
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#skillsModal">
+                                <i class="fas fa-tools me-2"></i>
+                                <span class="inline">
+                                
+                                    Sélectionner des services
+                                </span>
+                            </a>
+
+                            <input type="hidden" name="skills" id="selectedSkillsInput"
+                                value="{% for skill in selected_skills %}{{ skill.id }},{% endfor %}">
+                        </div>
+
+
+                            <!-- City Search -->
+                            <div class="col-12 col-md-5">
+                                <a href=""
+                                    class="btn d-flex align-items-center border rounded text-dark text-decoration-none me-1 flex-grow-1"
+                                    
+                                    
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cityModal">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+
+                                    <span class="inline" id="selectedCityText">
+                                        {% if selected_city %}
+                                            {{ selected_city }}
+                                        {% else %}
+                                            Choisir une ville
+                                        {% endif %}
+                                    </span>
+                
+                                </a>
+
+                                <input type="hidden" name="location" id="selectedCityInput"
+                                    value="{% if selected_city %}{{ selected_city.id }}{% endif %}">
+                            </div>
+
+                            
+                            <!-- Buttons -->
+                            <div class="col-12 col-md-2 d-flex align-items-center">
+                                <a href=""
+                                    class="btn d-flex align-items-center border rounded text-dark text-decoration-none me-1 flex-grow-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#filterModal">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            width="20" height="20" fill="currentColor"
+                                            class="me-2">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M3 7.69443L12.3145 7.69443C12.7657 9.17556 14.1304 10.2521 15.7438 10.2521C17.3573 10.2521 18.722 9.17556 19.1732 7.69443L21 7.69443C21.5523 7.69443 22 7.24192 22 6.68371C22 6.12551 21.5523 5.67299 21 5.67299H19.2062C18.7922 4.13273 17.3989 3 15.7438 3C14.0888 3 12.6955 4.13273 12.2815 5.67299H3C2.44772 5.67299 2 6.12551 2 6.68371C2 7.24191 2.44772 7.69443 3 7.69443ZM15.7438 5.02143C14.867 5.02143 14.1562 5.73984 14.1562 6.62603C14.1562 7.51223 14.867 8.23063 15.7438 8.23063C16.6206 8.23063 17.3314 7.51223 17.3314 6.62603C17.3314 5.73984 16.6206 5.02143 15.7438 5.02143Z"></path>
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M21 15.8056L11.6855 15.8056C11.2343 14.3244 9.86961 13.2479 8.25617 13.2479C6.64272 13.2479 5.27803 14.3244 4.82685 15.8056L3 15.8056C2.44772 15.8056 2 16.2581 2 16.8163C2 17.3745 2.44772 17.827 3 17.827H4.79378C5.20782 19.3673 6.60112 20.5 8.25616 20.5C9.91121 20.5 11.3045 19.3673 11.7185 17.827L21 17.827C21.5523 17.827 22 17.3745 22 16.8163C22 16.2581 21.5523 15.8056 21 15.8056ZM8.25616 18.4786C9.13296 18.4786 9.84375 17.7602 9.84375 16.874C9.84375 15.9878 9.13296 15.2694 8.25616 15.2694C7.37937 15.2694 6.66858 15.9878 6.66858 16.874C6.66858 17.7602 7.37937 18.4786 8.25616 18.4786Z"></path>
+                                </svg>
+                                <span class="inline">
+                                        Filtres
+                                  
+                                </span>
+
+                                </a>
+
+                                <style>
+                                a.btn:hover {
+                                    background-color: #f0f0f0; /* Light grey hover like "Se connecter" */
+                                }
+                                </style>
+
+                                <button type="submit" class="btn custom-btn flex-grow-1 ms-1">
+                                    <i class="bi bi-search"></i>
+                                    
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <div class="d-flex align-items-center gap p-1">
+                            
+                            <div id="selectedServices" class="skills-container mt-2 mb-2"></div>
+                        </div>
+
+                    
+                    <script>
+                        
+                    document.addEventListener("DOMContentLoaded", function () {
+                        
+                        const searchInput = document.getElementById("skillSearchModal");
+                        const skillItems = document.querySelectorAll("#skillsList .skill-item");
+                        const checkboxes = document.querySelectorAll(".skill-checkbox");
+                        const selectedContainer = document.getElementById("selectedServices");
+                        const hiddenInput = document.getElementById("selectedSkillsInput");
+                        const saveBtn = document.getElementById("saveSkillsBtn");
+
+                        function renderSelectedSkills() {
+
+                            selectedContainer.innerHTML = "";
+                            let selectedIds = [];
+
+                            checkboxes.forEach(cb => {
+
+                                if (cb.checked) {
+
+                                    let label = document
+                                        .querySelector(`label[for="${cb.id}"]`)
+                                        .textContent.trim();
+
+                                    selectedIds.push(cb.value);
+
+                                    let skillDiv = document.createElement("div");
+                                    skillDiv.className = "selected-skill";
+                                    skillDiv.setAttribute("data-skill-id", cb.value);
+
+                                    skillDiv.innerHTML =
+                                        `${label} <span class="remove-skill"
+                                        onclick="removeSkill('${cb.value}')">✖</span>`;
+
+                                    selectedContainer.appendChild(skillDiv);
+                                }
+
+                            });
+
+                            hiddenInput.value = selectedIds.join(",");
+                        }
+                        
+
+                        // 🔍 Filter with STARTS WITH
+                        searchInput.addEventListener("input", function () {
+                            let filter = searchInput.value.toLowerCase().trim();
+
+                            skillItems.forEach(item => {
+                                let name = item.getAttribute("data-name");
+
+                                if (filter === "" || name.startsWith(filter)) {
+                                    item.classList.remove("d-none");
+                                } else {
+                                    item.classList.add("d-none");
+                                }
+                            });
+                        });
+
+                        // 💾 Save selected skills
+                        
+                        saveBtn.addEventListener("click", renderSelectedSkills);
+                        renderSelectedSkills();
+
+
+                        // ❌ Remove skill from outside
+                        window.removeSkill = function(skillId) {
+                            const checkbox = document.querySelector(`.skill-checkbox[value="${skillId}"]`);
+                            if (checkbox) checkbox.checked = false;
+
+                            const skillDiv = document.querySelector(`.selected-skill[data-skill-id="${skillId}"]`);
+                            if (skillDiv) skillDiv.remove();
+
+                            updateHiddenInput();
+                        };
+
+                        function updateHiddenInput() {
+                            let selectedIds = [];
+                            document.querySelectorAll(".skill-checkbox:checked").forEach(cb => {
+                                selectedIds.push(cb.value);
+                            });
+                            hiddenInput.value = selectedIds.join(",");
+                        }
+
+                    });
+                    </script>
+
+                    
+                    
+                    <style>
+                        .selected-skill {
+                            background-color: #ec700a;
+                            color: black;
+                            padding: 5px 10px;
+                            border-radius: 15px;
+                            display: inline-flex;
+                            align-items: center;
+                        }
+                        .remove-skill {
+                            cursor: pointer;
+                            margin-left: 8px;
+                            font-weight: bold;
+                        }
+
+
+                        .skill-option {
+                            padding: 8px 12px;
+                            border-bottom: 1px solid #ddd; /* line separator */
+                            cursor: pointer;
+                            transition: background-color 0.2s;
+                            
+                        }
+                        
+                        .skill-option:hover {
+                            background-color: #ec700a; /* Light hover effect */
+                        }
+
+                        .city-option {
+                            padding: 8px 12px;
+                            border-bottom: 1px solid #ddd; /* line separator */
+                            cursor: pointer;
+                            transition: background-color 0.2s;
+                        }
+
+                        .city-option:last-child {
+                            border-bottom: none; /* remove line on last item */
+                        }
+
+                        .city-option:hover {
+                            background-color: #f0f0f0; /* subtle hover */
+                        }
+
+                        .dropdown-menu {
+                            max-height: 200px;
+                            overflow-y: auto;
+                            padding: 0; /* remove default padding */
+                            border-radius: 5px;
+                        }
+
+                        .dropdown-menu .dropdown-item {
+                            display: block; /* ensure full width */
+                            width: 100%;
+                        }
+                    </style>
+
+                   <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const citySearch = document.getElementById("citySearchModal");
+                            const cityOptions = document.querySelectorAll("#cityList .city-option");
+                            const selectedCityInput = document.getElementById("selectedCityInput");
+                            const cityModalEl = document.getElementById("cityModal");
+                            const cityModal = new bootstrap.Modal(cityModalEl);
+                            const selectedCityText = document.getElementById("selectedCityText");
+
+                            // 🔍 Filter cities with STARTS WITH
+                            citySearch.addEventListener("input", function () {
+                                let filter = citySearch.value.toLowerCase().trim();
+
+                                cityOptions.forEach(option => {
+                                    let text = option.textContent.toLowerCase().trim();
+
+                                    if (filter === "") {
+                                        option.classList.add("d-none");  // hide all if input is empty
+                                    } else if (text.startsWith(filter)) {
+                                        option.classList.remove("d-none");  // show matching
+                                    } else {
+                                        option.classList.add("d-none");     // hide non-matching
+                                    }
+                                });
+                            });
+
+                            // 🏙 Select a city
+                            cityOptions.forEach(option => {
+                                option.addEventListener("click", function () {
+                                    let cityId = this.getAttribute("data-city-id");
+                                    let cityName = this.textContent.trim();
+
+                                    selectedCityText.textContent = cityName;
+                                    selectedCityInput.value = cityId;
+
+                                    cityModal.hide();
+                                });
+                            });
+
+                            // 🔄 Reset search when modal opens
+                            cityModalEl.addEventListener('shown.bs.modal', function () {
+                                citySearch.value = "";
+                                cityOptions.forEach(option => option.classList.add("d-none"));
+                                citySearch.focus();
+                            });
+                        });
+                    </script>
+                <div class="modal fade" id="skillsModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Choisir des services</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <!-- 🔍 Search -->
+                        <input type="text" id="skillSearchModal" class="form-control mb-3"
+                            placeholder="Rechercher un service...">
+
+                        <!-- 📋 Skills List -->
+                        <div id="skillsList" class="skills-scroll">
+                        {% for skill in skills %}
+                            <div class="form-check skill-item" data-name="{{ skill.name_fr|lower }}">
+                            <input class="form-check-input skill-checkbox me-3 ms-1"
+                                    type="checkbox"
+                                    value="{{ skill.id }}"
+                                    id="skill{{ skill.id }}"
+                                    {% if skill in selected_skills %}checked{% endif %}>
+                            <label class="form-check-label w-100" for="skill{{ skill.id }}">
+                                {{ skill.name_fr }}
+                            </label>
+                            </div>
+                        {% endfor %}
+                        </div>
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" style="background-color: #ec700a; border: none;" id="saveSkillsBtn" data-bs-dismiss="modal">
+                        Valider
+                        </button>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+                    <style>
+                        /* Scroll container */
+                    .skills-scroll {
+                        height: 300px;
+                        overflow-y: auto;
+                        
+                    }
+
+
+                    .skills-scroll::-webkit-scrollbar-thumb {
+                        background-color: #d0d0d0;
+                        border-radius: 10px;
+                    }
+                    .skills-scroll::-webkit-scrollbar-thumb:hover {
+                        background-color: #b8b8b8;
+                    }
+
+                    /* Each skill row */
+                    .skill-item {
+                        display: flex;
+                        align-items: center;
+                        padding: 8px 12px;
+                        border-radius: 8px;
+                        margin-bottom: 6px;
+                        transition: background-color 0.2s ease, transform 0.05s ease;
+                        cursor: pointer;
+                    }
+
+                    /* Hover effect */
+                    .skill-item:hover {
+                        background-color: #f5f7fa;
+                    }
+
+                    /* Checkbox spacing */
+                    .skill-item .form-check-input {
+                        margin-right: 10px;
+                        cursor: pointer;
+                    }
+
+                    /* Label takes full width so whole row clickable */
+                    .skill-item .form-check-label {
+                        cursor: pointer;
+                        
+                    }
+
+                    /* Highlight when checked */
+                    .skill-checkbox:checked + .form-check-label {
+                        font-weight: 600;
+                        color: #ec700a;
+                    }
+
+                    .skill-checkbox:checked {
+                        background-color: #ec700a;
+                        border-color: #ec700a;
+                    }
+
+                    </style>
+
+
+                        <div class="modal fade" id="cityModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Choisir une ville</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <!-- Search input -->
+                                        <input type="text" id="citySearchModal" class="form-control mb-3" placeholder="Rechercher une ville...">
+
+                                        <!-- Cities list -->
+                                        <div id="cityList" class="list-group" style="height:300px; overflow-y:auto;">
+                                            {% for city in cities %}
+                                                <button type="button"
+                                                        class="list-group-item list-group-item-action city-option d-none"
+                                                        data-city-id="{{ city.id }}">
+                                                    {{ city }}
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="filterModalLabel">
+                                    
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                    width="20" height="20" fill="currentColor"
+                                                    class="me-2">
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M3 7.69443L12.3145 7.69443C12.7657 9.17556 14.1304 10.2521 15.7438 10.2521C17.3573 10.2521 18.722 9.17556 19.1732 7.69443L21 7.69443C21.5523 7.69443 22 7.24192 22 6.68371C22 6.12551 21.5523 5.67299 21 5.67299H19.2062C18.7922 4.13273 17.3989 3 15.7438 3C14.0888 3 12.6955 4.13273 12.2815 5.67299H3C2.44772 5.67299 2 6.12551 2 6.68371C2 7.24191 2.44772 7.69443 3 7.69443ZM15.7438 5.02143C14.867 5.02143 14.1562 5.73984 14.1562 6.62603C14.1562 7.51223 14.867 8.23063 15.7438 8.23063C16.6206 8.23063 17.3314 7.51223 17.3314 6.62603C17.3314 5.73984 16.6206 5.02143 15.7438 5.02143Z"></path>
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M21 15.8056L11.6855 15.8056C11.2343 14.3244 9.86961 13.2479 8.25617 13.2479C6.64272 13.2479 5.27803 14.3244 4.82685 15.8056L3 15.8056C2.44772 15.8056 2 16.2581 2 16.8163C2 17.3745 2.44772 17.827 3 17.827H4.79378C5.20782 19.3673 6.60112 20.5 8.25616 20.5C9.91121 20.5 11.3045 19.3673 11.7185 17.827L21 17.827C21.5523 17.827 22 17.3745 22 16.8163C22 16.2581 21.5523 15.8056 21 15.8056ZM8.25616 18.4786C9.13296 18.4786 9.84375 17.7602 9.84375 16.874C9.84375 15.9878 9.13296 15.2694 8.25616 15.2694C7.37937 15.2694 6.66858 15.9878 6.66858 16.874C6.66858 17.7602 7.37937 18.4786 8.25616 18.4786Z"></path>
+                                            </svg>
+                                                Filtres
+                                            
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <!-- Trier par -->
+                                        <div class="mb-4">
+                                            <h6 class="text-muted">Type de l'annonce</h6>
+
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="categories"
+                                                    value="demande_prestation"
+                                                    id="demande_prestation"
+                                                    {% if 'demande_prestation' in filters.categories %}checked{% endif %}
+                                                >
+                                                <label class="form-check-label" for="demande_prestation">
+                                                    Demande de prestation
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="categories"
+                                                    value="offre_service"
+                                                    id="offre_service"
+                                                    {% if 'offre_service' in filters.categories %}checked{% endif %}
+                                                >
+                                                <label class="form-check-label" for="offre_service">
+                                                    Offre de services
+                                                </label>
+                                            </div>
+
+
+                                        </div>
+
+                                        <!-- Type de compte -->
+                                        <div class="mb-4">
+                                            <h6 class="text-muted">
+                                                    Type de compte
+                                                
+                                            </h6>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="account_type" value="particulier" id="particulier"
+                                                    {% if 'particulier' in filters.account_type %}checked{% endif %}>
+                                                <label class="form-check-label" for="particulier">
+                                                        Particulier
+                                                    
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="account_type" value="entreprise" id="entreprise"
+                                                    {% if 'entreprise' in filters.account_type %}checked{% endif %}>
+                                                <label class="form-check-label" for="entreprise">
+                                                        Entreprise
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Vérifié -->
+                                        <div class="mb-4">
+                                            <h6 class="text-muted">
+                                                    Vérifié
+                                                
+                                            </h6>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="verified" id="verified"
+                                                    {% if filters.verified %}checked{% endif %}>
+                                                <label class="form-check-label" for="verified">
+                                                        Comptes vérifiés uniquement
+                                                    
+                                                </label>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+
+                                    <!-- Footer Buttons -->
+                                    <div class="modal-footer d-flex justify-content-between">
+                                        
+                                        <button type="submit" class="btn custom-btn flex-grow-1" id="searchBtn">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                    <script>
+                                    document.getElementById("searchBtn").addEventListener("click", function(event) {
+                                        // If this is a form submit, prevent default temporarily
+                                        // event.preventDefault(); // uncomment if needed
+
+                                        // Close the modal
+                                        var filterModal = document.getElementById("filterModal");
+                                        var modal = bootstrap.Modal.getInstance(filterModal) || new bootstrap.Modal(filterModal);
+                                        modal.hide();
+                                    });
+                                    </script>
+
+
+
+
+                                
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+
+            
+
+        </div>
+        
+                <div id="annoncesLoadingIndicator" class="d-none text-center mt-4">
+                    <div class="spinner-border custom-spinner" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                </div>
+          
+                
+                <div id="annoncesResultsSection" class="position-relative mt-4">
+
+                    
+                    {% include "app/partials/annonces_results.html" %}
+
+                </div>
+                
+                <style>
+                    .custom-spinner {
+                        color: #ec700a !important; /* orange spinner */
+                    }
+                    #annoncesLoadingIndicator {
+                        display: none; /* hidden by default */
+                    }
+                    #annoncesLoadingIndicator.htmx-request {
+                        display: block !important; /* shown while HTMX request is active */
+                    }
+
+                </style>
+
+
+            <style>
+                .profile-section {
+                padding: 15px;
+                margin: 0 auto;
+                background-color: #fff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            }
+
+            </style>
+
+
+        
+        
+
+        
+
+        <div class="row mt-5 mb-1">
+            <div class="col-12 justify-content-center align-items-center " >
+
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                    crossorigin="anonymous"></script>
+                <!-- annonces_2 -->
+                <ins class="adsbygoogle"
+                    style="display:block;width:100%; height:150px;"
+                    data-ad-client="ca-pub-5485706271033891"
+                    data-ad-slot="9639063087"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+
+
+                   
+            </div> 
+        </div> 
+    </div>
+</section>
+
+
+
+
+
+<style>
+   .profile-section {
+    padding: 15px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+</style>
+
+<style>
+    
+    .checkbox-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    }
+    .checkbox-list li {
+    margin-bottom: 5px;
+    }
+    .checkbox-list label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor:pointer;
+    }
+    .checkbox-list input[type="checkbox"] {
+    margin-right: 10px;
+    cursor:pointer;
+    }
+
+
+</style> 
+
+{% endblock %}

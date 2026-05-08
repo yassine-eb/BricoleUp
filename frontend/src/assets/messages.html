@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BricoleUp — Feed & Messages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu:#1B3C6B; --bleu-dark:#132d52; --bleu-light:#EFF6FF;
+  --orange:#F97316; --orange-light:#FFF7ED;
+  --vert:#22C55E; --vert-light:#F0FDF4;
+  --rouge:#EF4444; --rouge-light:#FEF2F2;
+  --jaune:#F59E0B; --jaune-light:#FFFBEB;
+  --gris:#64748B; --gris-light:#F8FAFC;
+  --border:#E2E8F0; --texte:#0F172A;
+  --bg:#F4F7FB;
+  --shadow:0 12px 36px rgba(15,23,42,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--bg);color:var(--texte);min-height:100vh;}
+button{cursor:pointer;font-family:inherit;}
+textarea,input{font-family:inherit;}
+
+/* ═══ NAVBAR ═══ */
+.navbar{position:sticky;top:0;z-index:200;height:64px;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;}
+.navbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;width:100%;display:flex;align-items:center;gap:16px;}
+.nav-logo{font-family:"Poppins",sans-serif;font-size:1.3rem;font-weight:900;text-decoration:none;flex-shrink:0;}
+.nav-logo .bu{color:var(--bleu)}.nav-logo .up{color:var(--orange);}
+.nav-tabs{display:flex;align-items:stretch;gap:4px;flex:1;justify-content:center;height:64px;}
+.nav-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 18px;border:none;background:transparent;border-bottom:3px solid transparent;gap:2px;color:var(--gris);font-size:.78rem;font-family:"Poppins",sans-serif;font-weight:500;cursor:pointer;transition:all .15s;min-width:64px;}
+.nav-tab svg{width:22px;height:22px;}
+.nav-tab.active{color:var(--bleu);border-bottom-color:var(--bleu);background:var(--bleu-light);}
+.nav-tab:hover:not(.active){color:var(--bleu);background:var(--bleu-light);}
+.nav-tab-plus .plus-circ{width:30px;height:30px;background:var(--vert);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;}
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:12px;}
+.nav-avatar{width:36px;height:36px;background:var(--bleu);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;font-family:"Poppins",sans-serif;}
+.nav-msg-btn{position:relative;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--gris);cursor:pointer;transition:all .15s;}
+.nav-msg-btn:hover,.nav-msg-btn.active{border-color:var(--bleu);color:var(--bleu);}
+.notif-badge{position:absolute;top:-2px;right:-2px;min-width:18px;height:18px;background:var(--orange);color:#fff;border-radius:50px;font-size:.62rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff;}
+
+/* ═══ FEED ═══ */
+.feed-page{max-width:700px;margin:0 auto;padding:28px 16px 60px;}
+.feed-greeting{margin-bottom:20px;}
+.feed-greeting h2{font-family:"Poppins",sans-serif;font-size:1.4rem;font-weight:800;color:var(--bleu);}
+.feed-greeting p{color:var(--gris);font-size:.88rem;margin-top:4px;}
+
+/* Card feed */
+.fc-card{background:#fff;border-radius:16px;border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(15,23,42,.05);transition:box-shadow .2s,transform .2s;}
+.fc-card:hover{box-shadow:0 6px 24px rgba(15,23,42,.1);transform:translateY(-1px);}
+.fc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.fc-badges{display:flex;gap:6px;}
+.fc-badge{display:inline-flex;align-items:center;border-radius:50px;padding:3px 10px;font-size:.72rem;font-weight:700;}
+.badge-offre{background:var(--orange-light);color:var(--orange);border:1px solid #FED7AA;}
+.badge-demande{background:var(--bleu-light);color:var(--bleu);border:1px solid #BFDBFE;}
+.badge-skill{background:var(--gris-light);color:var(--gris);border:1px solid var(--border);}
+.fc-time{font-size:.75rem;color:var(--gris);}
+.fc-user-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.fc-av-wrap{position:relative;flex-shrink:0;}
+.fc-av-img{width:40px;height:40px;border-radius:50%;object-fit:cover;}
+.fc-av-init{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.85rem;}
+.fc-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid #fff;}
+.dot-verifie{background:var(--vert)}.dot-part{background:var(--gris);}
+.fc-username{font-weight:700;font-size:.88rem;color:var(--texte);}
+.fc-metier{font-size:.75rem;color:var(--gris);}
+.fc-city{display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--gris);}
+.fc-pro-badge{margin-left:auto;background:linear-gradient(135deg,var(--orange),#e0650f);color:#fff;border-radius:50px;padding:3px 8px;font-size:.7rem;font-weight:800;}
+.fc-budget{margin-left:auto;background:var(--bleu-light);color:var(--bleu);border-radius:50px;padding:4px 10px;font-size:.78rem;font-weight:700;}
+.fc-desc{color:var(--texte);font-size:.88rem;line-height:1.6;margin-bottom:14px;}
+.fc-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.fc-btn-primary{display:inline-flex;align-items:center;gap:6px;background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:.82rem;font-weight:700;transition:background .15s;}
+.fc-btn-primary:hover{background:var(--bleu-dark);}
+.fc-btn-ghost{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--gris);transition:all .15s;}
+.fc-btn-ghost:hover{border-color:var(--bleu);color:var(--bleu);}
+.fc-btn-ghost.liked{border-color:var(--orange);color:var(--orange);}
+.fc-replies-badge{font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:50px;}
+.has-replies{background:var(--bleu-light);color:var(--bleu);}
+.no-replies{background:var(--gris-light);color:var(--gris);}
+
+/* ═══ OVERLAY & MODALS ═══ */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);}
+.overlay.open{display:block;}
+.modal{display:none;position:fixed;top:50%;left:50%;z-index:600;width:min(95vw,480px);max-height:90vh;overflow-y:auto;background:#fff;border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.18);transform:translate(-50%,-50%) scale(.95);opacity:0;}
+.modal.open{display:block;animation:modalIn .25s ease forwards;}
+@keyframes modalIn{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+
+.modal-head{display:flex;align-items:center;gap:12px;padding:20px 20px 0;margin-bottom:16px;}
+.modal-head-info{flex:1;}
+.modal-head-title{font-family:"Poppins",sans-serif;font-size:1.05rem;font-weight:700;color:var(--bleu);}
+.modal-head-sub{font-size:.78rem;color:var(--gris);margin-top:2px;}
+.modal-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1rem;flex-shrink:0;}
+.modal-close-btn{width:34px;height:34px;border-radius:50%;border:none;background:var(--gris-light);color:var(--gris);font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;transition:background .15s;}
+.modal-close-btn:hover{background:var(--border);}
+.modal-body{padding:0 20px;}
+.modal-summary{background:var(--gris-light);border-radius:8px;padding:10px 14px;font-size:.82rem;color:var(--gris);margin-bottom:16px;}
+
+/* Champs modal */
+.m-field{margin-bottom:14px;}
+.m-label{display:block;font-size:.82rem;font-weight:600;color:var(--texte);margin-bottom:6px;}
+.m-input-wrap{position:relative;}
+.m-input,.m-textarea{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:.9rem;color:var(--texte);outline:none;background:#fff;transition:border-color .2s,box-shadow .2s;}
+.m-input.has-suffix{padding-right:38px;}
+.m-input:focus,.m-textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1);}
+.m-input.blue-focus:focus,.m-textarea.blue-focus:focus{border-color:var(--bleu);box-shadow:0 0 0 3px rgba(27,60,107,.08);}
+.m-textarea{min-height:120px;resize:none;line-height:1.6;}
+.m-textarea.tall{min-height:140px;}
+.m-suffix{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--gris);}
+.m-sublabel{font-size:.72rem;color:var(--gris);margin-top:4px;}
+.char-count{text-align:right;font-size:.72rem;color:var(--gris);margin-top:4px;}
+
+/* Chips délai */
+.chips-row{display:flex;gap:8px;flex-wrap:wrap;}
+.chip-sel{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--border);border-radius:50px;padding:6px 14px;font-size:.8rem;font-weight:600;color:var(--gris);background:#fff;cursor:pointer;transition:all .15s;}
+.chip-sel.active{background:var(--orange);border-color:var(--orange);color:#fff;}
+.chip-sel.blue.active{background:var(--bleu);border-color:var(--bleu);color:#fff;}
+
+.modal-footer{padding:16px 20px 20px;}
+.modal-secure{font-size:.75rem;color:var(--gris);text-align:center;margin-bottom:10px;}
+.btn-send{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--orange),#e0650f);color:#fff;font-family:"Poppins",sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(249,115,22,.35);transition:transform .15s,box-shadow .15s;}
+.btn-send:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(249,115,22,.45);}
+.btn-send.blue-btn{background:linear-gradient(135deg,var(--bleu),var(--bleu-dark));box-shadow:0 4px 16px rgba(27,60,107,.3);}
+.btn-send.blue-btn:hover{box-shadow:0 6px 24px rgba(27,60,107,.4);}
+
+/* Success screen */
+.modal-success{display:none;flex-direction:column;align-items:center;padding:32px 20px;text-align:center;}
+.modal-success.show{display:flex;}
+.success-circle{width:72px;height:72px;margin-bottom:20px;}
+.success-circle svg circle{stroke-dasharray:200;stroke-dashoffset:200;animation:drawCircle .5s ease forwards;}
+.success-circle svg path{stroke-dasharray:60;stroke-dashoffset:60;animation:drawCheck .3s ease .4s forwards;}
+@keyframes drawCircle{to{stroke-dashoffset:0}}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+.success-title{font-family:"Poppins",sans-serif;font-size:1.3rem;font-weight:700;color:var(--bleu);margin-bottom:8px;}
+.success-sub{color:var(--gris);font-size:.9rem;line-height:1.6;margin-bottom:20px;}
+.btn-msgs{display:inline-flex;align-items:center;gap:8px;background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:11px 22px;font-weight:700;font-size:.9rem;cursor:pointer;}
+
+/* ═══ PAGE MESSAGES ═══ */
+#page-messages{display:none;max-width:1100px;margin:0 auto;height:calc(100vh - 64px);overflow:hidden;}
+#page-messages.show{display:flex;}
+.msg-left{width:340px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.msg-left-head{padding:16px 16px 0;}
+.msg-left-title{font-family:"Poppins",sans-serif;font-size:1.2rem;font-weight:700;color:var(--bleu);margin-bottom:12px;}
+.msg-search{width:100%;border:none;border-radius:50px;background:var(--gris-light);padding:9px 16px;font-size:.85rem;color:var(--texte);outline:none;}
+.msg-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-top:12px;overflow-x:auto;}
+.msg-tab{border:none;background:transparent;padding:9px 14px;font-size:.78rem;font-weight:600;color:var(--gris);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s;}
+.msg-tab.active{color:var(--bleu);border-bottom-color:var(--orange);}
+.conv-list{flex:1;overflow-y:auto;}
+.conv-item{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;cursor:pointer;border-left:3px solid transparent;transition:background .15s;}
+.conv-item:hover{background:var(--gris-light);}
+.conv-item.active{background:var(--bleu-light);border-left-color:var(--bleu);}
+.conv-av-wrap{position:relative;flex-shrink:0;}
+.conv-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.88rem;}
+.unread-badge{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;background:var(--orange);color:#fff;border-radius:50px;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff;}
+.conv-info{flex:1;min-width:0;}
+.conv-name-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.conv-name{font-weight:700;font-size:.88rem;color:var(--texte);}
+.conv-role{font-size:.68rem;font-weight:700;border-radius:50px;padding:1px 7px;}
+.role-prest{background:var(--orange-light);color:var(--orange);}
+.role-client{background:var(--bleu-light);color:var(--bleu);}
+.conv-last{font-size:.78rem;color:var(--gris);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.conv-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.conv-time{font-size:.7rem;color:var(--gris);flex-shrink:0;}
+.offer-chip{font-size:.68rem;font-weight:700;background:var(--orange-light);color:var(--orange);border-radius:50px;padding:2px 8px;}
+
+/* Chat droit */
+.msg-right{flex:1;display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--bg);}
+.chat-head{background:#fff;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.chat-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;flex-shrink:0;}
+.chat-name{font-family:"Poppins",sans-serif;font-weight:700;font-size:.95rem;color:var(--texte);}
+.chat-status{font-size:.75rem;color:var(--vert);display:flex;align-items:center;gap:4px;}
+.chat-status.offline{color:var(--gris);}
+.chat-online-dot{width:7px;height:7px;border-radius:50%;background:var(--vert);}
+.chat-head-btns{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.chat-ann-btn{border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:#fff;font-size:.78rem;font-weight:600;color:var(--bleu);}
+.chat-more-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--gris);}
+
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.date-sep{align-self:center;background:var(--border);border-radius:50px;padding:3px 14px;font-size:.72rem;color:var(--gris);}
+
+.msg-recv{display:flex;align-items:flex-end;gap:8px;max-width:70%;}
+.msg-send{display:flex;align-items:flex-end;justify-content:flex-end;max-width:70%;align-self:flex-end;}
+.msg-bub-recv{background:#fff;border-radius:0 16px 16px 16px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.msg-bub-send{background:var(--bleu);color:#fff;border-radius:16px 0 16px 16px;padding:11px 14px;}
+.msg-text{font-size:.88rem;line-height:1.6;}
+.msg-time-recv{font-size:.68rem;color:var(--gris);margin-top:4px;}
+.msg-time-send{font-size:.68rem;color:rgba(255,255,255,.7);margin-top:4px;text-align:right;}
+.msg-av-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.68rem;flex-shrink:0;}
+
+/* Card offre message */
+.offer-card{background:#fff;border-radius:12px;border-left:4px solid var(--orange);padding:16px;max-width:300px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.offer-card-label{font-size:.78rem;font-weight:700;color:var(--orange);margin-bottom:8px;}
+.offer-card-price{font-family:"Poppins",sans-serif;font-size:1.5rem;font-weight:800;color:var(--bleu);margin-bottom:4px;}
+.offer-card-desc{font-size:.8rem;color:var(--gris);margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.offer-card-btns{display:flex;gap:8px;}
+.btn-accept{flex:1;border:none;border-radius:8px;padding:8px;background:var(--vert);color:#fff;font-weight:700;font-size:.8rem;}
+.btn-decline{flex:1;border:none;border-radius:8px;padding:8px;background:var(--rouge-light);color:var(--rouge);font-weight:700;font-size:.8rem;}
+.btn-accept:disabled,.btn-decline:disabled{opacity:.5;cursor:not-allowed;}
+.accepted-badge{display:inline-flex;align-items:center;gap:5px;background:var(--vert-light);color:var(--vert);border-radius:50px;padding:5px 12px;font-size:.78rem;font-weight:700;margin-top:8px;}
+
+/* Zone saisie */
+.chat-input-area{background:#fff;border-top:1px solid var(--border);padding:14px 16px;display:flex;align-items:flex-end;gap:10px;flex-shrink:0;}
+.chat-attach-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--gris-light);color:var(--gris);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:background .15s;}
+.chat-attach-btn:hover{background:var(--border);}
+.chat-textarea{flex:1;border:1.5px solid var(--border);border-radius:20px;padding:10px 16px;font-size:.9rem;color:var(--texte);outline:none;resize:none;max-height:120px;line-height:1.5;transition:border-color .2s;}
+.chat-textarea:focus{border-color:var(--bleu);}
+.chat-send-btn{width:42px;height:42px;border-radius:50%;border:none;background:var(--gris-light);color:var(--gris);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.chat-send-btn.active{background:var(--bleu);color:#fff;}
+.chat-send-btn.active:hover{background:var(--orange);transform:scale(1.05);}
+
+/* ═══ PROFIL TAB MOI ═══ */
+#page-profil{display:none;max-width:800px;margin:0 auto;padding:28px 16px 60px;}
+#page-profil.show{display:block;}
+.profil-section{margin-bottom:32px;}
+.profil-section-title{font-family:"Poppins",sans-serif;font-size:1.05rem;font-weight:800;color:var(--bleu);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.see-all-btn{margin-left:auto;border:none;background:transparent;color:var(--bleu);font-weight:700;font-size:.82rem;cursor:pointer;}
+
+/* Card offre reçue */
+.offer-recv-card{background:#fff;border-radius:16px;border:1px solid var(--border);border-top:3px solid var(--orange);padding:20px;margin-bottom:14px;}
+.orc-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.orc-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.88rem;flex-shrink:0;}
+.orc-name{font-weight:700;color:var(--texte);}
+.orc-time{font-size:.75rem;color:var(--gris);margin-top:2px;}
+.orc-new-badge{margin-left:auto;background:var(--orange);color:#fff;border-radius:50px;padding:3px 10px;font-size:.68rem;font-weight:800;}
+.orc-ann{background:var(--gris-light);border-radius:8px;padding:10px 14px;margin-bottom:14px;}
+.orc-ann-title{font-size:.82rem;font-weight:700;color:var(--texte);margin-bottom:4px;}
+.orc-price{font-family:"Poppins",sans-serif;font-size:1.8rem;font-weight:800;color:var(--bleu);line-height:1;}
+.orc-price-sub{font-size:.78rem;color:var(--gris);margin-bottom:10px;}
+.orc-msg{font-size:.84rem;color:var(--gris);font-style:italic;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.orc-dispo{display:inline-flex;align-items:center;gap:5px;background:var(--rouge-light);color:var(--rouge);border-radius:50px;padding:3px 10px;font-size:.72rem;font-weight:700;margin-bottom:14px;}
+.orc-btns{display:flex;gap:8px;}
+.orc-btn-accept{flex:1;border:none;border-radius:10px;padding:10px;background:var(--vert);color:#fff;font-weight:700;font-size:.82rem;}
+.orc-btn-reply{flex:1;border:none;border-radius:10px;padding:10px;background:var(--bleu);color:#fff;font-weight:700;font-size:.82rem;}
+.orc-btn-decline{border:none;border-radius:10px;padding:10px 14px;background:var(--rouge-light);color:var(--rouge);font-weight:700;font-size:.82rem;}
+
+/* Mini conv list */
+.mini-conv{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+.mini-conv-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.mini-conv-item:last-child{border-bottom:none;}
+.mini-conv-item:hover{background:var(--gris-light);}
+.mini-conv-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.78rem;flex-shrink:0;}
+.mini-conv-name{font-weight:700;font-size:.85rem;color:var(--texte);}
+.mini-conv-last{font-size:.75rem;color:var(--gris);margin-top:2px;}
+.mini-conv-time{margin-left:auto;font-size:.7rem;color:var(--gris);}
+
+/* Toast */
+.toast-wrap{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:var(--bleu-dark);color:#fff;border-radius:10px;padding:12px 18px;font-size:.85rem;font-weight:600;pointer-events:all;animation:toastIn .25s ease;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+
+/* Responsive */
+@media(max-width:768px){
+  .msg-left{width:100%;border-right:none;display:none;}
+  .msg-left.show-mobile{display:flex;}
+  .msg-right{width:100%;}
+  #page-messages{height:calc(100vh - 64px);}
+  .nav-tabs{gap:0;}
+  .nav-tab{padding:4px 10px;min-width:52px;font-size:.7rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="nav-logo" href="#"><span class="bu">Bricole</span><span class="up">Up</span></a>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showFeed('all',this)" id="tab-accueil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Accueil
+      </button>
+      <button class="nav-tab" onclick="showFeed('offres',this)" id="tab-offres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Offres
+      </button>
+      <button class="nav-tab" onclick="showFeed('demandes',this)" id="tab-demandes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        Demandes
+      </button>
+      <button class="nav-tab nav-tab-plus" onclick="alert('Créer une annonce')">
+        <div class="plus-circ"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        Créer
+      </button>
+      <button class="nav-tab" onclick="switchPage('profil',this)" id="tab-moi">
+        <div class="nav-avatar" id="nav-avatar-tab">YB</div>
+        Moi
+      </button>
+    </div>
+    <div class="nav-right">
+      <button class="nav-msg-btn" id="nav-msg-btn" onclick="switchPage('messages',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="notif-badge" id="msg-badge">3</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+<!-- ═══ POPUP OFFRE PRESTATAIRE ═══ -->
+<div class="modal" id="modal-offre">
+  <div class="modal-head">
+    <div class="modal-av" id="offre-av" style="background:#1B3C6B">AH</div>
+    <div class="modal-head-info">
+      <div class="modal-head-title" id="offre-title">Faire une offre à Ahmed B.</div>
+      <div class="modal-head-sub" id="offre-sub">Plombier · Nice</div>
+    </div>
+    <button class="modal-close-btn" onclick="closeModal('modal-offre')">✕</button>
+  </div>
+  <div class="modal-body" id="offre-form-body">
+    <div class="m-field">
+      <label class="m-label">💰 Votre budget</label>
+      <div class="m-input-wrap">
+        <input class="m-input has-suffix" type="number" id="offre-prix" placeholder="Ex: 150" min="0">
+        <span class="m-suffix">€</span>
+      </div>
+      <div class="m-sublabel">Prix total pour la prestation</div>
+    </div>
+    <div class="m-field">
+      <label class="m-label">📝 Décrivez votre besoin</label>
+      <textarea class="m-textarea" id="offre-desc" maxlength="500" placeholder="Bonjour, j'ai besoin de..." oninput="updateCount('offre-desc','offre-count')"></textarea>
+      <div class="char-count"><span id="offre-count">0</span>/500</div>
+    </div>
+    <div class="m-field">
+      <label class="m-label">⏰ Délai souhaité</label>
+      <div class="chips-row" id="offre-chips">
+        <button class="chip-sel active" onclick="selectChip(this,'offre-chips')">⚡ Urgent (24h)</button>
+        <button class="chip-sel" onclick="selectChip(this,'offre-chips')">📅 Cette semaine</button>
+        <button class="chip-sel" onclick="selectChip(this,'offre-chips')">🗓 À convenir</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-success" id="offre-success">
+    <svg class="success-circle" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="30" fill="none" stroke="#22C55E" stroke-width="4"/>
+      <path d="M20 36l12 12 20-20" fill="none" stroke="#22C55E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="success-title">Offre envoyée !</div>
+    <p class="success-sub" id="offre-success-sub">Ahmed B. sera notifié et vous répondra bientôt.</p>
+    <button class="btn-msgs" onclick="switchPage('messages',null);closeModal('modal-offre')">💬 Voir mes messages →</button>
+  </div>
+  <div class="modal-footer" id="offre-footer">
+    <div class="modal-secure">🔒 Votre message est sécurisé</div>
+    <button class="btn-send" onclick="sendOffre()">Envoyer l'offre →</button>
+  </div>
+</div>
+
+<!-- ═══ POPUP RÉPONDRE DEMANDE ═══ -->
+<div class="modal" id="modal-reponse">
+  <div class="modal-head">
+    <div class="modal-av" id="rep-av" style="background:#7C3AED">VD</div>
+    <div class="modal-head-info">
+      <div class="modal-head-title" id="rep-title">Répondre à Veronique D.</div>
+    </div>
+    <button class="modal-close-btn" onclick="closeModal('modal-reponse')">✕</button>
+  </div>
+  <div class="modal-body" id="rep-form-body">
+    <div class="modal-summary" id="rep-summary">🔧 Réparation machine à laver · Nice · Budget: À convenir</div>
+    <div class="m-field">
+      <label class="m-label">💬 Votre message</label>
+      <textarea class="m-textarea tall blue-focus" id="rep-msg" maxlength="500" placeholder="Bonjour, je peux vous aider avec..." oninput="updateCount('rep-msg','rep-count')"></textarea>
+      <div class="char-count"><span id="rep-count">0</span>/500</div>
+    </div>
+    <div class="m-field">
+      <label class="m-label">📅 Je suis disponible :</label>
+      <div class="chips-row" id="rep-chips">
+        <button class="chip-sel blue active" onclick="selectChip(this,'rep-chips')">Dès aujourd'hui</button>
+        <button class="chip-sel blue" onclick="selectChip(this,'rep-chips')">Cette semaine</button>
+        <button class="chip-sel blue" onclick="selectChip(this,'rep-chips')">À définir</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-success" id="rep-success">
+    <svg class="success-circle" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="30" fill="none" stroke="#22C55E" stroke-width="4"/>
+      <path d="M20 36l12 12 20-20" fill="none" stroke="#22C55E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="success-title">Réponse envoyée !</div>
+    <p class="success-sub" id="rep-success-sub">Veronique D. sera notifiée et vous répondra bientôt.</p>
+    <button class="btn-msgs" onclick="switchPage('messages',null);closeModal('modal-reponse')">💬 Voir mes messages →</button>
+  </div>
+  <div class="modal-footer" id="rep-footer">
+    <button class="btn-send blue-btn" onclick="sendReponse()">Envoyer ma réponse →</button>
+  </div>
+</div>
+
+<!-- ═══ FEED ═══ -->
+<div id="page-feed" style="display:block">
+  <div class="feed-page">
+    <div class="feed-greeting">
+      <h2>Bonjour Yassine 👋</h2>
+      <p>Voici les dernières annonces près de chez vous · Nice</p>
+    </div>
+
+    <!-- CARD OFFRE 1 -->
+    <div class="fc-card fc-card-offre">
+      <div class="fc-top">
+        <div class="fc-badges">
+          <span class="fc-badge badge-offre">⚡ Offre de service</span>
+          <span class="fc-badge badge-skill">🚿 Plomberie</span>
+        </div>
+        <span class="fc-time">il y a 23 min</span>
+      </div>
+      <div class="fc-user-row">
+        <div class="fc-av-wrap">
+          <div class="fc-av-init" style="background:#1B3C6B">AH</div>
+          <span class="fc-dot dot-verifie"></span>
+        </div>
+        <div>
+          <div class="fc-username">Ahmed B.</div>
+          <div class="fc-metier">Plombier certifié</div>
+          <div class="fc-city"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Nice, 06</div>
+        </div>
+        <span class="fc-pro-badge">Pro ✓</span>
+      </div>
+      <p class="fc-desc">Plombier certifié avec 12 ans d'expérience. Interventions urgentes, fuites, installation sanitaire. Devis gratuit en 1h. Disponible 7j/7.</p>
+      <div class="fc-footer">
+        <button class="fc-btn-primary" onclick="openOffre('Ahmed B.','Plombier · Nice','#1B3C6B','AH')">💬 Contacter</button>
+        <button class="fc-btn-ghost liked" id="like-1" onclick="toggleLike('like-1')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#F97316" stroke="#F97316" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          J'aime
+        </button>
+        <button class="fc-btn-ghost">👁 Voir profil</button>
+      </div>
+    </div>
+
+    <!-- CARD DEMANDE 1 -->
+    <div class="fc-card fc-card-demande">
+      <div class="fc-top">
+        <div class="fc-badges">
+          <span class="fc-badge badge-demande">🌐 Demande</span>
+          <span class="fc-badge badge-skill">🔧 Réparation</span>
+        </div>
+        <span class="fc-time">il y a 1h</span>
+      </div>
+      <div class="fc-user-row">
+        <div class="fc-av-wrap">
+          <div class="fc-av-init" style="background:#7C3AED">VD</div>
+        </div>
+        <div>
+          <div class="fc-username">Veronique D.</div>
+          <div class="fc-city"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Nice, 06</div>
+        </div>
+        <span class="fc-budget">À convenir</span>
+      </div>
+      <p class="fc-desc">Bonjour, ma machine à laver Bosch Serie 6 affiche une erreur E18 et ne vidange plus. J'ai besoin d'un technicien rapidement. Disponible en semaine.</p>
+      <div class="fc-footer">
+        <span class="fc-replies-badge no-replies">Aucune réponse</span>
+        <div style="display:flex;gap:8px;margin-left:auto">
+          <button class="fc-btn-ghost" onclick="toggleLike('like-2')" id="like-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            J'aime
+          </button>
+          <button class="fc-btn-primary" onclick="openReponse('Veronique D.','#7C3AED','VD','🔧 Réparation machine à laver · Nice · Budget: À convenir')">💬 Répondre →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD OFFRE 2 -->
+    <div class="fc-card fc-card-offre">
+      <div class="fc-top">
+        <div class="fc-badges">
+          <span class="fc-badge badge-offre">⚡ Offre de service</span>
+          <span class="fc-badge badge-skill">🎨 Peinture</span>
+        </div>
+        <span class="fc-time">il y a 2h</span>
+      </div>
+      <div class="fc-user-row">
+        <div class="fc-av-wrap">
+          <div class="fc-av-init" style="background:#EA580C">KL</div>
+          <span class="fc-dot dot-verifie"></span>
+        </div>
+        <div>
+          <div class="fc-username">Karim L.</div>
+          <div class="fc-metier">Peintre professionnel</div>
+          <div class="fc-city"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lyon, 69</div>
+        </div>
+        <span class="fc-pro-badge">Pro ✓</span>
+      </div>
+      <p class="fc-desc">15 ans d'expérience en peinture intérieure et extérieure. Enduit, lasure, décoration. Devis gratuit. Travail soigné et rapide. Photos disponibles sur demande.</p>
+      <div class="fc-footer">
+        <button class="fc-btn-primary" onclick="openOffre('Karim L.','Peintre · Lyon','#EA580C','KL')">💬 Contacter</button>
+        <button class="fc-btn-ghost" id="like-3" onclick="toggleLike('like-3')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          J'aime
+        </button>
+        <button class="fc-btn-ghost">👁 Voir profil</button>
+      </div>
+    </div>
+
+    <!-- CARD DEMANDE 2 -->
+    <div class="fc-card fc-card-demande">
+      <div class="fc-top">
+        <div class="fc-badges">
+          <span class="fc-badge badge-demande">🌐 Demande</span>
+          <span class="fc-badge badge-skill">📦 Déménagement</span>
+        </div>
+        <span class="fc-time">il y a 5h</span>
+      </div>
+      <div class="fc-user-row">
+        <div class="fc-av-wrap">
+          <div class="fc-av-init" style="background:#D97706">MD</div>
+        </div>
+        <div>
+          <div class="fc-username">Marie D.</div>
+          <div class="fc-city"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Paris, 75</div>
+        </div>
+        <span class="fc-budget">200–400 €</span>
+      </div>
+      <p class="fc-desc">Besoin aide déménagement appartement 60m². 3 pièces, 4ème étage sans ascenseur. Samedi matin de préférence. Distance courte (même arrondissement).</p>
+      <div class="fc-footer">
+        <span class="fc-replies-badge has-replies">💬 2 réponses</span>
+        <div style="display:flex;gap:8px;margin-left:auto">
+          <button class="fc-btn-ghost" id="like-4" onclick="toggleLike('like-4')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            J'aime
+          </button>
+          <button class="fc-btn-primary" onclick="openReponse('Marie D.','#D97706','MD','📦 Déménagement 60m² · Paris · Budget: 200-400€')">💬 Répondre →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD OFFRE 3 -->
+    <div class="fc-card fc-card-offre">
+      <div class="fc-top">
+        <div class="fc-badges">
+          <span class="fc-badge badge-offre">⚡ Offre de service</span>
+          <span class="fc-badge badge-skill">🪟 Menuiserie</span>
+        </div>
+        <span class="fc-time">il y a 31h</span>
+      </div>
+      <div class="fc-user-row">
+        <div class="fc-av-wrap">
+          <div class="fc-av-init" style="background:#0891B2">NC</div>
+          <span class="fc-dot dot-verifie"></span>
+        </div>
+        <div>
+          <div class="fc-username">Nadia C.</div>
+          <div class="fc-metier">Menuisière · Pose de fenêtres</div>
+          <div class="fc-city"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Marseille, 13</div>
+        </div>
+        <span class="fc-pro-badge">Pro ✓</span>
+      </div>
+      <p class="fc-desc">Menuisière spécialisée dans la pose de fenêtres double vitrage. Remplacement, rénovation, isolation thermique et phonique. 8 photos de réalisations disponibles.</p>
+      <div class="fc-footer">
+        <button class="fc-btn-primary" onclick="openOffre('Nadia C.','Menuisière · Marseille','#0891B2','NC')">💬 Contacter</button>
+        <button class="fc-btn-ghost" id="like-5" onclick="toggleLike('like-5')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          J'aime
+        </button>
+        <button class="fc-btn-ghost">👁 Voir profil</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ PAGE MESSAGES ═══ -->
+<div id="page-messages">
+  <!-- Colonne gauche -->
+  <div class="msg-left" id="msg-left">
+    <div class="msg-left-head">
+      <div class="msg-left-title">Messages</div>
+      <input class="msg-search" type="search" placeholder="Rechercher une conversation...">
+      <div class="msg-tabs">
+        <button class="msg-tab active">Tous</button>
+        <button class="msg-tab">Non lus (3)</button>
+        <button class="msg-tab">Offres</button>
+        <button class="msg-tab">Demandes</button>
+      </div>
+    </div>
+    <div class="conv-list" id="conv-list">
+      <!-- Conversations -->
+      <div class="conv-item active" onclick="openConv(this,0)">
+        <div class="conv-av-wrap">
+          <div class="conv-av" style="background:#1B3C6B">AH</div>
+          <span class="unread-badge">2</span>
+        </div>
+        <div class="conv-info">
+          <div class="conv-name-row">
+            <span class="conv-name">Ahmed B.</span>
+            <span class="conv-role role-prest">Prestataire</span>
+          </div>
+          <div class="conv-last">Bonjour, je suis disponible dès demain...</div>
+          <div class="conv-meta">
+            <span class="offer-chip">💰 Offre: 150€</span>
+            <span class="conv-time">2 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="conv-item" onclick="openConv(this,1)">
+        <div class="conv-av-wrap">
+          <div class="conv-av" style="background:#7C3AED">VD</div>
+        </div>
+        <div class="conv-info">
+          <div class="conv-name-row">
+            <span class="conv-name">Veronique D.</span>
+            <span class="conv-role role-client">Client</span>
+          </div>
+          <div class="conv-last">Merci pour votre réponse rapide !</div>
+          <div class="conv-meta"><span class="conv-time">il y a 1h</span></div>
+        </div>
+      </div>
+      <div class="conv-item" onclick="openConv(this,2)">
+        <div class="conv-av-wrap">
+          <div class="conv-av" style="background:#EA580C">KL</div>
+          <span class="unread-badge">1</span>
+        </div>
+        <div class="conv-info">
+          <div class="conv-name-row">
+            <span class="conv-name">Karim L.</span>
+            <span class="conv-role role-prest">Prestataire</span>
+          </div>
+          <div class="conv-last">Je peux intervenir demain matin si...</div>
+          <div class="conv-meta">
+            <span class="offer-chip">💰 Offre: 80€</span>
+            <span class="conv-time">3h</span>
+          </div>
+        </div>
+      </div>
+      <div class="conv-item" onclick="openConv(this,3)">
+        <div class="conv-av-wrap">
+          <div class="conv-av" style="background:#D97706">SM</div>
+        </div>
+        <div class="conv-info">
+          <div class="conv-name-row">
+            <span class="conv-name">Sophie M.</span>
+            <span class="conv-role role-client">Client</span>
+          </div>
+          <div class="conv-last">Est-ce que vous êtes disponible ce...</div>
+          <div class="conv-meta"><span class="conv-time">hier</span></div>
+        </div>
+      </div>
+      <div class="conv-item" onclick="openConv(this,4)">
+        <div class="conv-av-wrap">
+          <div class="conv-av" style="background:#16A34A">TR</div>
+        </div>
+        <div class="conv-info">
+          <div class="conv-name-row">
+            <span class="conv-name">Thomas R.</span>
+            <span class="conv-role role-prest">Prestataire</span>
+          </div>
+          <div class="conv-last">Bien reçu, à bientôt !</div>
+          <div class="conv-meta"><span class="conv-time">2j</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne droite — Chat -->
+  <div class="msg-right">
+    <div class="chat-head">
+      <div class="chat-av" id="chat-av" style="background:#1B3C6B">AH</div>
+      <div>
+        <div class="chat-name" id="chat-name">Ahmed B.</div>
+        <div class="chat-status" id="chat-status"><span class="chat-online-dot"></span> En ligne</div>
+      </div>
+      <div class="chat-head-btns">
+        <button class="chat-ann-btn">📋 Voir l'annonce</button>
+        <button class="chat-more-btn">⋮</button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="date-sep">Aujourd'hui</div>
+
+      <!-- Message reçu avec offre -->
+      <div class="msg-recv" id="offer-msg-wrap">
+        <div class="msg-av-sm" style="background:#1B3C6B">AH</div>
+        <div>
+          <div class="offer-card">
+            <div class="offer-card-label">💰 Offre reçue</div>
+            <div class="offer-card-price">150€</div>
+            <div class="offer-card-desc">Je suis plombier certifié, disponible dès demain pour réparer votre fuite. Pièces incluses.</div>
+            <div class="offer-card-btns" id="offer-btns">
+              <button class="btn-accept" onclick="acceptOffer()">✓ Accepter</button>
+              <button class="btn-decline" onclick="declineOffer()">✗ Décliner</button>
+            </div>
+          </div>
+          <div class="msg-time-recv">10:32</div>
+        </div>
+      </div>
+
+      <div class="msg-recv">
+        <div class="msg-av-sm" style="background:#1B3C6B">AH</div>
+        <div>
+          <div class="msg-bub-recv"><div class="msg-text">Bonjour ! J'ai bien reçu votre demande concernant la fuite. Je peux passer demain matin entre 9h et 11h. Ça vous convient ?</div></div>
+          <div class="msg-time-recv">10:33</div>
+        </div>
+      </div>
+
+      <div class="msg-send">
+        <div>
+          <div class="msg-bub-send"><div class="msg-text">Bonjour Ahmed ! Oui parfait pour demain matin. J'habite au 3ème étage, sonnez à "Dupont".</div></div>
+          <div class="msg-time-send">10:45 ✓✓</div>
+        </div>
+      </div>
+
+      <div class="msg-recv">
+        <div class="msg-av-sm" style="background:#1B3C6B">AH</div>
+        <div>
+          <div class="msg-bub-recv"><div class="msg-text">Noté ! Je serai là à 9h pile. Avez-vous le robinet d'arrêt accessible ?</div></div>
+          <div class="msg-time-recv">10:47</div>
+        </div>
+      </div>
+
+      <div class="msg-send">
+        <div>
+          <div class="msg-bub-send"><div class="msg-text">Oui il est sous l'évier. Merci beaucoup !</div></div>
+          <div class="msg-time-send">11:02 ✓✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <button class="chat-attach-btn" title="Joindre un fichier">📎</button>
+      <button class="chat-attach-btn" title="Envoyer une photo">📷</button>
+      <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Écrire un message..." oninput="onChatInput(this)"></textarea>
+      <button class="chat-send-btn" id="chat-send" onclick="sendMessage()" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE PROFIL — MOI ═══ -->
+<div id="page-profil">
+  <div class="profil-section">
+    <div class="profil-section-title">
+      📨 Offres reçues
+      <button class="see-all-btn">Voir toutes (5) →</button>
+    </div>
+
+    <div class="offer-recv-card">
+      <div class="orc-head">
+        <div class="orc-av" style="background:#1B3C6B">AH</div>
+        <div>
+          <div class="orc-name">Ahmed B.</div>
+          <div class="orc-time">il y a 2h</div>
+        </div>
+        <span class="orc-new-badge">💰 Nouveau</span>
+      </div>
+      <div class="orc-ann">
+        <div class="orc-ann-title">Réparation fuite sous évier cuisine</div>
+        <span class="fc-badge badge-skill" style="font-size:.7rem">🚿 Plomberie</span>
+      </div>
+      <div class="orc-price">150€</div>
+      <div class="orc-price-sub">Pour la prestation complète</div>
+      <div class="orc-msg">"Bonjour, je suis plombier certifié avec 12 ans d'expérience. Je peux intervenir dès demain matin et réparer votre fuite rapidement..."</div>
+      <div class="orc-dispo">⚡ Urgent (24h)</div>
+      <div class="orc-btns">
+        <button class="orc-btn-accept">✓ Accepter</button>
+        <button class="orc-btn-reply" onclick="switchPage('messages',null)">💬 Répondre</button>
+        <button class="orc-btn-decline">✗ Décliner</button>
+      </div>
+    </div>
+
+    <div class="offer-recv-card">
+      <div class="orc-head">
+        <div class="orc-av" style="background:#EA580C">KL</div>
+        <div>
+          <div class="orc-name">Karim L.</div>
+          <div class="orc-time">il y a 5h</div>
+        </div>
+      </div>
+      <div class="orc-ann">
+        <div class="orc-ann-title">Réparation fuite sous évier cuisine</div>
+        <span class="fc-badge badge-skill" style="font-size:.7rem">🚿 Plomberie</span>
+      </div>
+      <div class="orc-price">80€</div>
+      <div class="orc-price-sub">Pour la prestation complète</div>
+      <div class="orc-msg">"Bonjour, je peux intervenir cette semaine. Tarif compétitif, travail soigné et garantie 6 mois sur les réparations..."</div>
+      <div class="orc-btns">
+        <button class="orc-btn-accept">✓ Accepter</button>
+        <button class="orc-btn-reply" onclick="switchPage('messages',null)">💬 Répondre</button>
+        <button class="orc-btn-decline">✗ Décliner</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="profil-section">
+    <div class="profil-section-title">
+      💬 Mes messages
+      <button class="see-all-btn" onclick="switchPage('messages',null)">Voir tous →</button>
+    </div>
+    <div class="mini-conv">
+      <div class="mini-conv-item" onclick="switchPage('messages',null)">
+        <div class="mini-conv-av" style="background:#1B3C6B">AH</div>
+        <div><div class="mini-conv-name">Ahmed B.</div><div class="mini-conv-last">Je serai là à 9h pile...</div></div>
+        <span class="mini-conv-time">2 min</span>
+      </div>
+      <div class="mini-conv-item" onclick="switchPage('messages',null)">
+        <div class="mini-conv-av" style="background:#7C3AED">VD</div>
+        <div><div class="mini-conv-name">Veronique D.</div><div class="mini-conv-last">Merci pour votre réponse...</div></div>
+        <span class="mini-conv-time">1h</span>
+      </div>
+      <div class="mini-conv-item" onclick="switchPage('messages',null)">
+        <div class="mini-conv-av" style="background:#EA580C">KL</div>
+        <div><div class="mini-conv-name">Karim L.</div><div class="mini-conv-last">Je peux intervenir demain...</div></div>
+        <span class="mini-conv-time">3h</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let msgBadgeCount = 3;
+let currentConvIdx = 0;
+
+const convData = [
+  { name:'Ahmed B.', color:'#1B3C6B', init:'AH', role:'Prestataire', online:true },
+  { name:'Veronique D.', color:'#7C3AED', init:'VD', role:'Client', online:false, lastSeen:'Vu il y a 2h' },
+  { name:'Karim L.', color:'#EA580C', init:'KL', role:'Prestataire', online:true },
+  { name:'Sophie M.', color:'#D97706', init:'SM', role:'Client', online:false, lastSeen:'Vu hier' },
+  { name:'Thomas R.', color:'#16A34A', init:'TR', role:'Prestataire', online:false, lastSeen:'Vu il y a 2j' },
+];
+
+// ── PAGES ──
+function switchPage(page, tabEl) {
+  ['page-feed','page-messages','page-profil'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.classList.remove('show'); }
+  });
+  document.querySelectorAll('.nav-tab,.nav-msg-btn').forEach(t => t.classList.remove('active'));
+
+  if (page === 'feed') {
+    document.getElementById('page-feed').style.display = 'block';
+  } else if (page === 'messages') {
+    const pm = document.getElementById('page-messages');
+    pm.style.display = 'flex'; pm.classList.add('show');
+    document.getElementById('nav-msg-btn').classList.add('active');
+    // décrémente badge
+    if (msgBadgeCount > 0) {
+      msgBadgeCount = 0;
+      document.getElementById('msg-badge').style.display = 'none';
+    }
+  } else if (page === 'profil') {
+    const pp = document.getElementById('page-profil');
+    pp.style.display = 'block'; pp.classList.add('show');
+    document.getElementById('tab-moi').classList.add('active');
+  }
+  if (tabEl) tabEl.classList.add('active');
+}
+
+function showFeed(view, tabEl) {
+  switchPage('feed', tabEl);
+  document.getElementById('page-feed').style.display = 'block';
+  document.querySelectorAll('.fc-card').forEach(c => {
+    if (view === 'all') c.style.display = '';
+    else if (view === 'offres') c.style.display = c.classList.contains('fc-card-offre') ? '' : 'none';
+    else if (view === 'demandes') c.style.display = c.classList.contains('fc-card-demande') ? '' : 'none';
+  });
+}
+
+// Init feed visible
+document.getElementById('page-feed').style.display = 'block';
+
+// ── MODALS ──
+function openModal(id) {
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // reset
+  if (id === 'modal-offre') resetModal('offre');
+  if (id === 'modal-reponse') resetModal('rep');
+}
+
+function closeAllModals() {
+  ['modal-offre','modal-reponse'].forEach(id => closeModal(id));
+}
+
+function resetModal(prefix) {
+  const formBody = document.getElementById(prefix+'-form-body');
+  const success  = document.getElementById(prefix+'-success');
+  const footer   = document.getElementById(prefix+'-footer');
+  if (formBody) formBody.style.display = '';
+  if (success)  success.classList.remove('show');
+  if (footer)   footer.style.display = '';
+  if (prefix === 'offre') {
+    const prix = document.getElementById('offre-prix');
+    const desc = document.getElementById('offre-desc');
+    if (prix) prix.value = '';
+    if (desc) desc.value = '';
+    const cnt = document.getElementById('offre-count');
+    if (cnt) cnt.textContent = '0';
+    // reset chips
+    const chips = document.querySelectorAll('#offre-chips .chip-sel');
+    chips.forEach((c,i) => c.classList.toggle('active', i===0));
+  } else {
+    const msg = document.getElementById('rep-msg');
+    if (msg) msg.value = '';
+    const cnt = document.getElementById('rep-count');
+    if (cnt) cnt.textContent = '0';
+    const chips = document.querySelectorAll('#rep-chips .chip-sel');
+    chips.forEach((c,i) => c.classList.toggle('active', i===0));
+  }
+}
+
+// ── POPUP OFFRE ──
+function openOffre(name, sub, color, init) {
+  document.getElementById('offre-title').textContent = 'Faire une offre à ' + name;
+  document.getElementById('offre-sub').textContent = sub;
+  document.getElementById('offre-av').style.background = color;
+  document.getElementById('offre-av').textContent = init;
+  document.getElementById('offre-success-sub').textContent = name + ' sera notifié et vous répondra bientôt.';
+  openModal('modal-offre');
+}
+
+function sendOffre() {
+  document.getElementById('offre-form-body').style.display = 'none';
+  document.getElementById('offre-footer').style.display = 'none';
+  const s = document.getElementById('offre-success');
+  s.classList.add('show');
+  incrementMsgBadge();
+  showToast('💬 Offre envoyée avec succès !');
+}
+
+// ── POPUP RÉPONSE ──
+function openReponse(name, color, init, summary) {
+  document.getElementById('rep-title').textContent = 'Répondre à ' + name;
+  document.getElementById('rep-av').style.background = color;
+  document.getElementById('rep-av').textContent = init;
+  document.getElementById('rep-summary').textContent = summary;
+  document.getElementById('rep-success-sub').textContent = name + ' sera notifié(e) et vous répondra bientôt.';
+  openModal('modal-reponse');
+}
+
+function sendReponse() {
+  document.getElementById('rep-form-body').style.display = 'none';
+  document.getElementById('rep-footer').style.display = 'none';
+  const s = document.getElementById('rep-success');
+  s.classList.add('show');
+  incrementMsgBadge();
+  showToast('✅ Réponse envoyée avec succès !');
+}
+
+// ── CHIPS ──
+function selectChip(el, groupId) {
+  const chips = document.querySelectorAll('#' + groupId + ' .chip-sel');
+  chips.forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── CHAR COUNT ──
+function updateCount(textareaId, countId) {
+  const ta = document.getElementById(textareaId);
+  const cnt = document.getElementById(countId);
+  if (ta && cnt) cnt.textContent = ta.value.length;
+}
+
+// ── LIKE ──
+function toggleLike(id) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  const svg = btn.querySelector('svg');
+  if (btn.classList.contains('liked')) {
+    btn.classList.remove('liked');
+    svg.setAttribute('fill','none');
+    svg.setAttribute('stroke','currentColor');
+  } else {
+    btn.classList.add('liked');
+    svg.setAttribute('fill','#F97316');
+    svg.setAttribute('stroke','#F97316');
+  }
+}
+
+// ── CONVERSATIONS ──
+function openConv(el, idx) {
+  document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  // retirer badge non lu
+  const badge = el.querySelector('.unread-badge');
+  if (badge) {
+    const n = parseInt(badge.textContent) || 0;
+    badge.remove();
+    msgBadgeCount = Math.max(0, msgBadgeCount - n);
+    const navBadge = document.getElementById('msg-badge');
+    if (msgBadgeCount > 0) navBadge.textContent = msgBadgeCount;
+    else navBadge.style.display = 'none';
+  }
+  currentConvIdx = idx;
+  const c = convData[idx];
+  document.getElementById('chat-av').style.background = c.color;
+  document.getElementById('chat-av').textContent = c.init;
+  document.getElementById('chat-name').textContent = c.name;
+  const statusEl = document.getElementById('chat-status');
+  if (c.online) {
+    statusEl.className = 'chat-status';
+    statusEl.innerHTML = '<span class="chat-online-dot"></span> En ligne';
+  } else {
+    statusEl.className = 'chat-status offline';
+    statusEl.innerHTML = c.lastSeen || 'Hors ligne';
+  }
+}
+
+// ── CHAT INPUT ──
+function onChatInput(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+  const btn = document.getElementById('chat-send');
+  if (ta.value.trim().length > 0) {
+    btn.disabled = false;
+    btn.classList.add('active');
+  } else {
+    btn.disabled = true;
+    btn.classList.remove('active');
+  }
+}
+
+function sendMessage() {
+  const ta = document.getElementById('chat-input');
+  const text = ta.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById('chat-messages');
+  const bub = document.createElement('div');
+  bub.className = 'msg-send';
+  const now = new Date();
+  const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  bub.innerHTML = `<div><div class="msg-bub-send"><div class="msg-text">${escHtml(text)}</div></div><div class="msg-time-send">${time} ✓</div></div>`;
+  msgs.appendChild(bub);
+  msgs.scrollTop = msgs.scrollHeight;
+  ta.value = '';
+  ta.style.height = 'auto';
+  document.getElementById('chat-send').disabled = true;
+  document.getElementById('chat-send').classList.remove('active');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── OFFRE ACCEPTER/DÉCLINER ──
+function acceptOffer() {
+  const btns = document.getElementById('offer-btns');
+  btns.innerHTML = '<span class="accepted-badge">✓ Offre acceptée</span>';
+  showToast('✅ Offre acceptée ! Ahmed B. a été notifié.');
+}
+
+function declineOffer() {
+  const btns = document.getElementById('offer-btns');
+  btns.innerHTML = '<span style="color:var(--rouge);font-size:.78rem;font-weight:700;">✗ Offre déclinée</span>';
+}
+
+// ── BADGE MESSAGES ──
+function incrementMsgBadge() {
+  msgBadgeCount++;
+  const b = document.getElementById('msg-badge');
+  b.textContent = msgBadgeCount;
+  b.style.display = 'flex';
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const wrap = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// ── ESCAPE ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAllModals();
+});
+
+// Init scroll chat
+document.getElementById('chat-messages').scrollTop = 9999;
+</script>
+</body>
+</html>

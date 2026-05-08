@@ -1,0 +1,485 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Confiance & Vérification
+{% endblock %}
+
+{% block content %}
+
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container">
+
+                <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+                <div class="col-12 justify-content-center align-items-center " >
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                        crossorigin="anonymous"></script>
+                    <!-- annonce_details_1 -->
+                    <ins class="adsbygoogle"
+                        style="display:block;width:100%;height:130px;"
+                        data-ad-client="ca-pub-5485706271033891"
+                        data-ad-slot="1737959128"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+
+
+                
+                </div> 
+            </div> 
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 mb-5">
+            <div class="row mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+               
+                <h6 style="font-size: 24px; font-weight: bold;">Confiance & Vérification</h6>
+                <form method="POST" action="{% url 'app:account_verification' %}" enctype="multipart/form-data" onsubmit="showSettingsLoader(event)">  
+                    {% csrf_token %}
+                    <div class="row mt-1 mb-3">
+                    
+                        <!-- STEP 1 : EMAIL -->
+                        <div class ="col-12 col-lg-6 mb-3">
+                            <label class="input-title" >
+                                Adresse e-mail
+                                {% if profile.is_email_verified %}
+                                    <i class="fas fa-check-circle text-success ms-1"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger ms-1"></i>
+                                {% endif %}
+                            </label>
+
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                            {% if not profile.is_email_verified %}
+                            <div>
+                                <div id="emailStatus" class="mt-2 mb-2 text-success"></div>
+                            </div>
+
+                            <div class="mb-3 d-flex justify-content-end">
+                                <button id="verifyEmailBtn" class="btn btn-outline-primary" type="button" onclick="verifyEmail()">
+                                        Vérifier mon e-mail
+                                
+                                </button>
+
+                            </div>
+
+                            <script>
+                                function verifyEmail() {
+                                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                                    const statusDiv = document.getElementById("emailStatus");
+                                    const verifyButton = document.getElementById("verifyEmailBtn");
+
+                                    // Show loading spinner on button
+                                    verifyButton.innerHTML = `
+                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Envoi...
+                                    `;
+                                    verifyButton.disabled = true;
+
+                                    fetch("{% url 'app:verify_email_request' %}", {
+                                        method: "POST",
+                                        headers: {
+                                            "X-CSRFToken": csrfToken,
+                                            "Content-Type": "application/x-www-form-urlencoded",
+                                        },
+                                        body: new URLSearchParams({ language: "fr" })
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        verifyButton.innerHTML = "Vérifier mon e-mail";
+                                        verifyButton.disabled = false;
+
+                                        if (data.success) {
+                                            statusDiv.textContent = data.message;
+                                            statusDiv.classList.remove('text-danger');
+                                            statusDiv.classList.add('text-success');
+                                        } else {
+                                            statusDiv.textContent = data.message;
+                                            statusDiv.classList.remove('text-success');
+                                            statusDiv.classList.add('text-danger');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        verifyButton.innerHTML = "Vérifier mon e-mail";
+                                        verifyButton.disabled = false;
+
+                                        console.error("Erreur:", error);
+                                        statusDiv.textContent = "Une erreur s'est produite lors de l'envoi.";
+                                        statusDiv.classList.remove('text-success');
+                                        statusDiv.classList.add('text-danger');
+                                    });
+                                }
+                            </script>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-lg-6 mb-3">
+                            <label class="input-title">
+                                Numéro de téléphone
+                                {% if profile.is_phone_verified %}
+                                    <i class="fas fa-check-circle text-success ms-1"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger ms-1"></i>
+                                {% endif %}
+                            </label>
+ 
+                            <input type="text" class="form-control" value="{{ verif_phone_number }}" readonly>
+
+                            {% if not profile.is_phone_verified %}
+                                
+                                <div class="mb-3 d-flex justify-content-end">
+                                    <button id="send-code-btn" class="btn btn-outline-primary mt-3 ">
+                                        Vérifier mon téléphone mobile
+                                    </button>
+                                </div>
+                                <div id="recaptcha-container" class="mt-3"></div>
+
+                                <!-- OTP SECTION (hidden at first) -->
+                                <div id="otp-section" class="mt-3 d-none">
+                                    <label class="form-label">Code SMS</label>
+                                    <input type="text" id="otp-code" class="form-control" maxlength="6" placeholder="123456">
+                                    <button id="confirm-code-btn" class="btn btn-success mt-2 w-100">Confirmer le code</button>
+                                </div>
+                            {% endif %}
+                        </div>
+
+
+                        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+                        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+                        <script>
+                            const firebaseConfig = {
+                        apiKey: "AIzaSyAS-Tb8xuiUjkFwsJCEgBDsvmZiGttP2cY",
+                        authDomain: "phone-bricoleup.firebaseapp.com",
+                        projectId: "phone-bricoleup",
+                        storageBucket: "phone-bricoleup.firebasestorage.app",
+                        messagingSenderId: "1047489432044",
+                        appId: "1:1047489432044:web:fd0dc985756a7e060818c9"
+                        };
+
+                        
+
+                        firebase.initializeApp(firebaseConfig);
+                        </script>
+                        <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const phoneNumber = "{{ verif_phone_number }}";
+                            const sendBtn = document.getElementById("send-code-btn");
+                            const confirmBtn = document.getElementById("confirm-code-btn");
+                            const otpSection = document.getElementById("otp-section");
+                            const otpInput = document.getElementById("otp-code");
+
+                            
+                            let recaptchaRendered = false;
+
+                            sendBtn?.addEventListener("click", function () {
+
+                                // Render captcha ONLY the first time user clicks
+                                if (!recaptchaRendered) {
+                                    const container = document.getElementById("recaptcha-container");
+                                    container.classList.remove("d-none");
+
+                                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+                                        'recaptcha-container',
+                                        { size: 'invisible' }
+                                    );
+
+                                    window.recaptchaVerifier.render();
+                                    recaptchaRendered = true;
+                                }
+
+                                sendBtn.disabled = true;
+                                sendBtn.innerText = "Envoi du SMS...";
+
+                                firebase.auth().signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+                                    .then(function (confirmationResult) {
+                                        window.confirmationResult = confirmationResult;
+                                        otpSection.classList.remove("d-none");
+                                        sendBtn.classList.add("d-none");
+                                    })
+                                    .catch(function (error) {
+                                        console.error(error);
+                                        alert("Erreur SMS : " + error.message);
+                                        sendBtn.disabled = false;
+                                        sendBtn.innerText = "Vérifier mon téléphone mobile";
+                                        window.recaptchaVerifier.reset();
+                                    });
+                            });
+
+                            confirmBtn?.addEventListener("click", function () {
+                                const code = otpInput.value.trim();
+                                if (code.length !== 6) {
+                                    alert("Entrez le code à 6 chiffres");
+                                    return;
+                                }
+
+                                confirmBtn.disabled = true;
+                                confirmBtn.innerText = "Vérification...";
+
+                                window.confirmationResult.confirm(code)
+                                    .then(result => result.user.getIdToken())
+                                    .then(idToken => {
+                                        return fetch("{% url 'app:verify_phone_token' %}", {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                                "X-CSRFToken": "{{ csrf_token }}"
+                                            },
+                                            body: JSON.stringify({ token: idToken })
+                                        });
+                                    })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.status === "success") {
+                                            location.reload();
+                                        } else {
+                                            throw new Error(data.message);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                        alert("Erreur : " + error.message);
+                                        confirmBtn.disabled = false;
+                                        confirmBtn.innerText = "Confirmer le code";
+                                    });
+                            });
+                            
+                        });
+                        </script>
+
+
+                        <h6 class="mb-3 mt-1" style="font-size: 18px; font-weight: bold;">Identité
+                            {% if profile.is_identity_verified %}
+                                        <i class="fas fa-check-circle text-success ms-1"></i>
+                                    {% else %}
+                                        <i class="fas fa-times-circle text-danger ms-1"></i>
+                                    {% endif %} 
+                        </h6>
+                        
+                        
+                            
+                            
+
+                            <div class ="col-12 col-lg-6 mb-3">
+                                <label class="input-title">
+                                    Statut
+                                </label>
+
+                                <input type="text" class="form-control" value="{{ profile.statut }}" readonly>
+                            </div>
+                            {% if profile.statut == 'particulier' %}
+                            
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label class="input-title">
+                                        Civilité
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.gender }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label class="input-title">
+                                        Prénom
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.prenom }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label class="input-title">
+                                        Nom
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.nom }}" readonly>
+                                </div>
+                            
+                                {% if not profile.is_identity_verified_request %}
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <label class="input-title">Pièce d’identité
+                                            <span class="ms-1 text-primary" style="cursor: pointer;"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="click"
+                                                data-bs-placement="right"
+                                                data-bs-content="Carte d’identité, passeport ou permis de conduire en cours de validité. Le document doit être lisible et en couleur.">
+                                                ⓘ
+                                            </span>
+
+                                        </label>
+                                        <input type="file" class="form-control" name="piece_identite" accept="image/*,.pdf" required>
+                                    </div>
+                                   
+                            
+                                {% endif %}
+                            {% elif profile.statut == 'entreprise' %}
+                            
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label class="input-title">
+                                        Nom commercial
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.nom_commercial }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label class="input-title">
+                                        Numéro SIRET
+                                    </label>
+
+                                    <input type="text" class="form-control mb-2" value="{{ profile.siret }}" readonly>
+                                </div>
+                        
+                                
+                                {% if not profile.is_identity_verified_request %}
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <label class="input-title">Extrait KBIS ou Avis SIRENE
+                                            <span class="ms-1 text-primary" style="cursor: pointer;"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="click"
+                                                data-bs-placement="right"
+                                                data-bs-content="Document officiel prouvant l’existence de l’entreprise (KBIS ou avis de situation INSEE).">
+                                                ⓘ
+                                            </span>
+
+                                        </label>
+                                        <input type="file" class="form-control" name="document_entreprise" accept="image/*,.pdf" required>
+                                    </div>
+                                   
+                                {% endif %}
+
+                            {% endif %}
+                        {% if not profile.is_identity_verified %}
+
+                            <!-- Bouton de soumission -->
+                            
+                                <div class="col-12 mb-4 mt-4">
+
+                                    {% if profile.is_identity_verified_request  %}
+                                    
+                                        <div class="mb-3 d-flex justify-content-end">
+                                            Vérification en cours...
+                                        </div>
+                                    
+                                    {% else %}
+                                        <!-- statut non_verifie -->
+                                        <div class="mb-3 d-flex justify-content-end">
+                                    <button id="settingsSubmitBtn" type="submit" name="action" value="verify_identity" class="btn btn-outline-primary" >
+                                     Soumettre pour vérification
+                                        </button>
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                            
+
+                        {% else %}
+                            <!-- Demande déjà envoyée -->
+                                <div class="mb-3 d-flex justify-content-end">
+                                    <button id="settingsSubmitBtn" type="submit" name="action" value="verify_identity" class="btn btn-outline-primary" >
+                                           Soumettre pour vérification
+                                    
+                                    </button>
+
+                                </div>
+                                
+                            
+                        {% endif %}
+                </form>
+                <script>
+                    function showSettingsLoader(event) {
+                        const btn = document.getElementById("settingsSubmitBtn");
+                        event.preventDefault();
+
+                        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>`;
+                        btn.disabled = true;
+                        event.target.submit();
+                    }
+                </script>
+                        
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const popoverTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="popover"]')
+    );
+    popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
+});
+</script>
+
+<style>
+#recaptcha-container {
+    display: none;
+}
+
+    .input-title{                        
+        font-weight:bold;
+        display: inline-block;
+        color: #13547a;
+      }
+
+
+.step-number {
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600;
+    
+   
+        color: #13547a;
+}
+
+/* Input group styling */
+ .input-group {
+    display: flex;
+    align-items: center;
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    color: #495057;
+}
+
+
+/* Verified icon */
+ i.text-success {
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+/* Pending icon */
+i.text-warning {
+    color: #ffc107;
+    font-size: 1.2rem;
+}
+
+i.text-danger {
+    color: #dc3545;
+    font-size: 1.2rem;
+}
+
+
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    font-size: 0.85rem;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+</style>
+{% endblock %}

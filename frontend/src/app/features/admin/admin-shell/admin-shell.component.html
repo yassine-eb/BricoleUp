@@ -1,0 +1,86 @@
+<div class="admin-root">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="adminSidebar">
+    <div class="side-logo">
+      <span style="color:#fff">Bricole</span><span style="color:#F97316">Up</span>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+
+    <div class="nav-title">Général</div>
+    <a class="nav-item" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+      📊 <span>Tableau de bord</span>
+    </a>
+    <a class="nav-item" routerLink="/admin/utilisateurs" routerLinkActive="active">
+      👥 <span>Utilisateurs</span>
+    </a>
+
+    <!-- Annonces avec sous-menu -->
+    <a class="nav-item nav-item-parent" routerLink="/admin/annonces" routerLinkActive="active" (click)="annOpen=true">
+      📋 <span>Annonces</span>
+      <span class="nav-badge" id="ann-sidebar-badge">8</span>
+      <span class="nav-chevron" [class.open]="annOpen" (click)="$event.preventDefault(); $event.stopPropagation(); annOpen=!annOpen">▾</span>
+    </a>
+    <div class="nav-submenu" [class.open]="annOpen">
+      <a class="nav-sub-item" routerLink="/admin/annonces" routerLinkActive="active">
+        <span class="sub-dot urgent"></span> En attente
+        <span class="sub-badge">8</span>
+      </a>
+      <a class="nav-sub-item" routerLink="/admin/annonces" routerLinkActive="active" [queryParams]="{tab:'approved'}">
+        <span class="sub-dot ok"></span> Approuvées
+        <span class="sub-badge muted">2</span>
+      </a>
+      <a class="nav-sub-item" routerLink="/admin/annonces" routerLinkActive="active" [queryParams]="{tab:'rejected'}">
+        <span class="sub-dot red"></span> Rejetées
+        <span class="sub-badge muted">2</span>
+      </a>
+      <a class="nav-sub-item" routerLink="/admin/annonces" routerLinkActive="active">
+        <span class="sub-dot gray"></span> Toutes
+        <span class="sub-badge muted">12</span>
+      </a>
+    </div>
+    <a class="nav-item" routerLink="/admin/offres" routerLinkActive="active">
+      💼 <span>Offres prestataires</span>
+    </a>
+    <div class="nav-item disabled">📅 <span>Réservations</span></div>
+    <div class="nav-item disabled">⭐ <span>Avis & Notations</span></div>
+    <div class="nav-item disabled">💬 <span>Messages</span></div>
+
+    <div class="nav-title">Finance</div>
+    <div class="nav-item disabled">💳 <span>Paiements</span></div>
+    <div class="nav-item disabled">📈 <span>Statistiques</span></div>
+    <div class="nav-item disabled">🧾 <span>Factures</span></div>
+
+    <div class="nav-title">Système</div>
+    <div class="nav-item disabled">🔧 <span>Configuration</span></div>
+    <div class="nav-item disabled">🛡️ <span>Sécurité & KYC</span></div>
+    <div class="nav-item disabled">📣 <span>Notifications</span></div>
+
+    <div class="admin-profile">
+      <span class="avatar">AD</span>
+      <div><div class="profile-name">Admin BricoleUp</div><div class="profile-role">Super Admin</div></div>
+      <span class="profile-gear">⚙️</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="hamburger" type="button" (click)="toggleSidebar()">☰</button>
+        <div>
+          <div class="crumb">Administration</div>
+        </div>
+      </div>
+      <div class="top-right">
+        <div class="top-user">
+          <span class="avatar" style="background:var(--bleu)">AD</span>
+          <span>Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <router-outlet />
+  </main>
+
+</div>

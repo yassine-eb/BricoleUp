@@ -1,0 +1,426 @@
+
+
+<div class="announcements-grid">
+    <style>
+            /* ===== GRID LAYOUT ===== */
+            .announcements-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+                padding: 0;
+            }
+
+            @media (max-width: 768px) {
+                .announcements-grid {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
+                }
+            }
+
+            /* ===== ANNOUNCEMENT CARD ===== */
+            
+
+            .announcement-card:hover {
+                border-color: #ec700a;
+                box-shadow: 0 12px 24px rgba(236, 112, 10, 0.12);
+                transform: translateY(-4px);
+            }
+
+            /* ===== IMAGE GALLERY ===== */
+            .announcement-gallery {
+                width: 100%;
+                height: 200px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2px;
+                background: #f3f4f6;
+                overflow: hidden;
+            }
+
+            .announcement-gallery.single {
+                grid-template-columns: 1fr;
+            }
+
+            .announcement-gallery img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+
+            .announcement-card:hover .announcement-gallery img {
+                transform: scale(1.05);
+            }
+
+          
+
+            /* Author Section */
+            .announcement-author {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .announcement-author-pic {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #ec700a;
+                flex-shrink: 0;
+            }
+
+            .announcement-author-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .announcement-author-name {
+                font-weight: 600;
+                font-size: 13px;
+                color: #1a1a1a;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .announcement-author-location {
+                font-size: 12px;
+                color: #6b7280;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .verified-badge {
+                color: #ec700a;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+
+            /* Category Badge */
+            .announcement-category {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 10px;
+                width: fit-content;
+            }
+
+            .announcement-category.demande-de-prestation {
+                background-color: #e8f7ee;
+                color: #1f8a4c;
+                border: 1px solid #bfe8cf;
+            }
+
+            .announcement-category.offre-de-services {
+                background-color: #eef4ff;
+                color: #3b5bdb;
+                border: 1px solid #cdd9ff;
+            }
+
+            .announcement-category.vente-de-materiel {
+                background-color: #fef5f0;
+                color: #ec700a;
+                border: 1px solid #fed7aa;
+            }
+
+            .announcement-category.location-de-materiel {
+                background-color: #f0f0f0;
+                color: #495057;
+                border: 1px solid #d6d6d6;
+            }
+
+            .announcement-category.offre-d-emploi {
+                background-color: #fce7f3;
+                color: #be185d;
+                border: 1px solid #fbcfe8;
+            }
+
+            /* Price Section */
+            .announcement-price {
+                font-size: 14px;
+                font-weight: 700;
+                color: #ec700a;
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .announcement-price-label {
+                font-size: 12px;
+                color: #6b7280;
+                font-weight: 500;
+            }
+
+
+            /* Footer Info 
+            .announcement-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 10px;
+                border-top: 1px solid #f0f0f0;
+                font-size: 12px;
+                color: #6b7280;
+            }
+
+            .announcement-footer-item {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+                */
+
+            /* ===== LOAD MORE BUTTON ===== */
+            .load-more-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 40px;
+                padding: 20px 0;
+            }
+
+            .load-more-btn {
+                padding: 12px 32px;
+                font-size: 14px;
+                font-weight: 600;
+                background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.25);
+            }
+
+            .load-more-btn:hover {
+                background: linear-gradient(135deg, #d45f00 0%, #c45200 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(236, 112, 10, 0.35);
+            }
+
+            .load-more-btn:active {
+                transform: translateY(0);
+            }
+
+            .load-more-btn i {
+                transition: transform 0.3s ease;
+            }
+
+            .load-more-btn:hover i {
+                transform: translateY(2px);
+            }
+
+            /* ===== EMPTY STATE ===== */
+            .empty-state {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px 20px;
+                color: #6b7280;
+            }
+
+            .empty-state-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+
+            /* Make all cards have equal height */
+.announcement-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;  /* ← This makes them all same height */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Make description take remaining space */
+.announcement-description {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 12px;
+    flex: 1;  /* ← This pushes footer down */
+    min-height: 57px;  /* ← Ensure minimum space (3 lines × 1.5 line-height) */
+}
+
+/* Make content flexible */
+.announcement-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;  /* ← Takes remaining vertical space */
+}
+        </style>
+
+    {% if announcements %}
+        {% for announcement in announcements %}
+            <div class="profile-item" style="display: block;">
+                <div class="announcement-card" onclick="window.open('{% url 'app:annonce_details' announcement.id %}', '_blank')">
+                    <!-- Gallery -->
+                    <div class="announcement-gallery {% if not announcement.image3 and not announcement.image4 %}single{% endif %}">
+                        {% if announcement.image1 %}
+                            <img src="{{ announcement.image1.url }}" alt="Announcement image">
+                        {% else %}
+                            <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="font-size: 32px; color: #9ca3af;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        {% if announcement.image2 %}
+                            <img src="{{ announcement.image2.url }}" alt="Announcement image">
+                        {% endif %}
+                        
+                        {% if announcement.image3 %}
+                            <img src="{{ announcement.image3.url }}" alt="Announcement image">
+                        {% endif %}
+                        
+                        {% if announcement.image4 %}
+                            <img src="{{ announcement.image4.url }}" alt="Announcement image">
+                        {% endif %}
+                    </div>
+
+                    <!-- Content -->
+                    <div class="announcement-content">
+                        <!-- Author -->
+                        <div class="announcement-author">
+                            <img src="{{ announcement.created_by.profile.profile_picture_url }}" alt="{{ announcement.created_by.username }}" class="announcement-author-pic">
+                            <div class="announcement-author-info">
+                                <div class="announcement-author-name">
+                                    {{ announcement.created_by.username }}
+                                    {% if announcement.created_by.profile.is_verified %}
+                                        <span class="verified-badge" title="Vérifié">
+                                            <i class="fas fa-check-circle"></i>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="announcement-author-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    {{ announcement.city }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <span class="announcement-category category-{{ announcement.category.name_fr|slugify }}">
+                            {{ announcement.category.name_fr }}
+                        </span>
+
+                        <!-- Price -->
+                        <div class="announcement-price">
+                            <span class="announcement-price-label">
+                                {% if announcement.category %}
+                                    {% if announcement.category.name_fr == "Demande de prestation" %}
+                                        Budget:
+                                    {% elif announcement.category.name_fr == "Offre de services" %}
+                                        Tarif:
+                                    {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                        Prix:
+                                    {% elif announcement.category.name_fr == "Location de matériel" %}
+                                        Tarif/jour:
+                                    {% elif announcement.category.name_fr == "Offre d'emploi" %}
+                                        Salaire:
+                                    {% else %}
+                                        Budget:
+                                    {% endif %}
+                                {% else %}
+                                    Budget:
+                                {% endif %}
+                            </span>
+                            {% if announcement.a_convenir %}
+                                <span>À convenir</span>
+                            {% else %}
+                                <span>{{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="announcement-description">
+                            {{ announcement.description|linebreaksbr }}
+                        </div>
+
+                        <!-- Footer 
+                        <div class="announcement-footer">
+                            <div class="announcement-footer-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>{{ announcement.created_at|date:"d M" }}</span>
+                            </div>
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <p style="font-size: 16px; font-weight: 500;">Aucune annonce trouvée</p>
+            <p style="font-size: 14px;">Il n'y a pas d'annonces pour le moment</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Load More Button -->
+{% if announcements|length > 9 %}
+<div class="load-more-container">
+    <button id="voir-plus" class="load-more-btn">
+        Voir plus <i class="bi bi-chevron-down ms-2"></i>
+    </button>
+</div>
+{% endif %}
+
+<script>
+    function initVoirPlus() {
+        const items = document.querySelectorAll(".profile-item");
+        const seeMoreBtn = document.getElementById("voir-plus");
+
+        if (!seeMoreBtn) return;
+
+        let visibleCount = 9;
+
+        function updateVisibleItems() {
+            items.forEach((item, index) => {
+                item.style.display = index < visibleCount ? "block" : "none";
+            });
+
+            if (items.length > visibleCount) {
+                seeMoreBtn.style.display = "block";
+            } else {
+                seeMoreBtn.style.display = "none";
+            }
+        }
+
+        updateVisibleItems();
+
+        seeMoreBtn.addEventListener("click", () => {
+            visibleCount += 9;
+            updateVisibleItems();
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", initVoirPlus);
+    document.body.addEventListener("htmx:afterSwap", initVoirPlus);
+</script>
+

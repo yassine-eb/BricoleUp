@@ -1,0 +1,171 @@
+<div class="ann-page" id="ann-page">
+
+  <!-- Toast -->
+  @if (toast()) {
+    <div class="ann-toast" [class.ann-toast-green]="toastType()==='green'" [class.ann-toast-red]="toastType()==='red'" [class.ann-toast-blue]="toastType()==='blue'">
+      {{ toast() }}
+    </div>
+  }
+
+  <!-- Topbar -->
+  <div class="ann-topbar-area">
+    <div>
+      <div class="ann-crumb">Administration <span>/</span> <strong>Annonces</strong></div>
+      <div class="ann-subtitle">Gérez les annonces publiées par les utilisateurs</div>
+    </div>
+    <button class="ann-btn ann-btn-refresh" (click)="loadFromApi()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Actualiser
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="ann-kpi-grid">
+    <div class="ann-kpi" style="border-left:3px solid var(--jaune)">
+      <div class="ann-kpi-icon" style="background:var(--jaune-light);color:var(--jaune)">⏳</div>
+      <div><div class="ann-kpi-label">En attente</div><div class="ann-kpi-val" id="ann-kpi-pending">{{ count('pending') }}</div></div>
+    </div>
+    <div class="ann-kpi" style="border-left:3px solid var(--vert)">
+      <div class="ann-kpi-icon" style="background:var(--vert-light);color:var(--vert)">✅</div>
+      <div><div class="ann-kpi-label">Approuvées</div><div class="ann-kpi-val">{{ count('approved') }}</div></div>
+    </div>
+    <div class="ann-kpi" style="border-left:3px solid var(--rouge)">
+      <div class="ann-kpi-icon" style="background:var(--rouge-light);color:var(--rouge)">❌</div>
+      <div><div class="ann-kpi-label">Rejetées</div><div class="ann-kpi-val">{{ count('rejected') }}</div></div>
+    </div>
+    <div class="ann-kpi" style="border-left:3px solid var(--bleu)">
+      <div class="ann-kpi-icon" style="background:var(--bleu-light);color:var(--bleu)">📋</div>
+      <div><div class="ann-kpi-label">Total</div><div class="ann-kpi-val">{{ count('all') }}</div></div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="ann-toolbar">
+    <div class="ann-toolbar-left">
+      <div class="ann-search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" placeholder="Titre, auteur, catégorie…" [ngModel]="searchQ()" (ngModelChange)="searchQ.set($event)">
+      </div>
+      <select [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+        <option value="">Tous les types</option>
+        <option value="demande">Demande</option>
+        <option value="offre">Offre</option>
+      </select>
+      <select [ngModel]="ageFilter()" (ngModelChange)="ageFilter.set($event)">
+        <option value="">Toute ancienneté</option>
+        <option value="1h">&lt; 1h</option>
+        <option value="24h">1h – 24h</option>
+        <option value="+24h">+ 24h</option>
+      </select>
+      <button class="ann-btn-reset" (click)="resetFilters()">↺ Réinitialiser</button>
+    </div>
+    <div class="ann-toolbar-right">
+      <div class="ann-tabs">
+        <button class="ann-tab" [class.active]="activeTab()==='all'" (click)="activeTab.set('all')">
+          📁 Toutes <span class="tab-count">{{ count('all') }}</span>
+        </button>
+        <button class="ann-tab" [class.active]="activeTab()==='pending'" (click)="activeTab.set('pending')">
+          ⏳ En attente <span class="tab-count" style="background:var(--rouge-light);color:var(--rouge)">{{ count('pending') }}</span>
+        </button>
+        <button class="ann-tab" [class.active]="activeTab()==='approved'" (click)="activeTab.set('approved')">
+          ✅ Approuvées <span class="tab-count">{{ count('approved') }}</span>
+        </button>
+        <button class="ann-tab" [class.active]="activeTab()==='rejected'" (click)="activeTab.set('rejected')">
+          ❌ Rejetées <span class="tab-count">{{ count('rejected') }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="ann-loading"><div class="ann-spinner"></div> Chargement des annonces…</div>
+  }
+
+  <!-- Table -->
+  @if (!loading()) {
+    <div class="ann-table-card">
+      <div class="ann-table-scroll">
+        <table class="ann-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>ANNONCE</th>
+              <th>AUTEUR</th>
+              <th>TYPE</th>
+              <th>CATÉGORIE</th>
+              <th>SOUMISE</th>
+              <th>ANCIENNETÉ</th>
+              <th>STATUT</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filtered(); track item._id) {
+              <tr [style.background]="rowBg(item)">
+                <td class="ann-id">{{ item.id }}</td>
+                <td class="ann-titre-cell">
+                  <div class="ann-titre-text">{{ item.titre }}</div>
+                  @if (item.budget) {
+                    <span class="ann-budget-badge">💶 {{ item.budget }}</span>
+                  }
+                </td>
+                <td>
+                  <div class="ann-auteur">
+                    <span class="ann-av" [style.background]="colorFor(item.auteur)">{{ initials(item.auteur) }}</span>
+                    <div>
+                      <div class="ann-auteur-name">{{ item.auteur }}</div>
+                      <div class="ann-email">{{ item.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  @if (item.type === 'offre') {
+                    <span class="pill toffre">⚡ Offre</span>
+                  } @else {
+                    <span class="pill tdemande">🌐 Demande</span>
+                  }
+                </td>
+                <td class="ann-cat">{{ item.cat }}</td>
+                <td class="ann-date">{{ item.soumiseTs | date:'dd MMM yyyy, HH:mm' }}</td>
+                <td>
+                  <span class="age-tag" [class]="ageClass(item.soumiseTs)">{{ ageLabel(item.soumiseTs) }}</span>
+                </td>
+                <td>
+                  @if (item.moderation_status === 'pending') {
+                    <span class="pill" style="background:var(--jaune-light);color:var(--jaune)">⏳ En attente</span>
+                  } @else if (item.moderation_status === 'approved') {
+                    <span class="pill" style="background:var(--vert-light);color:#16A34A;border:1px solid #BBF7D0">✅ Approuvée</span>
+                  } @else {
+                    <span class="pill" style="background:var(--rouge-light);color:var(--rouge);border:1px solid #FECACA" [title]="item.moderation_note">❌ Rejetée</span>
+                  }
+                </td>
+                <td>
+                  <div class="ann-actions">
+                    @if (item.moderation_status === 'pending') {
+                      <button class="ann-btn-approve" (click)="approve(item)" title="Approuver">✓ Approuver</button>
+                      <button class="ann-btn-reject" (click)="openRejectModal(item)" title="Rejeter">✗ Rejeter</button>
+                    } @else if (item.moderation_status === 'approved') {
+                      <button class="ann-btn-reject" (click)="openRejectModal(item)" title="Rejeter">✗ Rejeter</button>
+                    } @else {
+                      <button class="ann-btn-approve" (click)="approve(item)" title="Ré-approuver">✓ Ré-approuver</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (filtered().length === 0) {
+              <tr>
+                <td colspan="9" style="text-align:center;padding:40px;color:var(--gris)">Aucune annonce trouvée</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="padding:12px 0;color:var(--gris);font-size:.82rem">
+      {{ filtered().length }} annonce{{ filtered().length > 1 ? 's' : '' }} affichée{{ filtered().length > 1 ? 's' : '' }}
+    </div>
+  }
+
+</div>

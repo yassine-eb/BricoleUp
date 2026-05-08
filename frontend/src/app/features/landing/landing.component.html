@@ -1,0 +1,556 @@
+<!-- ===== SECTION 1 ===== -->
+<header class="navbar" id="navbar">
+  <a href="#" class="logo" aria-label="BricoleUp accueil">
+    <span class="logo-bricole">Bricole</span><span class="logo-up">Up</span>
+    <span class="logo-dot"></span>
+  </a>
+  <nav class="nav-actions" aria-label="Acces rapides">
+    <button class="nav-action js-open-login" type="button">
+      <span class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </span>
+      <span>Mes recherches</span>
+    </button>
+    <button class="nav-action js-open-login" type="button">
+      <span class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </span>
+      <span>Favoris</span>
+    </button>
+    <button class="nav-action js-open-login" type="button">
+      <span class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </span>
+      <span>Messages</span>
+    </button>
+    <button class="nav-action js-open-login" type="button">
+      <span class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <span>Se connecter</span>
+    </button>
+  </nav>
+</header>
+
+<main>
+  <!-- ===== SECTION 2 ===== -->
+  <section class="hero reveal">
+    <div class="hero-media">
+      <img src="assets/mtr.png" alt="Clé à molette BricoleUp">
+    </div>
+    <div class="hero-content">
+      <h1>Prestations de services<br>et artisans près de chez vous</h1>
+      <p>Plus de {{ latestDemandes.length > 0 ? '700' : '700' }}+ prestataires actifs sur la plateforme</p>
+      <a class="btn btn-primary js-open-register" href="#signup">Créer un compte</a>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3 ===== -->
+  <section class="store-wave reveal">
+    <svg class="wave wave-top" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,0H1440V42C1190,82 980,18 735,43C483,69 258,77 0,33Z" fill="currentColor"></path>
+    </svg>
+    <div class="store-content">
+      <div>
+        <a class="store-btn" href="#google-play">▶ Google Play</a>
+        <div class="stars">★★★★½</div>
+        <div class="score">4,6/5</div>
+        <div class="reviews">Calculé à partir de 47 802 avis</div>
+      </div>
+      <div>
+        <a class="store-btn" href="#app-store"> App Store</a>
+        <div class="stars">★★★★½</div>
+        <div class="score">4,6/5</div>
+        <div class="reviews">Calculé à partir de 47 802 avis</div>
+      </div>
+    </div>
+    <svg class="wave wave-bottom" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,0H1440V42C1190,82 980,18 735,43C483,69 258,77 0,33Z" fill="currentColor"></path>
+    </svg>
+  </section>
+
+  <!-- ===== SECTION 4 ===== -->
+  <section class="requests reveal">
+    <div class="container">
+      <h2 class="section-title">Les dernières <span class="highlight green">demandes</span></h2>
+      <div class="cards-grid"></div>
+      <div class="center-action">
+        <a class="btn btn-green" [routerLink]="['/demandes']">Voir toutes les demandes →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5 ===== -->
+  <section class="providers reveal">
+    <div class="container">
+      <h2 class="section-title">Ils <span class="highlight orange">répondent</span> à vos demandes</h2>
+      <div class="cards-grid"></div>
+      <div class="center-action">
+        <a class="btn btn-orange" [routerLink]="['/prestataires']">Voir tous les prestataires →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6 ===== -->
+  <section class="steps reveal">
+    <div class="container">
+      <h2 class="section-title"><span class="highlight orange">Particuliers,</span> trouvez le bon artisan avec BricoleUp !</h2>
+      <div class="steps-grid">
+        <div class="step reveal" style="transition-delay: 0ms">
+          <div class="step-icon">📋</div>
+          <h3>1. Je dépose ma demande</h3>
+          <p>En 2 minutes, décris ton projet et ton budget</p>
+        </div>
+        <div class="step reveal" style="transition-delay: 100ms">
+          <div class="step-icon">💬</div>
+          <h3>2. Je reçois des devis</h3>
+          <p>Des prestataires vérifiés KYC te répondent rapidement</p>
+        </div>
+        <div class="step reveal" style="transition-delay: 200ms">
+          <div class="step-icon">⭐</div>
+          <h3>3. Je valide et je note</h3>
+          <p>Paiement sécurisé, fonds libérés après validation</p>
+        </div>
+      </div>
+      <div class="center-action">
+        <a class="btn btn-orange" href="#deposer">Je dépose ma demande</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7 ===== -->
+  <section class="pro-section reveal">
+    <div class="container">
+      <div class="pro-logo">bricoleup <span class="pro-pill">pro</span></div>
+      <p class="pro-subtitle">Professionnels, développez votre activité avec BricoleUp Pro</p>
+      <div class="wide-badge"><span class="highlight blue">Professionnels,</span> développez votre activité</div>
+      <div class="pro-columns">
+        <div class="pro-col reveal" style="transition-delay: 0ms">
+          <h3>Trouvez des clients</h3>
+          <ul>
+            <li>500 000+ membres actifs</li>
+            <li>Des milliers de demandes chaque jour</li>
+            <li>Partout en France</li>
+            <li>Mise en relation instantanée</li>
+          </ul>
+        </div>
+        <div class="pro-col reveal" style="transition-delay: 100ms">
+          <h3>Développez votre visibilité</h3>
+          <ul>
+            <li>Profil référencé sur Google</li>
+            <li>Collecte d'avis clients vérifiés</li>
+            <li>Badge "Pro Vérifié" affiché</li>
+            <li>Boost d'annonce disponible</li>
+          </ul>
+        </div>
+        <div class="pro-col reveal" style="transition-delay: 200ms">
+          <h3>Gérez votre activité</h3>
+          <ul>
+            <li>Création et envoi de devis PDF</li>
+            <li>Paiement sécurisé en escrow</li>
+            <li>Suivi de votre chiffre d'affaires</li>
+            <li>Dashboard prestataire complet</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pro-actions">
+        <a class="btn btn-primary js-open-register" href="#pro-signup">Je m'inscris</a>
+        <a class="learn-link" href="#pro">En savoir plus →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 8 ===== -->
+  <section class="app-section reveal">
+    <div class="container">
+      <h2 class="section-title">Téléchargez notre <span class="highlight blue">application</span> mobile</h2>
+      <div class="app-layout">
+        <div class="phones">
+          <div class="phone">BricoleUp</div>
+          <div class="phone">BricoleUp</div>
+        </div>
+        <div class="app-rating">
+          <div class="app-buttons">
+            <a class="black-store" href="#app-store"> App Store</a>
+            <a class="black-store" href="#google-play">▶ Google Play</a>
+          </div>
+          <div class="stars">★★★★½</div>
+          <div class="score">4,6/5</div>
+          <div class="reviews">Calculé à partir de 113 802 avis</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 9 ===== -->
+  <section class="projects-testimonial reveal">
+    <div class="container split-layout">
+      <div>
+        <h2 class="local-title">Les <span class="double-underline">projets</span> à la Une</h2>
+        <div class="project-cards">
+          <div class="project-card car reveal" style="transition-delay: 0ms">
+            🚗
+            <strong>J'entretiens mon véhicule</strong>
+          </div>
+          <div class="project-card bath reveal" style="transition-delay: 100ms">
+            🚿
+            <strong>Je rénove ma salle de bain</strong>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h2 class="local-title">Le dernier <span class="highlight blue">article</span> publié</h2>
+        <article class="article-card reveal" *ngIf="latestAnnonce as a; else noAnnonce">
+          <div class="article-header">
+            <span class="avatar orange" style="color:#fff">{{ (a.created_by?.username || 'U') | slice:0:2 | uppercase }}</span>
+            <div class="article-info">
+              <div class="name">{{ a.created_by?.username || 'Utilisateur' }}</div>
+              <div class="city">{{ a.categorie?.nom || 'Annonce' }} · {{ a.localisation || '—' }}</div>
+            </div>
+            <span class="article-score">#{{ a.id }}</span>
+          </div>
+          <div class="quote-mark">"</div>
+          <blockquote>{{ a.description }}</blockquote>
+          <a class="story-link" [routerLink]="['/annonces', a.id]">Voir l'annonce →</a>
+        </article>
+        <ng-template #noAnnonce>
+          <article class="article-card reveal">
+            <div class="article-header">
+              <span class="avatar orange" style="color:#fff">BU</span>
+              <div class="article-info">
+                <div class="name">BricoleUp</div>
+                <div class="city">Aucune annonce pour le moment</div>
+              </div>
+              <span class="article-score">—</span>
+            </div>
+            <div class="quote-mark">"</div>
+            <blockquote>Revenez plus tard pour découvrir les dernières annonces publiées.</blockquote>
+            <a class="story-link" routerLink="/annonces">Voir les annonces →</a>
+          </article>
+        </ng-template>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 10 ===== -->
+  <section class="press reveal">
+    <div class="container">
+      <h2>Ils parlent de nous</h2>
+      <div class="press-logos">
+        <span>TF1</span>
+        <span>RTL</span>
+        <span>France Info</span>
+        <span>BFM TV</span>
+        <span>Le Monde</span>
+        <span>20 Minutes</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-logo"><span style="color:#fff">Bricole</span><span style="color:#F97316">Up</span></div>
+    <div class="footer-grid">
+      <div>
+        <h3>BricoleUp</h3>
+        <a href="#about">À propos</a>
+        <a href="#how">Comment ça marche</a>
+        <a href="#press">Presse</a>
+        <a href="#blog">Blog</a>
+      </div>
+      <div>
+        <h3>Particuliers</h3>
+        <a href="#annonce">Déposer une annonce</a>
+        <a href="#artisan">Trouver un artisan</a>
+        <a href="#tarifs">Tarifs</a>
+      </div>
+      <div>
+        <h3>Professionnels</h3>
+        <a href="#profil">Créer mon profil</a>
+        <a href="#pro">BricoleUp Pro</a>
+        <a href="#kyc">KYC & Vérification</a>
+      </div>
+      <div>
+        <h3>Légal</h3>
+        <a href="#cgu">CGU</a>
+        <a href="#confidentialite">Confidentialité</a>
+        <a href="#cookies">Cookies</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <hr class="footer-line">
+    <p class="copyright">© 2026 BricoleUp — Tous droits réservés</p>
+  </div>
+</footer>
+
+<div id="overlay" aria-hidden="true"></div>
+
+<!-- ===== MODAL A ===== -->
+<div class="modal" id="modal-a" role="dialog" aria-modal="true" aria-labelledby="modal-a-title">
+  <button class="modal-close" type="button" aria-label="Fermer">×</button>
+  <h2 id="modal-a-title">Rejoignez-nous !</h2>
+  <p class="modal-subtitle">Les habitants et professionnels de votre quartier répondent à tous vos besoins.</p>
+  <div class="modal-stack">
+    <button class="social-btn js-oauth" type="button">
+      <span class="social-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#4285F4" d="M21.6 12.23c0-.74-.07-1.45-.19-2.14H12v4.04h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.23c1.89-1.74 2.98-4.3 2.98-7.43z"/>
+          <path fill="#34A853" d="M12 22c2.7 0 4.96-.89 6.62-2.34l-3.23-2.51c-.9.6-2.04.95-3.39.95-2.6 0-4.8-1.75-5.59-4.12H3.07v2.59A10 10 0 0 0 12 22z"/>
+          <path fill="#FBBC05" d="M6.41 13.98A6 6 0 0 1 6.1 12c0-.69.11-1.35.31-1.98V7.43H3.07A10 10 0 0 0 2 12c0 1.61.39 3.13 1.07 4.57l3.34-2.59z"/>
+          <path fill="#EA4335" d="M12 5.9c1.47 0 2.79.51 3.83 1.5l2.86-2.86C16.96 2.93 14.7 2 12 2a10 10 0 0 0-8.93 5.43l3.34 2.59C7.2 7.65 9.4 5.9 12 5.9z"/>
+        </svg>
+      </span>
+      Se connecter avec Google
+    </button>
+    <button class="social-btn js-oauth" type="button">
+      <span class="social-icon facebook-icon" aria-hidden="true">f</span>
+      Continuer avec Facebook
+    </button>
+    <div class="divider">ou</div>
+    <button class="social-btn" type="button" data-open="modal-c">
+      <span class="social-icon" aria-hidden="true">👤</span>
+      M'inscrire avec un e-mail
+    </button>
+  </div>
+  <div class="modal-link">Déjà inscrit ? <button type="button" data-open="modal-b">Me connecter</button></div>
+</div>
+
+<!-- ===== MODAL B ===== -->
+<div class="modal" id="modal-b" role="dialog" aria-modal="true" aria-labelledby="modal-b-title">
+  <button class="modal-back" type="button" data-back="modal-a" aria-label="Retour">←</button>
+  <button class="modal-close" type="button" aria-label="Fermer">×</button>
+  <h2 id="modal-b-title">Contents de vous revoir !</h2>
+  <div class="modal-stack">
+    <button class="social-btn js-oauth" type="button">
+      <span class="social-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#4285F4" d="M21.6 12.23c0-.74-.07-1.45-.19-2.14H12v4.04h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.23c1.89-1.74 2.98-4.3 2.98-7.43z"/>
+          <path fill="#34A853" d="M12 22c2.7 0 4.96-.89 6.62-2.34l-3.23-2.51c-.9.6-2.04.95-3.39.95-2.6 0-4.8-1.75-5.59-4.12H3.07v2.59A10 10 0 0 0 12 22z"/>
+          <path fill="#FBBC05" d="M6.41 13.98A6 6 0 0 1 6.1 12c0-.69.11-1.35.31-1.98V7.43H3.07A10 10 0 0 0 2 12c0 1.61.39 3.13 1.07 4.57l3.34-2.59z"/>
+          <path fill="#EA4335" d="M12 5.9c1.47 0 2.79.51 3.83 1.5l2.86-2.86C16.96 2.93 14.7 2 12 2a10 10 0 0 0-8.93 5.43l3.34 2.59C7.2 7.65 9.4 5.9 12 5.9z"/>
+        </svg>
+      </span>
+      Se connecter avec Google
+    </button>
+    <button class="social-btn js-oauth" type="button">
+      <span class="social-icon facebook-icon" aria-hidden="true">f</span>
+      Continuer avec Facebook
+    </button>
+    <div class="divider">ou</div>
+    <form class="auth-form">
+      <div class="field">
+        <input type="email" placeholder="E-mail" required>
+      </div>
+      <div class="field password-field">
+        <input type="password" placeholder="Mot de passe" required>
+        <button class="toggle-password" type="button" aria-label="Afficher le mot de passe">👁</button>
+      </div>
+      <button class="btn btn-primary modal-submit" type="submit">Connexion</button>
+    </form>
+    <div class="modal-link"><a class="forgot-link" href="#forgot">Mot de passe oublié ?</a></div>
+  </div>
+</div>
+
+<!-- ===== MODAL C ===== -->
+<div class="modal" id="modal-c" role="dialog" aria-modal="true" aria-labelledby="modal-c-title">
+  <button class="modal-back" type="button" data-back="modal-a" aria-label="Retour">←</button>
+  <button class="modal-close" type="button" aria-label="Fermer">×</button>
+  <h2 id="modal-c-title">Je m'inscris en tant que :</h2>
+  <div class="modal-stack">
+    <button class="role-btn" type="button" data-open="modal-d">Particulier</button>
+    <div class="divider">ou</div>
+    <button class="role-btn" type="button" data-open="modal-e">Auto-entrepreneur</button>
+    <button class="role-btn" type="button" data-open="modal-f">Entreprise</button>
+  </div>
+  <p class="step-text">Étape 1/2</p>
+</div>
+
+<!-- ===== MODAL D — Inscription Particulier ===== -->
+<div class="modal" id="modal-d" role="dialog" aria-modal="true" aria-labelledby="modal-d-title">
+  <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
+  <button class="modal-close" type="button" aria-label="Fermer">×</button>
+  <h2 id="modal-d-title">Inscription Particulier</h2>
+  <form class="auth-form" id="form-particulier">
+    <!-- User : prenom + nom -->
+    <div class="input-row">
+      <div class="field">
+        <input type="text" id="d-prenom" name="prenom" placeholder=" " required autofocus>
+        <label for="d-prenom">Prénom</label>
+      </div>
+      <div class="field">
+        <input type="text" id="d-nom" name="nom" placeholder=" " required>
+        <label for="d-nom">Nom</label>
+      </div>
+    </div>
+    <!-- User : email -->
+    <div class="field">
+      <input type="email" id="d-email" name="email" placeholder=" " required>
+      <label for="d-email">E-mail</label>
+    </div>
+    <!-- User : username -->
+    <div class="field">
+      <input type="text" id="d-username" name="username" placeholder=" " required>
+      <label for="d-username">Nom d'utilisateur</label>
+    </div>
+    <!-- UserProfile : phone_number -->
+    <div class="field">
+      <input type="tel" id="d-phone" name="phone_number" placeholder=" ">
+      <label for="d-phone">Téléphone</label>
+    </div>
+    <!-- UserProfile : city (FK) -->
+    <div class="field">
+      <input type="text" id="d-city" name="city" placeholder=" " autocomplete="off" list="d-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
+      <label for="d-city">Ville</label>
+      <datalist id="d-city-list"></datalist>
+    </div>
+    <!-- UserProfile : gender -->
+    <div class="field">
+      <select id="d-gender" name="gender" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;appearance:none;background:#fff;color:#64748B;">
+        <option value="">Genre (optionnel)</option>
+        <option value="M">Homme</option>
+        <option value="F">Femme</option>
+        <option value="other">Autre</option>
+      </select>
+    </div>
+    <!-- User : password -->
+    <div class="field password-field">
+      <input type="password" id="d-password" name="password" placeholder=" " required>
+      <label for="d-password">Mot de passe</label>
+      <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
+    </div>
+    <div class="checkboxes">
+      <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
+      <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
+    </div>
+    <button class="btn btn-primary modal-submit" type="submit">M'inscrire</button>
+  </form>
+  <p class="step-text">Étape 2/2 — Particulier</p>
+</div>
+
+<!-- ===== MODAL E — Inscription Auto-entrepreneur ===== -->
+<div class="modal" id="modal-e" role="dialog" aria-modal="true" aria-labelledby="modal-e-title">
+  <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
+  <button class="modal-close" type="button" aria-label="Fermer">×</button>
+  <h2 id="modal-e-title">Inscription Prestataire</h2>
+  <form class="auth-form" id="form-autoentrepreneur">
+    <!-- User : prenom + nom -->
+    <div class="input-row">
+      <div class="field">
+        <input type="text" id="e-prenom" name="prenom" placeholder=" " required>
+        <label for="e-prenom">Prénom</label>
+      </div>
+      <div class="field">
+        <input type="text" id="e-nom" name="nom" placeholder=" " required>
+        <label for="e-nom">Nom</label>
+      </div>
+    </div>
+    <!-- User : email -->
+    <div class="field">
+      <input type="email" id="e-email" name="email" placeholder=" " required>
+      <label for="e-email">E-mail</label>
+    </div>
+    <!-- User : username -->
+    <div class="field">
+      <input type="text" id="e-username" name="username" placeholder=" " required>
+      <label for="e-username">Nom d'utilisateur</label>
+    </div>
+    <!-- UserProfile : phone_number -->
+    <div class="field">
+      <input type="tel" id="e-phone" name="phone_number" placeholder=" ">
+      <label for="e-phone">Téléphone</label>
+    </div>
+    <!-- UserProfile : city (FK) -->
+    <div class="field">
+      <input type="text" id="e-city" name="city" placeholder=" " autocomplete="off" list="e-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
+      <label for="e-city">Ville</label>
+      <datalist id="e-city-list"></datalist>
+    </div>
+    <!-- UserProfile : bio (présentation métier) -->
+    <div class="field">
+      <textarea id="e-bio" name="bio" placeholder="Décrivez votre activité..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 16px;font:0.95rem 'DM Sans',sans-serif;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea>
+    </div>
+    <!-- User : password -->
+    <div class="field password-field">
+      <input type="password" id="e-password" name="password" placeholder=" " required>
+      <label for="e-password">Mot de passe</label>
+      <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
+    </div>
+    <div class="checkboxes">
+      <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
+      <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
+    </div>
+    <button class="btn btn-primary modal-submit" type="submit">M'inscrire comme prestataire</button>
+  </form>
+  <p class="step-text">Étape 2/2 — Auto-entrepreneur</p>
+</div>
+
+<!-- ===== MODAL F — Inscription Entreprise ===== -->
+<div class="modal" id="modal-f" role="dialog" aria-modal="true" aria-labelledby="modal-f-title">
+  <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
+  <button class="modal-close" type="button" aria-label="Fermer">×</button>
+  <h2 id="modal-f-title">Inscription Entreprise</h2>
+  <form class="auth-form" id="form-entreprise">
+    <!-- User : prenom + nom du dirigeant -->
+    <div class="input-row">
+      <div class="field">
+        <input type="text" id="f-prenom" name="prenom" placeholder=" " required>
+        <label for="f-prenom">Prénom du dirigeant</label>
+      </div>
+      <div class="field">
+        <input type="text" id="f-nom" name="nom" placeholder=" " required>
+        <label for="f-nom">Nom du dirigeant</label>
+      </div>
+    </div>
+    <!-- User : email -->
+    <div class="field">
+      <input type="email" id="f-email" name="email" placeholder=" " required>
+      <label for="f-email">E-mail professionnel</label>
+    </div>
+    <!-- User : username -->
+    <div class="field">
+      <input type="text" id="f-username" name="username" placeholder=" " required>
+      <label for="f-username">Nom d'utilisateur</label>
+    </div>
+    <!-- UserProfile : phone_number -->
+    <div class="field">
+      <input type="tel" id="f-phone" name="phone_number" placeholder=" ">
+      <label for="f-phone">Téléphone professionnel</label>
+    </div>
+    <!-- UserProfile : city (FK) -->
+    <div class="field">
+      <input type="text" id="f-city" name="city" placeholder=" " autocomplete="off" list="f-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
+      <label for="f-city">Ville</label>
+      <datalist id="f-city-list"></datalist>
+    </div>
+    <!-- UserProfile : bio (description entreprise) -->
+    <div class="field">
+      <textarea id="f-bio" name="bio" placeholder="Décrivez votre entreprise..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 16px;font:0.95rem 'DM Sans',sans-serif;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea>
+    </div>
+    <!-- User : password -->
+    <div class="field password-field">
+      <input type="password" id="f-password" name="password" placeholder=" " required>
+      <label for="f-password">Mot de passe</label>
+      <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
+    </div>
+    <div class="checkboxes">
+      <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
+      <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
+    </div>
+    <button class="btn btn-primary modal-submit" type="submit">M'inscrire comme entreprise</button>
+  </form>
+  <p class="step-text">Étape 2/2 — Entreprise</p>
+</div>

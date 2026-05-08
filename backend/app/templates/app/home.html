@@ -1,0 +1,2422 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+BricoleUp - Marketplace de prestations de services.
+{% endblock %}
+
+{% block meta %}
+    <meta name="author" content="BricoleUp">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="BricoleUp">
+    <meta property="og:description" content="Marketplace de prestations de services.">
+    <meta property="og:url" content="https://bricoleup.com">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="BricoleUp">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "url": "https://bricoleup.com",
+        "name": "BricoleUp",
+        "description": "Marketplace de prestations de services.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "BricoleUp"
+        }
+    }
+    </script>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center" style="margin-top: 65px; ">
+    <div class="container mt-4">
+      <div class="row  align-items-center mb-5 mt-5">
+        <div class="col-md-7 text-container">
+            <h2 class="home-title">
+            Marketplace de Prestations de Services
+            </h2>
+
+            <h4 class="home-subtitle">
+                Bricolage et petits travaux : La solution pour vos services de proximité
+            
+            </h4>
+        </div>
+        <div class="col-md-5">
+            <form id="searchForm" method="POST">
+                    {% csrf_token %}
+                    <div class="p-2 bg-white rounded shadow-sm border " style="border-radius: 8px;">
+                        <div class="row g-2 align-items-center">
+                            <!-- Service Search -->
+                            <div class="col-12">
+                            <a href=""
+                                    class="btn d-flex align-items-center border rounded text-dark text-decoration-none me-1 flex-grow-1"
+                                    
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#skillsModal">
+                                <i class="fas fa-tools me-2"></i>
+                                <span class="inline">
+                                
+                                    Sélectionner des services
+                                </span>
+                            </a>
+
+                            <input type="hidden" name="skills" id="selectedSkillsInput"
+                                value="{% for skill in selected_skills %}{{ skill.id }},{% endfor %}">
+                        </div>
+
+
+                            <!-- City Search -->
+                            <div class="col-12">
+                                <a href=""
+                                    class="btn d-flex align-items-center border rounded text-dark text-decoration-none me-1 flex-grow-1"
+                                    
+                                    
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cityModal">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+
+                                    <span class="inline" id="selectedCityText">
+                                        {% if selected_city %}
+                                            {{ selected_city }}
+                                        {% else %}
+                                            Choisir une ville
+                                        {% endif %}
+                                    </span>
+                
+                                </a>
+
+                                <input type="hidden" name="location" id="selectedCityInput"
+                                    value="{% if selected_city %}{{ selected_city.id }}{% endif %}">
+                            </div>
+
+                            
+                            <!-- Buttons -->
+                            <div class="col-12 d-flex align-items-center">
+                                
+
+                                <style>
+                                a.btn:hover {
+                                    background-color: #f0f0f0; /* Light grey hover like "Se connecter" */
+                                }
+                                </style>
+
+                                <button type="button"
+                                        id="searchTriggerBtn"
+                                        class="btn custom-btn flex-grow-1 ms-1">
+                                    <i class="bi bi-search"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <div class="d-flex align-items-center gap p-1">
+                            
+                            <div id="selectedServices" class="skills-container mt-2 mb-2"></div>
+                        </div>
+
+                    <div class="modal fade" id="searchChoiceModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Rechercher dans</h5>
+                                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <ul class="nav justify-content-around text-center">
+
+                                        <li class="nav-item">
+                                            <a href="#"
+                                            class="nav-link text-dark px-1 search-choice"
+                                            data-url="{% url 'app:annonces' %}">
+                                                <i class="fas fa-bullhorn fa-2x"></i><br>
+                                                Annonces
+                                            </a>
+                                        </li>
+
+                                        <li class="nav-item">
+                                            <a href="#"
+                                            class="nav-link text-dark px-1 search-choice"
+                                            data-url="{% url 'app:prestataires' %}">
+                                                <i class="fas fa-users fa-2x"></i><br>
+                                                Prestataires
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+
+                        const form = document.getElementById("searchForm");
+                        const modalEl = document.getElementById("searchChoiceModal");
+                        const modal = new bootstrap.Modal(modalEl);
+
+                        document
+                            .getElementById("searchTriggerBtn")
+                            .addEventListener("click", () => modal.show());
+
+                        modalEl.querySelectorAll(".search-choice").forEach(link => {
+
+                            link.addEventListener("click", function (e) {
+
+                                e.preventDefault();        // ⭐ important
+
+                                const url = this.dataset.url;
+
+                                form.action = url;
+                                form.target = "_blank";
+
+                                modal.hide();
+
+                                // submit AFTER modal animation starts
+                                setTimeout(() => {
+                                    form.submit();
+                                    form.target = "_self";   // ⭐ reset safety
+                                }, 150);
+
+                            });
+
+                        });
+
+                    });
+
+                    </script>
+
+
+                    <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+
+                        const searchInput = document.getElementById("skillSearchModal");
+                        const skillItems = document.querySelectorAll("#skillsList .skill-item");
+                        const checkboxes = document.querySelectorAll(".skill-checkbox");
+                        const selectedContainer = document.getElementById("selectedServices");
+                        const hiddenInput = document.getElementById("selectedSkillsInput");
+                        const saveBtn = document.getElementById("saveSkillsBtn");
+
+                        // 🔍 Filter with STARTS WITH
+                        searchInput.addEventListener("input", function () {
+                            let filter = searchInput.value.toLowerCase().trim();
+
+                            skillItems.forEach(item => {
+                                let name = item.getAttribute("data-name");
+
+                                if (filter === "" || name.startsWith(filter)) {
+                                    item.classList.remove("d-none");
+                                } else {
+                                    item.classList.add("d-none");
+                                }
+                            });
+                        });
+
+                        // 💾 Save selected skills
+                        saveBtn.addEventListener("click", function () {
+                            selectedContainer.innerHTML = "";
+                            let selectedIds = [];
+
+                            checkboxes.forEach(cb => {
+                                if (cb.checked) {
+                                    let label = document.querySelector(`label[for="${cb.id}"]`).textContent.trim();
+                                    selectedIds.push(cb.value);
+
+                                    let skillDiv = document.createElement("div");
+                                    skillDiv.className = "selected-skill";
+                                    skillDiv.setAttribute("data-skill-id", cb.value);
+                                    skillDiv.innerHTML = `${label} <span class="remove-skill" onclick="removeSkill('${cb.value}')">✖</span>`;
+
+                                    selectedContainer.appendChild(skillDiv);
+                                }
+                            });
+
+                            hiddenInput.value = selectedIds.join(",");
+                        });
+
+                        // ❌ Remove skill from outside
+                        window.removeSkill = function(skillId) {
+                            const checkbox = document.querySelector(`.skill-checkbox[value="${skillId}"]`);
+                            if (checkbox) checkbox.checked = false;
+
+                            const skillDiv = document.querySelector(`.selected-skill[data-skill-id="${skillId}"]`);
+                            if (skillDiv) skillDiv.remove();
+
+                            updateHiddenInput();
+                        };
+
+                        function updateHiddenInput() {
+                            let selectedIds = [];
+                            document.querySelectorAll(".skill-checkbox:checked").forEach(cb => {
+                                selectedIds.push(cb.value);
+                            });
+                            hiddenInput.value = selectedIds.join(",");
+                        }
+
+                    });
+                    </script>
+
+                    
+                    
+                    <style>
+                        .selected-skill {
+                            background-color: #ec700a;
+                            color: black;
+                            padding: 5px 10px;
+                            border-radius: 15px;
+                            display: inline-flex;
+                            align-items: center;
+                        }
+                        .remove-skill {
+                            cursor: pointer;
+                            margin-left: 8px;
+                            font-weight: bold;
+                        }
+
+
+                        .skill-option {
+                            padding: 8px 12px;
+                            border-bottom: 1px solid #ddd; /* line separator */
+                            cursor: pointer;
+                            transition: background-color 0.2s;
+                            
+                        }
+                        
+                        .skill-option:hover {
+                            background-color: #ec700a; /* Light hover effect */
+                        }
+
+                        .city-option {
+                            padding: 8px 12px;
+                            border-bottom: 1px solid #ddd; /* line separator */
+                            cursor: pointer;
+                            transition: background-color 0.2s;
+                        }
+
+                        .city-option:last-child {
+                            border-bottom: none; /* remove line on last item */
+                        }
+
+                        .city-option:hover {
+                            background-color: #f0f0f0; /* subtle hover */
+                        }
+
+                        .dropdown-menu {
+                            max-height: 200px;
+                            overflow-y: auto;
+                            padding: 0; /* remove default padding */
+                            border-radius: 5px;
+                        }
+
+                        .dropdown-menu .dropdown-item {
+                            display: block; /* ensure full width */
+                            width: 100%;
+                        }
+                    </style>
+
+                   <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const citySearch = document.getElementById("citySearchModal");
+                            const cityOptions = document.querySelectorAll("#cityList .city-option");
+                            const selectedCityInput = document.getElementById("selectedCityInput");
+                            const cityModalEl = document.getElementById("cityModal");
+                            const cityModal = new bootstrap.Modal(cityModalEl);
+                            const selectedCityText = document.getElementById("selectedCityText");
+
+                            // 🔍 Filter cities with STARTS WITH
+                            citySearch.addEventListener("input", function () {
+                                let filter = citySearch.value.toLowerCase().trim();
+
+                                cityOptions.forEach(option => {
+                                    let text = option.textContent.toLowerCase().trim();
+
+                                    if (filter === "") {
+                                        option.classList.add("d-none");  // hide all if input is empty
+                                    } else if (text.startsWith(filter)) {
+                                        option.classList.remove("d-none");  // show matching
+                                    } else {
+                                        option.classList.add("d-none");     // hide non-matching
+                                    }
+                                });
+                            });
+
+                            // 🏙 Select a city
+                            cityOptions.forEach(option => {
+                                option.addEventListener("click", function () {
+                                    let cityId = this.getAttribute("data-city-id");
+                                    let cityName = this.textContent.trim();
+
+                                    selectedCityText.textContent = cityName;
+                                    selectedCityInput.value = cityId;
+
+                                    cityModal.hide();
+                                });
+                            });
+
+                            // 🔄 Reset search when modal opens
+                            cityModalEl.addEventListener('shown.bs.modal', function () {
+                                citySearch.value = "";
+                                cityOptions.forEach(option => option.classList.add("d-none"));
+                                citySearch.focus();
+                            });
+                        });
+                    </script>
+                <div class="modal fade" id="skillsModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Choisir des services</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <!-- 🔍 Search -->
+                        <input type="text" id="skillSearchModal" class="form-control mb-3"
+                            placeholder="Rechercher un service...">
+
+                        <!-- 📋 Skills List -->
+                        <div id="skillsList" class="skills-scroll">
+                        {% for skill in skills %}
+                            <div class="form-check skill-item" data-name="{{ skill.name_fr|lower }}">
+                            <input class="form-check-input skill-checkbox me-3 ms-1"
+                                    type="checkbox"
+                                    value="{{ skill.id }}"
+                                    id="skill{{ skill.id }}"
+                                    {% if skill in selected_skills %}checked{% endif %}>
+                            <label class="form-check-label w-100" for="skill{{ skill.id }}">
+                                {{ skill.name_fr }}
+                            </label>
+                            </div>
+                        {% endfor %}
+                        </div>
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" style="background-color: #ec700a; border: none;" id="saveSkillsBtn" data-bs-dismiss="modal">
+                        Valider
+                        </button>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+                    <style>
+                        /* Scroll container */
+                    .skills-scroll {
+                        height: 300px;
+                        overflow-y: auto;
+                        
+                    }
+
+
+                    .skills-scroll::-webkit-scrollbar-thumb {
+                        background-color: #d0d0d0;
+                        border-radius: 10px;
+                    }
+                    .skills-scroll::-webkit-scrollbar-thumb:hover {
+                        background-color: #b8b8b8;
+                    }
+
+                    /* Each skill row */
+                    .skill-item {
+                        display: flex;
+                        align-items: center;
+                        padding: 8px 12px;
+                        border-radius: 8px;
+                        margin-bottom: 6px;
+                        transition: background-color 0.2s ease, transform 0.05s ease;
+                        cursor: pointer;
+                    }
+
+                    /* Hover effect */
+                    .skill-item:hover {
+                        background-color: #f5f7fa;
+                    }
+
+                    /* Checkbox spacing */
+                    .skill-item .form-check-input {
+                        margin-right: 10px;
+                        cursor: pointer;
+                    }
+
+                    /* Label takes full width so whole row clickable */
+                    .skill-item .form-check-label {
+                        cursor: pointer;
+                        
+                    }
+
+                    /* Highlight when checked */
+                    .skill-checkbox:checked + .form-check-label {
+                        font-weight: 600;
+                        color: #ec700a;
+                    }
+
+                    .skill-checkbox:checked {
+                        background-color: #ec700a;
+                        border-color: #ec700a;
+                    }
+
+                    </style>
+
+
+                        <div class="modal fade" id="cityModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Choisir une ville</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <!-- Search input -->
+                                        <input type="text" id="citySearchModal" class="form-control mb-3" placeholder="Rechercher une ville...">
+
+                                        <!-- Cities list -->
+                                        <div id="cityList" class="list-group" style="height:300px; overflow-y:auto;">
+                                            {% for city in cities %}
+                                                <button type="button"
+                                                        class="list-group-item list-group-item-action city-option d-none"
+                                                        data-city-id="{{ city.id }}">
+                                                    {{ city }}
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    
+                    
+                </form>
+        </div>
+
+        
+
+        </div>
+
+        <!-- CSS -->
+        <style>
+            .section-home {
+            display: flex;
+            align-items: center;      /* Centre verticalement */
+            justify-content: center;  /* Centre horizontalement */
+            flex-wrap: wrap;
+            
+            padding: 40px 0;
+            }
+
+            /* Image */
+            
+            .home-image {
+                max-width: 100%;
+                max-height: 350px; /* default for larger screens */
+                border: none;
+                box-shadow: none;
+                transition: none;
+            }
+
+
+
+            /* Texte */
+            .text-container {
+            text-align: left;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            }
+            .home-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #393939ff; /* 👈 Black color for the title */
+            margin-bottom: 15px;
+            }
+            .home-subtitle {
+            font-size: 1.3rem;
+            color:  #000;
+            line-height: 1.6;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .section-home {
+                    flex-direction: column;
+                    text-align: center;
+                }
+                .text-container {
+                    text-align: center;
+                    
+                }
+                .home-title {
+                    font-size: 1.5rem;
+                }
+                .home-subtitle {
+                    font-size: 1rem;
+                }
+                .home-image {
+                    max-height: 240px; /* smaller height on small screens */
+                }
+
+            }
+            .profile-section {
+                padding: 15px;
+                margin: 0 auto;
+                background-color: #fff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            }
+            
+            /* Base scrollable rows */
+            .announcement-row,
+            .profiles-row {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+            cursor: grab;
+            padding-bottom: 1.5rem; /* space for scrollbar + buttons */
+            }
+
+            .announcement-row:active,
+            .profiles-row:active {
+            cursor: grabbing;
+            }
+
+            .announcement-row > div,
+            .profiles-row > div {
+            flex: 0 0 auto; /* prevent shrinking */
+            scroll-snap-align: start;
+            }
+
+            /* Custom horizontal scrollbar */
+            .announcement-row::-webkit-scrollbar,
+            .profiles-row::-webkit-scrollbar {
+            height: 6px;
+            }
+
+            .announcement-row::-webkit-scrollbar-thumb,
+            .profiles-row::-webkit-scrollbar-thumb {
+            background-color: #13547a;
+            border-radius: 3px;
+            }
+
+            .announcement-row::-webkit-scrollbar-thumb:hover,
+            .profiles-row::-webkit-scrollbar-thumb:hover {
+            background-color: #0f3b59;
+            }
+
+            .announcement-row::-webkit-scrollbar-track,
+            .profiles-row::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            /* Wrapper for positioning buttons */
+            .scroll-wrapper {
+            position: relative;
+            }
+
+            /* Scroll buttons positioned just above the scrollbar */
+            .scroll-buttons-bottom {
+            position: absolute;
+            bottom: 6px; /* sits right above scrollbar */
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.5rem;
+            pointer-events: none; /* allows scroll underneath */
+            }
+
+            /* Individual buttons */
+            .scroll-btn-inline {
+            background: rgba(19, 84, 122, 0.85);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: background 0.3s;
+            pointer-events: auto; /* re-enable click */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            }
+
+            .scroll-btn-inline:hover {
+            background: rgba(15, 59, 89, 0.95);
+            }
+
+            /* Hide buttons on small and medium devices */
+            @media (max-width: 991.98px) {
+            .scroll-buttons-bottom {
+                display: none !important;
+            }
+            }
+
+            .special {
+                cursor: pointer;
+                border-radius: 8px;
+                transition: border 0.2s, box-shadow 0.2s; /* smooth effect */
+                border: 1px solid transparent; /* initial invisible border */
+                }
+
+                .special:hover {
+                border: 1px solid #13547a; /* border color on hover */
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* optional shadow effect */
+                }
+
+        </style>
+        <style>
+
+                            
+                            .description-clamp {
+                                display: -webkit-box;
+                                -webkit-box-orient: vertical;
+                                -webkit-line-clamp: 3; 
+                                overflow: hidden;
+                                position: relative;
+                                line-height: 1.5rem; /* Adjust based on your font size */
+                                min-height: calc(1.5rem * 3);
+                            }
+                            
+
+
+                            .clamp-link {
+                                position: absolute;
+                                bottom: 0;
+                                right: 0;
+                                background: white; /* matches your container background */
+                                padding-left: 4px;
+                                font-weight: bold;
+                                color: #0d6efd;
+                                text-decoration: none;
+                            }
+                            
+                            .image-ggallery {
+                                display: grid;
+                                grid-template-columns: repeat(2, 1fr);
+                                gap: 5px;
+                                height: 150px; /* fixed container height */
+                            }
+
+                            .image-ggallery.one-row {
+                                grid-template-rows: 150px; /* 1 row for 2 images */
+                            }
+
+                            .image-ggallery.two-rows {
+                                grid-template-rows: 75px 75px; /* 2 rows for 3 or 4 images */
+                            }
+
+                            .image-ggallery .ggallery-image {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                border-radius: 4px;
+                                cursor: pointer;
+                            }
+
+
+                        </style>
+        <script>
+        function scrollRow(rowClass, direction) {
+        const row = document.querySelector(`.${rowClass}`);
+        const scrollAmount = 300; // adjust for your card width
+        row.scrollBy({
+            left: direction === 'left' ? -scrollAmount : scrollAmount,
+            behavior: 'smooth'
+        });
+        }
+        </script>
+       
+
+        <div class="row justify-content-center align-items-center text-center mb-2 mt-4" >
+            <div class="col-12 justify-content-center align-items-center " >
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                    crossorigin="anonymous"></script>
+                <!-- home1 -->
+                <ins class="adsbygoogle"
+                    style="display:block;width:100%;height:100px;"
+                    data-ad-client="ca-pub-5485706271033891"
+                    data-ad-slot="4870129746"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            
+            </div> 
+        </div> 
+
+
+        <div class="col-12 text-center mt-5">
+            <h6 style="font-size: 28px;font-weight: bold;">
+                    Annonces récentes
+               
+            </h6>
+        </div>
+        <div class="col-12 text-start mt-4 mb-2">
+                <h6 style="font-size: 24px;font-weight: bold;">
+                        Demandes de prestations
+                
+                </h6>
+            </div>
+        <style>
+            /* ===== GRID LAYOUT ===== */
+            .announcements-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+                padding: 0;
+            }
+
+            @media (max-width: 768px) {
+                .announcements-grid {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
+                }
+            }
+
+            /* ===== ANNOUNCEMENT CARD ===== */
+            
+
+            .announcement-card:hover {
+                border-color: #ec700a;
+                box-shadow: 0 12px 24px rgba(236, 112, 10, 0.12);
+                transform: translateY(-4px);
+            }
+
+            /* ===== IMAGE GALLERY ===== */
+            .announcement-gallery {
+                width: 100%;
+                height: 200px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2px;
+                background: #f3f4f6;
+                overflow: hidden;
+            }
+
+            .announcement-gallery.single {
+                grid-template-columns: 1fr;
+            }
+
+            .announcement-gallery img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+
+            .announcement-card:hover .announcement-gallery img {
+                transform: scale(1.05);
+            }
+
+          
+
+            /* Author Section */
+            .announcement-author {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .announcement-author-pic {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #ec700a;
+                flex-shrink: 0;
+            }
+
+            .announcement-author-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .announcement-author-name {
+                font-weight: 600;
+                font-size: 13px;
+                color: #1a1a1a;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .announcement-author-location {
+                font-size: 12px;
+                color: #6b7280;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .verified-badge {
+                color: #ec700a;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+
+            /* Category Badge */
+            .announcement-category {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 10px;
+                width: fit-content;
+            }
+
+            .announcement-category.demande-de-prestation {
+                background-color: #e8f7ee;
+                color: #1f8a4c;
+                border: 1px solid #bfe8cf;
+            }
+
+            .announcement-category.offre-de-services {
+                background-color: #eef4ff;
+                color: #3b5bdb;
+                border: 1px solid #cdd9ff;
+            }
+
+            .announcement-category.vente-de-materiel {
+                background-color: #fef5f0;
+                color: #ec700a;
+                border: 1px solid #fed7aa;
+            }
+
+            .announcement-category.location-de-materiel {
+                background-color: #f0f0f0;
+                color: #495057;
+                border: 1px solid #d6d6d6;
+            }
+
+            .announcement-category.offre-d-emploi {
+                background-color: #fce7f3;
+                color: #be185d;
+                border: 1px solid #fbcfe8;
+            }
+
+            /* Price Section */
+            .announcement-price {
+                font-size: 14px;
+                font-weight: 700;
+                color: #ec700a;
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .announcement-price-label {
+                font-size: 12px;
+                color: #6b7280;
+                font-weight: 500;
+            }
+
+
+            /* Footer Info 
+            .announcement-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 10px;
+                border-top: 1px solid #f0f0f0;
+                font-size: 12px;
+                color: #6b7280;
+            }
+
+            .announcement-footer-item {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+                */
+
+            /* ===== LOAD MORE BUTTON ===== */
+            .load-more-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 40px;
+                padding: 20px 0;
+            }
+
+            .load-more-btn {
+                padding: 12px 32px;
+                font-size: 14px;
+                font-weight: 600;
+                background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.25);
+            }
+
+            .load-more-btn:hover {
+                background: linear-gradient(135deg, #d45f00 0%, #c45200 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(236, 112, 10, 0.35);
+            }
+
+            .load-more-btn:active {
+                transform: translateY(0);
+            }
+
+            .load-more-btn i {
+                transition: transform 0.3s ease;
+            }
+
+            .load-more-btn:hover i {
+                transform: translateY(2px);
+            }
+
+            /* ===== EMPTY STATE ===== */
+            .empty-state {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px 20px;
+                color: #6b7280;
+            }
+
+            .empty-state-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+
+            /* Make all cards have equal height */
+.announcement-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;  /* ← This makes them all same height */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Make description take remaining space */
+.announcement-description {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 12px;
+    flex: 1;  /* ← This pushes footer down */
+    min-height: 57px;  /* ← Ensure minimum space (3 lines × 1.5 line-height) */
+}
+
+/* Make content flexible */
+.announcement-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;  /* ← Takes remaining vertical space */
+}
+        </style>
+
+        <div class="row profiles-row flex-nowrap overflow-auto">
+            
+
+            
+            {% for announcement in latest_demandes %}
+                <div class="col-10  col-lg-4 mb-1">
+                    <div class="profile-item" style="display: block;">
+                        <div class="announcement-card" onclick="window.open('{% url 'app:annonce_details' announcement.id %}', '_blank')">
+                            <!-- Gallery -->
+                            <div class="announcement-gallery {% if not announcement.image3 and not announcement.image4 %}single{% endif %}">
+                                {% if announcement.image1 %}
+                                    <img src="{{ announcement.image1.url }}" alt="Announcement image">
+                                {% else %}
+                                    <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-image" style="font-size: 32px; color: #9ca3af;"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if announcement.image2 %}
+                                    <img src="{{ announcement.image2.url }}" alt="Announcement image">
+                                {% endif %}
+                                
+                                {% if announcement.image3 %}
+                                    <img src="{{ announcement.image3.url }}" alt="Announcement image">
+                                {% endif %}
+                                
+                                {% if announcement.image4 %}
+                                    <img src="{{ announcement.image4.url }}" alt="Announcement image">
+                                {% endif %}
+                            </div>
+
+                            <!-- Content -->
+                            <div class="announcement-content">
+                                <!-- Author -->
+                                <div class="announcement-author">
+                                    <img src="{{ announcement.created_by.profile.profile_picture_url }}" alt="{{ announcement.created_by.username }}" class="announcement-author-pic">
+                                    <div class="announcement-author-info">
+                                        <div class="announcement-author-name">
+                                            {{ announcement.created_by.username }}
+                                            {% if announcement.created_by.profile.is_verified %}
+                                                <span class="verified-badge" title="Vérifié">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="announcement-author-location">
+                                            <i class="bi bi-geo-alt"></i>
+                                            {{ announcement.city }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Category -->
+                                <span class="announcement-category category-{{ announcement.category.name_fr|slugify }}">
+                                    {{ announcement.category.name_fr }}
+                                </span>
+
+                                <!-- Price -->
+                                <div class="announcement-price">
+                                    <span class="announcement-price-label">
+                                        {% if announcement.category %}
+                                            {% if announcement.category.name_fr == "Demande de prestation" %}
+                                                Budget:
+                                            {% elif announcement.category.name_fr == "Offre de services" %}
+                                                Tarif:
+                                            {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                                Prix:
+                                            {% elif announcement.category.name_fr == "Location de matériel" %}
+                                                Tarif/jour:
+                                            {% elif announcement.category.name_fr == "Offre d'emploi" %}
+                                                Salaire:
+                                            {% else %}
+                                                Budget:
+                                            {% endif %}
+                                        {% else %}
+                                            Budget:
+                                        {% endif %}
+                                    </span>
+                                    {% if announcement.a_convenir %}
+                                        <span>À convenir</span>
+                                    {% else %}
+                                        <span>{{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Description -->
+                                <div class="announcement-description">
+                                    {{ announcement.description|linebreaksbr }}
+                                </div>
+
+                                <!-- Footer 
+                                <div class="announcement-footer">
+                                    <div class="announcement-footer-item">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <span>{{ announcement.created_at|date:"d M" }}</span>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+            <div class="col-12 text-start mt-3 mb-2">
+                <h6 style="font-size: 24px;font-weight: bold;">
+                        Offres de services
+                
+                </h6>
+            </div>
+        <div class="row profiles-row flex-nowrap overflow-auto mt-2">
+            
+            {% for announcement  in  latest_offres %}
+                <div class="col-10  col-lg-4 mb-1">
+                <div class="profile-item" style="display: block;">
+                    <div class="announcement-card" onclick="window.open('{% url 'app:annonce_details' announcement.id %}', '_blank')">
+                        <!-- Gallery -->
+                        <div class="announcement-gallery {% if not announcement.image3 and not announcement.image4 %}single{% endif %}">
+                            {% if announcement.image1 %}
+                                <img src="{{ announcement.image1.url }}" alt="Announcement image">
+                            {% else %}
+                                <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image" style="font-size: 32px; color: #9ca3af;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            {% if announcement.image2 %}
+                                <img src="{{ announcement.image2.url }}" alt="Announcement image">
+                            {% endif %}
+                            
+                            {% if announcement.image3 %}
+                                <img src="{{ announcement.image3.url }}" alt="Announcement image">
+                            {% endif %}
+                            
+                            {% if announcement.image4 %}
+                                <img src="{{ announcement.image4.url }}" alt="Announcement image">
+                            {% endif %}
+                        </div>
+
+                        <!-- Content -->
+                        <div class="announcement-content">
+                            <!-- Author -->
+                            <div class="announcement-author">
+                                <img src="{{ announcement.created_by.profile.profile_picture_url }}" alt="{{ announcement.created_by.username }}" class="announcement-author-pic">
+                                <div class="announcement-author-info">
+                                    <div class="announcement-author-name">
+                                        {{ announcement.created_by.username }}
+                                        {% if announcement.created_by.profile.is_verified %}
+                                            <span class="verified-badge" title="Vérifié">
+                                                <i class="fas fa-check-circle"></i>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="announcement-author-location">
+                                        <i class="bi bi-geo-alt"></i>
+                                        {{ announcement.city }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <span class="announcement-category category-{{ announcement.category.name_fr|slugify }}">
+                                {{ announcement.category.name_fr }}
+                            </span>
+
+                            <!-- Price -->
+                            <div class="announcement-price">
+                                <span class="announcement-price-label">
+                                    {% if announcement.category %}
+                                        {% if announcement.category.name_fr == "Demande de prestation" %}
+                                            Budget:
+                                        {% elif announcement.category.name_fr == "Offre de services" %}
+                                            Tarif:
+                                        {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                            Prix:
+                                        {% elif announcement.category.name_fr == "Location de matériel" %}
+                                            Tarif/jour:
+                                        {% elif announcement.category.name_fr == "Offre d'emploi" %}
+                                            Salaire:
+                                        {% else %}
+                                            Budget:
+                                        {% endif %}
+                                    {% else %}
+                                        Budget:
+                                    {% endif %}
+                                </span>
+                                {% if announcement.a_convenir %}
+                                    <span>À convenir</span>
+                                {% else %}
+                                    <span>{{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Description -->
+                            <div class="announcement-description">
+                                {{ announcement.description|linebreaksbr }}
+                            </div>
+
+                            <!-- Footer 
+                            <div class="announcement-footer">
+                                <div class="announcement-footer-item">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>{{ announcement.created_at|date:"d M" }}</span>
+                                </div>
+                            </div>
+                            -->
+                        </div>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+        
+        
+      
+        <div class="col-12 text-center ">
+            
+            <a href="{% url 'app:annonces' %}" class="btn custom-btn mt-2"
+            style="background-color:#13547a; color:white;"
+            onmouseover="this.style.backgroundColor='#0f3a5a';"
+            onmouseout="this.style.backgroundColor='#13547a';">
+                Voir toutes les annonces
+            </a>
+
+
+        </div>
+        <div class="row justify-content-center align-items-center text-center mb-2 mt-5" >
+            <div class="col-12 justify-content-center align-items-center " >
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                    crossorigin="anonymous"></script>
+                <!-- home2 -->
+                <ins class="adsbygoogle"
+                    style="display:block;width:100%;height:100px;"
+                    data-ad-client="ca-pub-5485706271033891"
+                    data-ad-slot="7883305899"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+
+            
+            </div> 
+        </div> 
+        <div class="row  mt-5 mb-2 p-3" 
+            style="background: #f5f7f8; border-radius: 12px;">
+            <h6 class="text-center" style="font-size: 30px; font-weight: bold;">
+                Ils / Elles 
+                <span style="color:#ec700a; display:inline-block; ">
+                    répondent
+                </span>
+                à vos besoins
+            </h6>
+
+            
+            
+
+            <!-- Button below the title -->
+            <div class="text-center mt-5">
+                <a href="{% url 'app:prestataires' %}">
+                    <button class="btn custom-btn ">
+                    Voir plus
+                    </button>
+                </a>
+            </div>
+        </div>
+        <h6 class="text-start mt-5 fw-bold" style="font-size:22px;">
+            Découvrez les nouveaux prestataires et artisans
+        </h6>
+        <style>
+            /* ===== GRID ===== */
+            .prestataires-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+                margin-top: 24px;
+            }
+
+            @media (max-width: 768px) {
+                .prestataires-grid {
+                    grid-template-columns: 1fr;
+                    gap: 14px;
+                }
+            }
+
+            /* ===== CARD ===== */
+            .prestataire-card {
+                background: white;
+                border-radius: 12px;
+                padding: 18px;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                height: 100%;
+            }
+
+            .prestataire-card:hover {
+                border-color: #ec700a;
+                box-shadow: 0 10px 24px rgba(236, 112, 10, 0.1);
+                transform: translateY(-4px);
+            }
+
+            /* Header */
+            .prestataire-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .prestataire-author {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .prestataire-avatar {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #ec700a;
+                flex-shrink: 0;
+            }
+
+            .prestataire-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .prestataire-name {
+                font-size: 14px;
+                font-weight: 700;
+                color: #1a1a1a;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .prestataire-location {
+                font-size: 12px;
+                color: #6b7280;
+                margin-top: 2px;
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+
+            .verified-chip {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+                background: #ec700a;
+                color: white;
+                border-radius: 50%;
+                font-size: 8px;
+                flex-shrink: 0;
+            }
+
+            .prestataire-distance {
+                font-size: 12px;
+                font-weight: 600;
+                color: #6b7280;
+                white-space: nowrap;
+                background: #f4f5f7;
+                padding: 4px 8px;
+                border-radius: 20px;
+                flex-shrink: 0;
+            }
+
+            /* Meta */
+            .prestataire-meta {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .prestataire-rating {
+                font-size: 13px;
+                font-weight: 600;
+                color: #1a1a1a;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .rating-count {
+                font-size: 12px;
+                color: #9ca3af;
+                font-weight: 400;
+            }
+
+            .statut-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            .statut-particulier {
+                background-color: #e8f7ee;
+                color: #1f8a4c;
+                border: 1px solid #bfe8cf;
+            }
+
+            .statut-entreprise {
+                background-color: #f0f0f0;
+                color: #495057;
+                border: 1px solid #d6d6d6;
+            }
+
+            /* Bio */
+            .prestataire-bio {
+                font-size: 13px;
+                color: #4b5563;
+                line-height: 1.6;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                overflow: hidden;
+                flex: 1;
+                min-height: 58px;
+            }
+
+            /* Skills */
+            .prestataire-skills {
+                padding-top: 10px;
+                border-top: 1px solid #f0f0f0;
+            }
+
+            .skills-text {
+                display: block;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                font-size: 12px;
+                font-weight: 600;
+                color: #6b7280;
+            }
+
+            /* Empty State */
+            .empty-state {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 60px 20px;
+                color: #9ca3af;
+            }
+
+            .empty-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.4;
+            }
+
+            /* Load More */
+            .load-more-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 32px;
+                padding: 20px 0;
+            }
+
+            .load-more-btn {
+                padding: 12px 32px;
+                font-size: 14px;
+                font-weight: 600;
+                background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.25);
+            }
+
+            .load-more-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(236, 112, 10, 0.35);
+            }
+
+            .load-more-btn:hover i {
+                transform: translateY(2px);
+                display: inline-block;
+                transition: transform 0.3s ease;
+            }
+        </style>
+
+            <div class="row profiles-row flex-nowrap overflow-auto mt-2">
+            {% for profile  in  profiles %}
+            <div class="col-10 col-lg-4 mb-3">
+                <div class="profile-item">
+                    <div class="prestataire-card" onclick="window.open('{% url 'app:account' profile.slug %}', '_blank')">
+
+                        <!-- Header: Avatar + Name + Distance -->
+                        <div class="prestataire-header">
+                            <div class="prestataire-author">
+                                <img src="{{ profile.profile_picture_url }}" alt="{{ profile.user.username }}" class="prestataire-avatar">
+                                <div class="prestataire-info">
+                                    <div class="prestataire-name">
+                                        {{ profile.user.username }}
+                                        {% if profile.is_verified %}
+                                            <span class="verified-chip" title="Vérifié"><i class="fas fa-check"></i></span>
+                                        {% endif %}
+                                    </div>
+                                    {% if profile.city %}
+                                    <div class="prestataire-location">
+                                        <i class="bi bi-geo-alt-fill"></i> {{ profile.city }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Meta: Rating + Statut -->
+                        <div class="prestataire-meta">
+                            <div class="prestataire-rating">
+                                <i class="fas fa-star" style="color:#ec700a;"></i>
+                                {% if profile.review_count > 0 %}
+                                    {{ profile.average_rating|floatformat:1 }}/5
+                                {% else %}
+                                    —/5
+                                {% endif %}
+                                <span class="rating-count"> Avis ({{ profile.review_count }})</span>
+                            </div>
+
+                            <span class="statut-badge statut-{{ profile.statut }}">
+                                {% if profile.statut == 'particulier' %}
+                                    <i class="fas fa-user"></i> Particulier
+                                {% elif profile.statut == 'entreprise' %}
+                                    <i class="fas fa-building"></i> Entreprise
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Bio -->
+                        {% if profile.bio %}
+                        <div class="prestataire-bio">
+                            {{ profile.bio|linebreaksbr }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Skills -->
+                        {% if profile.skills.all %}
+                        <div class="prestataire-skills">
+                            {% with all_skills=profile.skills.all|join:", " %}
+                                <span class="skills-text" title="{{ all_skills }}">{{ all_skills }}</span>
+                            {% endwith %}
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            
+            </div>
+            {% endfor %}
+            </div>
+        <h6 class="text-center fw-bold mt-5" style="font-size:30px;">
+            Réalisations ajoutés récemment
+        </h6>
+
+        <div class="row profiles-row flex-nowrap overflow-auto mt-5 mb-2">
+    {% for project in latest_projects %}
+    <div class="col-9 col-lg-3 mb-1">
+        <div class="profile-item" style="display: block;">
+            <div class="announcement-card" onclick="window.open('{% url 'app:project_details' project.id %}', '_blank')">
+                <!-- Gallery -->
+                <div class="announcement-gallery {% if not project.image3 and not project.image4 %}single{% endif %}">
+                    {% if project.image1 %}
+                        <img src="{{ project.image1.url }}" alt="Project image">
+                    {% else %}
+                        <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-image" style="font-size: 32px; color: #9ca3af;"></i>
+                        </div>
+                    {% endif %}
+                    {% if project.image2 %}
+                        <img src="{{ project.image2.url }}" alt="Project image">
+                    {% endif %}
+                    {% if project.image3 %}
+                        <img src="{{ project.image3.url }}" alt="Project image">
+                    {% endif %}
+                    {% if project.image4 %}
+                        <img src="{{ project.image4.url }}" alt="Project image">
+                    {% endif %}
+                </div>
+
+                <!-- Content -->
+                <div class="announcement-content">
+                    <!-- Author -->
+                    <div class="announcement-author">
+                        <img src="{{ project.user.profile.profile_picture_url }}" alt="{{ project.user.username }}" class="announcement-author-pic">
+                        <div class="announcement-author-info">
+                            <div class="announcement-author-name">
+                                {{ project.user.username }}
+                                {% if project.user.profile.is_verified %}
+                                    <span class="verified-badge" title="Vérifié">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            {% if project.user.profile.city %}
+                            <div class="announcement-author-location">
+                                <i class="bi bi-geo-alt"></i>
+                                {{ project.user.profile.city }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="announcement-description">
+                        {{ project.description|linebreaksbr }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+        
+
+        
+        
+
+        <style>
+            .text-brand { color: #ec700a !important; }
+        </style>
+
+        <div class="row text-center mt-5 mb-2 p-3" style="background: #f5f7f8; border-radius: 12px;">
+
+            <!-- Prestataire -->
+            <div class="col-12 mb-5">
+                <h6 class="text-center mb-4" style="font-size: 28px; font-weight: bold;">
+                    Vous êtes <span class="fw-bold text-brand">prestataire</span> ?
+                </h6>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="h-100">
+                            <i class="bi bi-person-check display-6 mb-3 text-brand"></i>
+                            <h4 class="fw-bold mb-2 fs-6 fs-lg-4">1. Complétez et ajoutez votre profil à la recherche</h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="h-100">
+                            <i class="bi bi-chat-dots display-6 mb-3 text-brand"></i>
+                            <h4 class="fw-bold mb-2 fs-6 fs-lg-4">2. Répondez aux annonces des clients</h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="h-100">
+                            <i class="bi bi-graph-up-arrow display-6 mb-3 text-brand"></i>
+                            <h4 class="fw-bold mb-2 fs-6 fs-lg-4">3. Augmentez votre visibilité et obtenez de nouveaux clients</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'app:user_login' %}">
+                        <button class="btn custom-btn">Je propose mes services</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Client -->
+            <div class="col-12 mt-2">
+                <h6 class="text-center mb-4" style="font-size: 28px; font-weight: bold;">
+                    Vous êtes <span class="fw-bold text-brand">client</span> ?
+                </h6>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="h-100">
+                            <i class="bi bi-megaphone display-6 mb-3 text-brand"></i>
+                            <h4 class="fw-bold mb-2 fs-6 fs-lg-4">1. Publiez votre annonce</h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="h-100">
+                            <i class="bi bi-search display-6 mb-3 text-brand"></i>
+                            <h4 class="fw-bold mb-2 fs-6 fs-lg-4">2. Cherchez le prestataire idéal</h4>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="h-100">
+                            <i class="bi bi-check-circle display-6 mb-3 text-brand"></i>
+                            <h4 class="fw-bold mb-2 fs-6 fs-lg-4">3. Réalisez vos travaux</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'app:user_login' %}">
+                        <button class="btn custom-btn">Se connecter / S'inscrire</button>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="row justify-content-center align-items-center text-center mb-2 mt-5" >
+            <div class="col-12 justify-content-center align-items-center " >
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                    crossorigin="anonymous"></script>
+                <!-- home3 -->
+                <ins class="adsbygoogle"
+                    style="display:block;width:100%;height:100px;"
+                    data-ad-client="ca-pub-5485706271033891"
+                    data-ad-slot="3456798116"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+
+           
+            </div> 
+        </div> 
+    </div>
+</section>
+
+<section class="faq-section" >
+    <div class="container">
+        
+        
+        <div class="row">
+            <div class="col-12 text-start mt-5 mb-4">
+                <h6 style="font-size: 28px; font-weight: bold;">
+                        Questions Fréquemment Posées
+                    
+                </h6>
+            </div>
+
+            
+
+            <div class="clearfix"></div>
+
+            <div class="col-lg-5 col-12">
+                <img src="{% static 'app/images/faq_graphic.jpg' %}" class="img-fluid" alt="FAQs">
+            </div>
+
+            <div class="col-lg-6 col-12 m-auto">
+         
+               <div class="accordion" id="accordionExample2">
+
+    <!-- Question 1 -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Qu’est-ce que BricoleUp ?
+            </button>
+        </h2>
+
+        <div id="collapseOne" class="accordion-collapse collapse show" 
+             aria-labelledby="headingOne" data-bs-parent="#accordionExample2">
+            <div class="accordion-body">
+                BricoleUp est une plateforme qui met en relation des particuliers ayant des 
+                travaux à réaliser avec des prestataires qualifiés. Publiez votre demande, 
+                recevez des réponses et organisez vos travaux en toute simplicité.
+            </div>
+        </div>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Rejoindre la plateforme est-il gratuit ?
+            </button>
+        </h2>
+
+        <div id="collapseTwo" class="accordion-collapse collapse" 
+             aria-labelledby="headingTwo" data-bs-parent="#accordionExample2">
+            <div class="accordion-body">
+                Oui, l’inscription est entièrement gratuite pour les clients comme pour les 
+                prestataires. Vous pouvez créer un compte, publier des annonces, consulter 
+                les profils et répondre aux demandes sans aucun frais.
+            </div>
+        </div>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Comment proposer mes services ?
+            </button>
+        </h2>
+
+        <div id="collapseThree" class="accordion-collapse collapse" 
+             aria-labelledby="headingThree" data-bs-parent="#accordionExample2">
+            <div class="accordion-body">
+                Créez un compte, complétez votre profil (compétences, expériences, zone 
+                d’intervention) et vous serez automatiquement visible dans les recherches. 
+                Vous pouvez ensuite répondre aux annonces publiées par les clients.
+            </div>
+        </div>
+    </div>
+
+    <!-- Question 4 (optionnelle mais recommandée) -->
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingFour">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                Comment choisir le bon prestataire ?
+            </button>
+        </h2>
+
+        <div id="collapseFour" class="accordion-collapse collapse" 
+             aria-labelledby="headingFour" data-bs-parent="#accordionExample2">
+            <div class="accordion-body">
+                Consultez les profils, avis, photos et compétences. Vous pouvez échanger 
+                directement avec le prestataire via la messagerie avant d’accepter une intervention.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        color: #ec700a;
+        background-color: #f0faf9;
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        border-color: #ec700a;
+        box-shadow: 0 0 0 .25rem rgba(128, 208, 199, .3);
+    }
+</style>
+
+
+            
+            </div>
+            
+        </div>
+      
+    </div>
+</section>
+<section class=" d-flex flex-column justify-content-center align-items-center" >
+    <div class="container">
+        <!-- 
+        <div class="row mb-5 mt-5">
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Aide à domicile.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="55">
+                            <button type="submit" class="btn custom-btn">
+                                    Aide à domicile
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/bricolage.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="49">
+                            <button type="submit" class="btn custom-btn">
+                                    Bricolage
+                               
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/chauffage.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="58">
+                            <button type="submit" class="btn custom-btn">
+                                    Chauffage
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Déménagement.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="50">
+                            <button type="submit" class="btn custom-btn">
+                                    Déménagement
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Électricité.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="44">
+                            <button type="submit" class="btn custom-btn">
+                                    Électricité
+                               
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/jardinage.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="48">
+                            <button type="submit" class="btn custom-btn">
+                                    Jardinage
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Maçonnerie.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="47">
+                            <button type="submit" class="btn custom-btn">
+                                    Maçonnerie
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/menage.jpeg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="51">
+                            <button type="submit" class="btn custom-btn">
+                                    Ménage
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Peinture.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="57">
+                            <button type="submit" class="btn custom-btn">
+                                    Peinture
+                               
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/plombier.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="45">
+                            <button type="submit" class="btn custom-btn">
+                                    Plomberie
+                               
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Piscine.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="60">
+                            <button type="submit" class="btn custom-btn">
+                                    Piscine
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="service-row" style="background-image: url({% static 'app/images/Rénovation.jpg' %});">
+                    <div class="service-content">
+                        <form method="POST" action="{% url 'app:prestataires' %}" class="skill-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="skills" value="64">
+                            <button type="submit" class="btn custom-btn">
+                                    Rénovation
+                                
+                            </button>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var forms = document.querySelectorAll('.skill-form');
+                forms.forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        var action = form.getAttribute('action');
+                        var params = new URLSearchParams(new FormData(form)).toString();
+                        var url = action + '?' + params;
+                        window.open(url);
+                    });
+                });
+            });
+        </script>
+         -->
+
+        <div class="row justify-content-center align-items-center text-center mb-2 mt-5" >
+            <div class="col-12 justify-content-center align-items-center " >
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                    crossorigin="anonymous"></script>
+                <!-- home4 -->
+                <ins class="adsbygoogle"
+                    style="display:block;width:100%;height:100px;"
+                    data-ad-client="ca-pub-5485706271033891"
+                    data-ad-slot="3365476388"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+
+            </div> 
+        </div> 
+    </div>
+</section>
+    <style>
+
+        .bio-preview {
+            min-height: 6em;
+        
+        }
+
+    
+
+        .skills-container {
+            max-width: 100%;
+        }
+
+        /* Ensure it stays one line */
+        .skills-text {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%; /* parent width */
+            vertical-align: bottom;
+            font-weight: bold;
+            color: #444;
+        }
+
+
+        /* Add "... plus" when text is cut off */
+        .skills-text:after {
+            content: " plus";
+            color: #0d6efd; /* bootstrap primary blue */
+            font-weight: bold;
+            margin-left: 4px;
+            display: none; /* only show if truncated */
+        }
+
+    
+    </style>
+  <style>
+            .background-slideshow {
+                position: relative;
+                min-height: 400px;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 40px 20px;
+                color: white;
+            }
+
+            .background-slideshow::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-color: rgba(0, 0, 0, 0.35);
+                z-index: 0;
+            }
+
+            .slideshow-inner {
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                
+                margin: 0 auto;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .top-texts {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .top-texts h6:first-child {
+                font-size: 32px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .top-texts h6:last-child {
+                font-size: 20px;
+                font-weight: 400;
+                margin-bottom: 0;
+            }
+
+            #slideshow-title {
+            margin: auto 0;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ec700a;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+            padding: 20px 10px;
+            background: rgba(0, 0, 0, 0.25); /* subtle background for readability */
+            border-radius: 8px;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            transition: opacity 0.5s ease-in-out;
+            }
+
+            /* Optional: simple fade-in effect for each new title */
+            #slideshow-title.fade {
+            opacity: 0;
+            }
+            #slideshow-title.show {
+            opacity: 1;
+            transition: opacity 0.8s ease-in;
+            }
+
+            @media (max-width: 768px) {
+            #slideshow-title {
+                font-size: 22px;
+                padding: 12px;
+            }
+
+            }
+
+        
+            .feature-icon {
+                font-size: 28px;
+                margin-bottom: 10px;
+                color: #ec700a;
+            }
+            .feature-title {
+                font-size: 14px;
+                
+            }
+
+            /* Responsive font sizes on small devices */
+            @media (max-width: 576px) {
+                .feature-title {
+                    font-size: 12px;
+                }
+                .feature-icon {
+                    font-size: 22px;
+                }
+                
+            }
+
+            .responsive-title {
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .responsive-text {
+                font-size: 16px;
+            }
+
+            @media (max-width: 576px) {
+                .responsive-title {
+                    font-size: 20px;
+                }
+
+                .responsive-text {
+                    font-size: 14px;
+                }
+            }
+
+        
+                            .main-image-wrapper {
+                                position: relative;
+                                text-align: center;
+                                
+                            }
+                        
+                            .main-image {
+                                height: 200px;
+                                width: auto;
+                                display: block;
+                                margin: 0 auto;
+                                object-fit: fill;
+
+                                
+                            }
+                        
+                            .thumbnail-list {
+                                position: absolute;
+                                width: 100%;
+                                bottom: 10px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                gap: 5px;
+                                background: rgba(0, 0, 0, 0.5);
+                                padding: 5px;
+                                border-radius: 8px;
+                                max-width: 100%;
+                                white-space: nowrap;
+                                overflow-x: auto;
+                                scrollbar-width: none;
+                            }
+                        
+                            .thumbnail-item {
+                                height: 40px;
+                                width: 40px;
+                                cursor: pointer;
+                                border: 2px solid transparent;
+                                transition: 0.3s;
+                                border-radius: 5px;
+                            }
+                        
+                            .thumbnail-item:hover {
+                                border-color: #ec700a;
+                            }
+              
+
+            .topics-detail-block {
+                break-inside: avoid;
+                width: 100%;
+            }
+        
+            .profile-card {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .profile-bottom-btn {
+                margin-top: auto;
+            }
+
+            .profile-wrapper {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+       
+        .service-row {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            padding: 50px 20px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            text-align: center; /* Center-align text */
+            transition: box-shadow 0.3s ease;
+        }
+        .service-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            transition: box-shadow 0.3s ease;
+            z-index: 0;
+        }
+        .service-row:hover::before {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .service-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+        }
+        .service-name {
+            margin-bottom: 20px; /* Space between name and button */
+        }
+
+        
+    
+    </style>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,357 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+S'inscrire - BricoleUp
+{% endblock %}
+
+
+{% block meta %}
+
+
+    <meta name="author" content="BricoleUp">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="S'inscrire à BricoleUp">
+    <meta property="og:description" content="Créez votre compte BricoleUp pour gérer vos annonces et prestations de services.">
+    <meta property="og:url" content="https://bricoleup.com/connexion/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="BricoleUp">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "url": "https://bricoleup.com/inscription/",
+        "name": "S'inscrire - BricoleUp",
+        "description": "Créez votre compte pour gérer vos annonces et prestations de services."
+    }
+    </script>
+{% endblock %}
+
+
+
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/css/intlTelInput.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<section class=" d-flex flex-column justify-content-center align-items-center" style="margin-top: 65px; ">
+
+        <div class="container " >
+
+            <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+                <div class="col-12 justify-content-center align-items-center " >
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                        crossorigin="anonymous"></script>
+                    <!-- login1 -->
+                    <ins class="adsbygoogle"
+                        style="display:block;width:100%;height:130px;"
+                        data-ad-client="ca-pub-5485706271033891"
+                        data-ad-slot="1443279805"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+       
+            <div class="row justify-content-center align-items-center mt-5" >
+                
+
+                <div class="col-lg-5 col-12  mb-5">
+                    <div class="row justify-content-center align-items-center">
+                        <div class="row mb-1 p-3" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                            
+                            <form id="registrationForm" action="{% url 'app:registration_step1' %}" method="post" class="custom-form contact-form  compact-floating" role="form">
+                                {% csrf_token %}
+                            
+                                    
+
+
+                                    <div class="col-lg-12 col-12 mt-2">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-person" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Nom d'utilisateur</span>
+                                        </label>
+                                        <input type="text" name="username" id="username" class="form-control"
+                                            placeholder="Votre nom d'utilisateur"
+                                            required style="border-radius: 8px; padding: 12px 14px;">
+                                    </div>
+                                    
+                                    <div class="col-lg-12 col-12 ">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-envelope" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Adresse e-mail</span>
+                                        </label>
+                                        <input type="email" name="email" id="email" class="form-control"
+                                            placeholder="exemple@email.com"
+                                            required style="border-radius: 8px; padding: 12px 14px;">
+                                    </div>
+
+                                    <div class="col-lg-12 col-12 ">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-telephone" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Numéro de téléphone</span>
+                                        </label>
+                                        
+                                        
+                                        <input id="mobile" type="tel" name="mobile" class="form-control"
+                                         required style="border-radius: 8px; padding: 12px 14px; padding-left: 60px;">
+
+                                        <input type="hidden" name="mobile_full" id="mobile_full">
+                                        <input type="hidden" name="mobile_country" id="mobile_country">
+                                    </div>
+                                    <div id="phoneError" class="invalid-feedback" style="display:none;">
+                                        Numéro de téléphone invalide
+                                    </div>
+                                    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+                                    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
+                                    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/utils.js"></script>
+
+
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+
+                                            const input = document.querySelector("#mobile");
+                                            const form = document.querySelector("#registrationForm");
+
+                                            const fullInput = document.querySelector("#mobile_full");
+                                            const countryInput = document.querySelector("#mobile_country");
+
+                                            const iti = window.intlTelInput(input, {
+                                                initialCountry: "fr",
+                                                preferredCountries: ["fr", "be", "lu", "ch", "ma", "dz", "tn"],
+                                                nationalMode: false,
+                                                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/utils.js"
+                                            });
+
+                                            // ✅ On submit: send clean data
+                                            form.addEventListener("submit", function(e){
+
+                                                const errorDiv = document.getElementById("phoneError");
+
+                                                if (!iti.isValidNumber()) {
+                                                    e.preventDefault();
+
+                                                    input.classList.add("is-invalid");
+                                                    errorDiv.style.display = "block";
+                                                    return;
+                                                }
+
+                                                // ✅ valid → prepare data
+                                                fullInput.value = iti.getNumber();
+                                                countryInput.value = iti.getSelectedCountryData().iso2;
+
+                                                // ✅ show loader ONLY if valid
+                                                const btn = document.getElementById("settingsSubmitBtn");
+                                                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Inscription...`;
+                                                btn.disabled = true;
+                                            });
+
+                                        });
+
+                                    </script>
+ 
+                                    
+
+                                    
+
+                                    <div class="col-12 mt-3">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-lock" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Mot de passe</span>
+                                        </label>
+                                        <div style="position: relative;">
+                                            <input type="password" name="password2" id="password2" class="form-control" style="border-radius: 8px; padding: 12px 14px;"
+                                                placeholder="Entrez un mot de passe sécurisé"
+                                                required>
+
+                                            <button type="button" id="togglePassword" class="btn-toggle-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af;">
+                                                <i class="bi bi-eye-slash" id="eyeIcon2"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            let togglePassword2 = document.getElementById("togglePassword");
+                                            let passwordInput2 = document.getElementById("password2");
+                                            let eyeIcon2 = document.getElementById("eyeIcon2");
+                                        
+                                            togglePassword2.addEventListener("click", function (e) {
+                                                e.preventDefault();
+                                                if (passwordInput2.type === "password") {
+                                                    passwordInput2.type = "text";
+                                                    eyeIcon2.classList.remove("bi-eye-slash");
+                                                    eyeIcon2.classList.add("bi-eye");
+                                                } else {
+                                                    passwordInput2.type = "password";
+                                                    eyeIcon2.classList.remove("bi-eye");
+                                                    eyeIcon2.classList.add("bi-eye-slash");
+                                                }
+                                            });
+                                        });
+                                    </script>
+                     
+                                   {% if error_message %}
+                                        <div class="col-lg-12 col-12 mt-3">
+                                            <div class="alert alert-danger" role="alert">
+                                                {{ error_message }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                            
+                                
+                                    <div class="col-12 mt-4">
+                                        <button id="settingsSubmitBtn" type="submit" class="form-control" style="background-color: #ec700a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.3s ease;">
+                                                        S'inscrire →
+                                                   
+
+                                        </button>
+                                    </div>
+                                    
+                            </form>
+                           
+                       
+                            
+                                
+                           <div class="col-lg-12 col-12 text-center mt-3">
+                                <p>
+                                        Vous avez déjà un compte? <a href="{% url 'app:user_login' %}" class="ms-2">Se connecter</a>
+                                    
+                                </p>
+                            </div>
+
+                            <div class="col-12 mb-2">
+                                <span class="form-check-label" style="font-size:14px;">
+                                        En cliquant sur <strong>S'inscrire →</strong>, vous acceptez les 
+                                        <a href="{% url 'app:conditions' %}" >CGU</a> 
+                                        et la <a href="{% url 'app:politique' %}" >Politique de confidentialité</a> de BricoleUp.
+                                
+                                </span>
+                            </div>
+
+                        </div>
+                    
+                            
+                            
+                    </div>
+                </div>
+                
+
+            </div>
+
+            
+      
+        
+        </div>
+</section>
+<style>
+ 
+    .button-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .btn-choice {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        padding: 10px;
+        border-radius: 8px;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: bold;
+       
+        text-decoration: none;
+        
+    }
+
+    
+
+    /* Selected State */
+    .btn-choice.selected {
+        background-color: #ec700a;
+       
+    }
+
+    .field-label-custom {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .btn-toggle-password:hover {
+        color: #ec700a;
+    }
+
+    .form-control:focus {
+        border-color: #ec700a;
+        box-shadow: 0 0 0 0.2rem rgba(236, 112, 10, 0.25);
+    }
+
+    /* International Tel Input Styling */
+    .iti {
+        width: 100%;
+    }
+
+    .iti__flag-container {
+        background-color: #f8f9fa;
+        border-radius: 8px 0 0 8px;
+    }
+
+    .iti__selected-country {
+        background-color: transparent;
+        border-right: 1px solid #ddd;
+    }
+
+    .iti__selected-country:hover {
+        background-color: #f0f0f0;
+    }
+
+    .iti__country-list {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .iti__country {
+        padding: 10px;
+    }
+
+    .iti__country:hover {
+        background-color: #f0f0f0;
+    }
+
+    .iti__country.iti__highlight {
+        background-color: rgba(236, 112, 10, 0.1);
+    }
+
+    .iti__country.iti__active {
+        background-color: #ec700a;
+        color: white;
+    }
+
+    .iti__country.iti__active .iti__country-name,
+    .iti__country.iti__active .iti__dial-code {
+        color: white;
+    }
+
+    /* Preferred countries divider */
+    .iti__country-list .iti__country:nth-child(7) {
+        border-bottom: 2px solid #ec700a;
+    }
+
+    
+</style>
+
+
+
+{% endblock %}

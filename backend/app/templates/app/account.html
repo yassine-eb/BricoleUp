@@ -1,0 +1,1765 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}{{ profile.user.username }}{% endblock %}
+{% block content %}
+
+
+    
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+                <div class="col-lg-10 col-md-12 col-12 mb-3">
+                    <div class="profile-container">
+                        <!-- Banner -->
+                        <div class="profile-banner clickable-cover" 
+                            style="
+                                position: relative;
+                                border-radius: 12px 12px 0 0;
+                                background-size: cover;
+                                background-position: center;
+                                {% if profile.cover_picture_url %}
+                                    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%), url('{{ profile.cover_picture_url }}');
+                                {% else %}
+                                    background-color: #f0f0f0;
+                                    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+                                {% endif %}
+                                ">
+                            
+                        </div>
+
+                        <!-- Cover Picture Modal -->
+                        <div class="modal fade" id="coverModal" tabindex="-1" aria-labelledby="coverModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-image">
+                                <div class="modal-content bg-dark border-0">
+                                    <!-- Close Button -->
+                                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                                    <!-- Image -->
+                                    <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                                        <img src="{{ profile.cover_picture_url }}"
+                                            alt="Cover image"
+                                            class="modal-image-content">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const coverBanner = document.querySelector(".clickable-cover");
+                            const coverModal = new bootstrap.Modal(document.getElementById("coverModal"));
+
+                            // Open modal on click
+                            if (coverBanner) {
+                                coverBanner.addEventListener("click", () => {
+                                    coverModal.show();
+                                });
+                            }
+                        });
+                        </script>
+
+                        <!-- Profile Info Section -->
+                        <div class="profile-main">
+                            <!-- Profile picture -->
+                            <div class="profile-picture">
+                                <img
+                                    src="{{ profile.profile_picture_url }}"
+                                    alt="{{ profile.user.username }}"
+                                    class="clickable-avatar"
+                                >
+                            </div>
+
+                            <!-- Avatar Modal -->
+                            <div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-image">
+                                    <div class="modal-content bg-dark border-0">
+                                        <!-- Close Button -->
+                                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                                        <!-- Image -->
+                                        <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                                            <img src="{{ profile.profile_picture_url }}"
+                                                alt="{{ profile.user.username }}"
+                                                class="modal-image-content">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const avatar = document.querySelector(".clickable-avatar");
+                                const avatarModal = new bootstrap.Modal(document.getElementById("avatarModal"));
+
+                                // Open modal when avatar clicked
+                                if (avatar) {
+                                    avatar.addEventListener("click", () => {
+                                        avatarModal.show();
+                                    });
+                                }
+                            });
+                            </script>
+
+                            <style>
+                            /* ===== MODAL STYLING ===== */
+                            .modal-image {
+                                --bs-modal-width: 90vw;
+                                max-width: 90vw;
+                            }
+
+                            .modal-image-content {
+                                display: block;
+                                max-height: 85vh;
+                                max-width: 100%;
+                                width: auto;
+                                height: auto;
+                                object-fit: contain;
+                                border-radius: 8px;
+                            }
+
+                            /* Desktop: Max width 800px */
+                            @media (min-width: 992px) {
+                                .modal-image {
+                                    --bs-modal-width: 800px;
+                                    max-width: 800px;
+                                }
+
+                                .modal-image-content {
+                                    max-height: 80vh;
+                                    max-width: 700px;
+                                }
+                            }
+
+                            /* Tablet: 85vw */
+                            @media (max-width: 991px) and (min-width: 768px) {
+                                .modal-image {
+                                    --bs-modal-width: 85vw;
+                                    max-width: 85vw;
+                                }
+
+                                .modal-image-content {
+                                    max-height: 80vh;
+                                }
+                            }
+
+                            /* Mobile: 95vw */
+                            @media (max-width: 767px) {
+                                .modal-image {
+                                    --bs-modal-width: 95vw;
+                                    max-width: 95vw;
+                                }
+
+                                .modal-image-content {
+                                    max-height: 70vh;
+                                }
+                            }
+
+                            /* Very Small Mobile: 100vw with padding */
+                            @media (max-width: 480px) {
+                                .modal-image {
+                                    --bs-modal-width: 100vw;
+                                    max-width: 100vw;
+                                    padding: 10px;
+                                }
+
+                                .modal-image-content {
+                                    max-height: 65vh;
+                                    max-width: calc(100vw - 20px);
+                                }
+                            }
+
+                            /* ===== CLICKABLE ELEMENTS ===== */
+                            .clickable-cover, .clickable-avatar {
+                                cursor: pointer;
+                                transition: transform 0.2s ease, opacity 0.2s ease;
+                                background-color: white;
+                            }
+
+                            .clickable-cover:hover, .clickable-avatar:hover {
+                                transform: scale(1.02);
+                                opacity: 0.9;
+                            }
+
+                            /* ===== CLOSE BUTTON ===== */
+                            .btn-close-white {
+                                z-index: 10;
+                                opacity: 0.8;
+                                transition: opacity 0.2s ease;
+                            }
+
+                            .btn-close-white:hover {
+                                opacity: 1;
+                            }
+                            </style>
+
+                            <!-- User Info -->
+                            <div class="profile-info">
+
+                                <div class="row">
+                                    <div class="col-lg-6 col-12">
+
+                                        <div class="username mb-0">
+                                            {{ profile.user.username }}
+                                            {% if profile.is_verified %}
+                                            <i class="fas fa-check-circle verified-icon" title="Vérifié"></i>
+                                            {% endif %}
+                                        </div>
+                                       
+                                        <div><i class="bi bi-geo-alt"></i> 
+                                            {% if profile.city %}{{ profile.city }}{% endif %}
+                                        </div>
+
+                                        <!-- Stats -->
+                                        <div >
+                                            <i class="fas fa-star" style="color:#ec700a;"></i> 
+                                                {% if profile.review_count > 0 %}
+                                                {{ profile.average_rating|floatformat:1 }}/5
+                                            {% else %}
+                                                -/5 
+                                            {% endif %}
+                                            Avis ({{ profile.review_count }})
+                                        </div>
+                                        
+                                        <style>
+                                            .profile-statut {
+                                                display: inline-flex;
+                                                align-items: center;
+                                                font-weight: 600;
+                                                padding: 4px 10px;
+                                                border-radius: 12px;
+                                                font-size: 0.85rem;
+                                            }
+
+                                            /* Statut colors */
+                                            .statut-particulier {
+                                                background-color: #e6f4ea; /* light green */
+                                                color: #198754; /* green text */
+                                                border: 1px solid #b7e4c7;
+                                            }
+
+                                            .statut-entreprise {
+                                                background-color: #f0f0f0; /* light gray */
+                                                color: #495057; /* dark gray text */
+                                                border: 1px solid #d6d6d6;
+                                            }
+                                        </style>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <div class="profile-actions-wrapper">
+
+                                            <div class="profile-actions-row">
+                                                {% if request.user.is_authenticated %}
+
+                                                    {% if request.user == profile.user %}
+                                                        <a href="{% url 'app:account_edit' %}" class="profile-main-btn">
+                                                            <i class="fas fa-pencil-alt"></i> Modifier le profil
+                                                        </a>
+                                                    {% else %}
+
+
+                                                        {% if is_favorite %}
+                                                            <a href="{% url 'app:remove_from_favorites_profiles' profile.id %}" class="profile-action-btn active">
+                                                                <i class="bi bi-heart-fill"></i>
+                                                                <span>Favori ✓</span>
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="{% url 'app:add_to_favorites_profiles' profile.id %}" class="profile-action-btn">
+                                                                <i class="bi bi-heart"></i>
+                                                                <span>Favoris</span>
+                                                            </a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="profile-action-btn">
+                                                        <i class="bi bi-heart"></i>
+                                                        <span>Enregistrer</span>
+                                                    </a>
+                                                {% endif %}
+
+                                                <button id="share-button" class="profile-action-btn">
+                                                    <i class="bi bi-share"></i>
+                                                    <span>Partager</span>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" id="profile-url" value="{% url 'app:account' profile.slug %}">
+
+                                    <style>
+                                        .profile-actions-wrapper {
+                                            display: flex;
+                                            flex-direction: column;
+                                            gap: 10px;
+                                            margin-top: 10px;
+                                        }
+
+                                        .profile-actions-row {
+                                            display: flex;
+                                            gap: 10px;
+                                            width: 100%;
+                                        }
+
+                                        /* Small secondary buttons (Row 1) */
+                                        .profile-action-btn {
+                                            flex: 1;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            gap: 6px;
+                                            padding: 9px 12px;
+                                            background: white;
+                                            color: #374151;
+                                            border: 1px solid #e5e7eb;
+                                            border-radius: 8px;
+                                            font-size: 12px;
+                                            font-weight: 600;
+                                            text-decoration: none;
+                                            cursor: pointer;
+                                            transition: all 0.25s ease;
+                                        }
+
+                                        .profile-action-btn:hover {
+                                            border-color: #ec700a;
+                                            color: #ec700a;
+                                            background: #fef5f0;
+                                        }
+
+                                        .profile-action-btn.active {
+                                            background: #fef5f0;
+                                            color: #ec700a;
+                                            border-color: #ec700a;
+                                        }
+
+                                        .profile-action-btn i {
+                                            font-size: 15px;
+                                        }
+
+                                        /* Main CTA button (Row 2) */
+                                        .profile-main-btn {
+                                            flex: 1;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            gap: 8px;
+                                            padding: 11px 16px;
+                                            background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 8px;
+                                            font-size: 13px;
+                                            font-weight: 600;
+                                            text-decoration: none;
+                                            cursor: pointer;
+                                            transition: all 0.25s ease;
+                                            box-shadow: 0 2px 8px rgba(236, 112, 10, 0.2);
+                                        }
+
+                                        .profile-main-btn:hover {
+                                            transform: translateY(-2px);
+                                            box-shadow: 0 4px 12px rgba(236, 112, 10, 0.3);
+                                            color: white;
+                                        }
+                                    </style>
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const shareButton = document.getElementById('share-button');
+                                            const profileUrl = document.getElementById('profile-url')?.value;
+
+                                            if (shareButton) {
+                                                shareButton.addEventListener('click', function () {
+                                                    if (navigator.share) {
+                                                        navigator.share({
+                                                            title: 'Découvrez ce profil !',
+                                                            text: 'J\'ai trouvé ce profil intéressant pour vous :',
+                                                            url: profileUrl
+                                                        }).catch((error) => console.error('Erreur partage :', error));
+                                                    } else {
+                                                        alert('Copiez l\'URL : ' + profileUrl);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    </script>
+                                </div>
+
+
+                            </div>
+                                
+                        </div>
+                    
+                        <!-- Profile Navigation -->
+                        <div class="profile-nav">
+                            <button class="nav-btn active" data-target="section-accueil">
+                                    Accueil
+                                
+                            </button>
+
+                            <button class="nav-btn" data-target="section-avis">
+                                    Avis
+                               
+                            </button>
+
+                            <button class="nav-btn" data-target="section-annonces">
+                                    Annonces
+                                
+                            </button>
+
+                            <button class="nav-btn" data-target="section-galerie">
+                                    Réalisations
+                                
+                            </button>
+                        </div>
+
+
+                    </div>
+                    <style>
+                        .profile-container {
+                            font-family: 'Arial', sans-serif;
+                            
+                            margin: 0 auto;
+                            background-color: #fff;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+                        }
+
+                        /* Banner */
+                        .profile-banner {
+                            width: 100%;
+                            height: 200px;
+                            background-size: cover;
+                            background-position: center;
+                            position: relative;
+                        }
+
+                        /* Main profile section */
+                        .profile-main {
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 5px;
+                            padding: 5px 5px 10px 5px;
+                            flex-wrap: wrap;
+                            position: relative;
+                        }
+
+                        /* Profile picture overlapping banner */
+                        .profile-picture {
+                            flex: 0 0 150px;
+                            margin-top: -75px; /* half of image height to overlap */
+                        }
+                        .profile-picture img {
+                            width: 150px;
+                            height: 150px;
+                            border-radius: 50%;
+                            border: 4px solid #fff;
+                            object-fit: cover;
+                        }
+                        @media (max-width: 576px) {
+                            .profile-picture {
+                                flex: 0 0 120px; /* match the smaller image width */
+                            }
+
+                            .profile-picture img {
+                                width: 120px;
+                                height: 120px;
+                                border-radius: 50%;
+                            }
+
+                        }
+
+                        
+
+                        /* Profile info */
+                        .profile-info {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                        }
+
+                        /* Username and title */
+                        .username {
+                            font-size: 24px;
+                            font-weight: bold;
+                            align-items: center;
+                        }
+                        .verified-icon { color: #ec700a; }
+                        .title {
+                            font-size: 18px;
+                            color: #555;
+                        }
+
+                        /* Statut */
+                        .profile-statut {
+                            display: inline-block;
+                            padding: 4px 10px;
+                            font-size: 13px;
+                            font-weight: 600;
+                            border-radius: 6px;
+                        }
+                   
+                        /* Buttons */
+                        .profile-actions {
+                            margin-top: 12px;
+                            display: flex;
+                            gap: 10px;
+                            flex-wrap: wrap;
+                        }
+                        .btn-edit, .btn-message {
+                            flex: 1;
+                            padding: 8px 12px;
+                            font-size: 14px;
+                            font-weight: 600;
+                            color: #fff;
+                            background-color: #ec700a;
+                            border: none;
+                            border-radius: 6px;
+                            text-align: center;
+                            cursor: pointer;
+                            transition: 0.2s;
+                            text-decoration: none;
+                        }
+                        .btn-edit:hover, .btn-message:hover { background-color: #5bb7b2; }
+
+                       
+
+                    </style>
+                     
+                    <!-- Profile Content Sections -->
+                    <div id="section-accueil" class="section  active mt-4">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-lg-7 justify-content-center  mb-4">
+                            <div class="profile-section" >
+                            
+                                <h6 class="fw-bold mb-2">Présentation :</h6>
+                                    <div>
+                                        {% if profile.bio %}
+                                        {{ profile.bio|linebreaksbr }}
+                                       
+                                        {% endif %}
+                                    </div>
+                              
+                                <h6 class="fw-bold mb-3 mt-4">
+                                    {% if profile.type == "towork" %}
+                                    Zone d'intervention :
+                                    {% else %}
+                                    Zone de recherche :
+                                    {% endif %}
+
+                                </h6>
+                                <div class="row mt-2 justify-content-center ">
+                                    
+                                    {% if profile.latitude and profile.longitude %}
+                                        <div >
+                                            {{ map|safe }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                           
+
+                                <h6 class="fw-bold mb-2 mt-3">Services :</h6>
+                                {% if profile.skills  %}
+                                <div class="skills-container ">
+                                    {% for skill in profile.skills.all %}
+                                        
+                                                <span class="profile-statut statut-entreprise">
+                                                        {{ skill.name_fr }}
+                                                
+                                                </span> 
+                                            
+                                    {% endfor %}
+
+                                </div>
+                                {% endif %}
+                                
+
+                            </div>
+                            </div>
+                            <div class="col-12 col-lg-5">
+                               <div class="profile-section ">
+                                <h6 class="fw-bold mb-3">
+                                        Informations :
+                                        
+                                    </h6>
+                                   <div class="info-line"><strong>Statut </strong>: 
+                                            <span class="profile-statut statut-{{ profile.statut }}">
+                                                {% if profile.statut == 'particulier' %}
+                                                    <i class="fas fa-user me-1"></i> {{ profile.get_statut_display }}
+                                                {% elif profile.statut == 'entreprise' %}
+                                                    <i class="fas fa-building me-1"></i> {{ profile.get_statut_display }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+
+ 
+                                    <!-- Informations personnelles -->
+                                    {% if profile.statut == "particulier" %}
+                                        <div class="info-line"><strong>Civilité </strong>: {{ profile.gender|default_if_none:"Non renseigné" }}</div>
+                                        <div class="info-line"><strong>Prénom </strong>: {{ profile.prenom|default_if_none:"Non renseigné" }}</div>
+                                        <div class="info-line"><strong>Nom </strong>: {{ profile.nom|default_if_none:"Non renseigné" }}</div>
+
+
+                                    {% elif profile.statut == "autoentrepreneur" or profile.statut == "entreprise" %}
+                                        <div class="info-line"><strong>Nom commercial </strong>: {{ profile.nom_commercial|default_if_none:"Non renseigné" }}</div>
+                                        <div class="info-line"><strong>Numéro SIRET </strong>: {{ profile.siret|default_if_none:"Non renseigné" }}</div>
+                                    {% endif %}
+
+                                    <hr>
+
+                                    <h6 class="fw-bold mb-3">Vérification :</h6>
+
+                                    <!-- Email Verification -->
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-auto text-center">
+                                            {% if profile.is_email_verified %}
+                                                <i class="fas fa-check-circle fa-lg" style="color: #ec700a" title="Adresse e-mail vérifiée"></i>
+                                            {% else %}
+                                                <i class="fas fa-times-circle text-danger fa-lg" title="Adresse e-mail non vérifiée"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col">
+                                            Adresse e-mail
+                                        </div>
+                                    </div>
+
+                                    <!-- Phone Verification -->
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-auto text-center">
+                                            {% if profile.is_phone_verified %}
+                                                <i class="fas fa-check-circle  fa-lg" style="color: #ec700a" title="Numéro de téléphone vérifié"></i>
+                                            {% else %}
+                                                <i class="fas fa-times-circle text-danger fa-lg" title="Numéro de téléphone non vérifié"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col">
+                                            Numéro de téléphone
+                                        </div>
+                                    </div>
+
+                                    <!-- Identity Verification -->
+                                    <div class="row align-items-center mb-2">
+                                        <div class="col-auto text-center">
+                                            {% if profile.is_identity_verified %}
+                                                <!-- Fully verified -->
+                                                <i class="fas fa-check-circle  fa-lg" style="color: #ec700a" title="Identité vérifiée"></i>
+                                            
+                                            {% else %}
+                                                <!-- Not verified -->
+                                                <i class="fas fa-times-circle text-danger fa-lg" title="Identité non vérifiée"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col">
+                                            Identité
+                                        </div>
+                                    </div>
+
+
+
+                                    <hr>
+
+                                        <div class="text-center mt-4">
+                                    <h6 style="font-size:24px; font-weight:bold; margin-bottom:10px;">
+                                        <i class="fas fa-star" style="color:#ec700a;"></i> 
+                                        {% if profile.review_count > 0 %}
+                                                {{ profile.average_rating|floatformat:1 }}/5
+                                            {% else %}
+                                                -/5 
+                                            {% endif %}
+                                            Avis ({{ profile.review_count }})
+                                    </h6>
+
+                                    <div class="rating-breakdown mt-3">
+                                        {% for r in rating_data %}
+                                        <div class="rating-row d-flex align-items-center mb-2">
+                                            <!-- Star label -->
+                                            <div class="star-label d-flex align-items-center justify-content-end me-2" style="width:40px;">
+                                                {{ r.star }}<i class="fas fa-star" style="color:#ec700a; margin-left:2px;"></i>
+                                            </div>
+
+                                            <!-- Progress bar -->
+                                            <div class="progress flex-grow-1 mx-2" style="height:12px; background-color:#e0e0e0; border-radius:6px;">
+                                                <div class="progress-bar" role="progressbar"
+                                                    style="width: {{ r.percent }}%; background-color:#ec700a;"
+                                                    aria-valuenow="{{ r.percent }}" aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+
+                                            <!-- Count -->
+                                            <div class="rating-count" style="width:30px; text-align:right;">
+                                                {{ r.count }}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <style>
+                                    /* Informations personnelles */
+                                    .info-line {
+                                    margin-bottom: 0.4rem;
+                                    font-size: 0.95rem;
+                                    }
+
+                                    .info-line strong {
+                                    min-width: 130px;
+                                    display: inline-block;
+                                    color: #13547a;
+                                    }
+
+                                    .contact-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+/* Left icons */
+.contact-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #f0f4f8;
+    color: #ec700a;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Middle section */
+.contact-info {
+    flex: 1;
+    margin-left: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #13547a;
+}
+
+/* Top-right pill badge */
+.contact-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 50px; /* pill shape */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Verified */
+.contact-badge.verified {
+    background-color: #d4edda;
+    color: #28a745;
+    border: 1px solid #c3e6cb;
+}
+
+/* Not verified */
+.contact-badge.not-verified {
+    background-color: #f8d7da;
+    color: #dc3545;
+    border: 1px solid #f5c6cb;
+}
+
+
+
+                                </style>
+                                
+                                {% if request.user != profile.user %}
+                                    <button class="action-btn-danger-full mt-4" data-bs-toggle="modal" data-bs-target="#reportProfileModal">
+                                        <i class="fas fa-flag"></i> Signaler ce profil
+                                    </button>
+
+                                    <!-- Modal Structure for Reporting a Profile -->
+                                    <div class="modal fade" id="reportProfileModal" tabindex="-1" aria-labelledby="reportProfileModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="reportProfileModalLabel">Signaler ce profil</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{% url 'app:report_profile' profile.id %}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="mb-3">
+                                                            <label for="reportMessage" class="form-label">Raison de signalement</label>
+                                                            <textarea class="form-control" id="reportMessage" name="message" rows="4" required></textarea>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                            {% if request.user.is_authenticated %}
+                                                                <button type="submit" class="btn btn-danger">Signaler</button>
+                                                            {% else %}
+                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                                                    <button type="button" class="btn btn-danger">Signaler</button>
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <style>
+                                    .action-btn-danger-full {
+                                    width: 100%;
+                                    padding: 10px;
+                                    background-color: #fee2e2;
+                                    color: #dc2626;
+                                    border: 1px solid #fecaca;
+                                    border-radius: 8px;
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 8px;
+                                }
+
+                                .action-btn-danger-full:hover {
+                                    background-color: #fecaca;
+                                    border-color: #f87171;
+                                }
+                                </style>
+
+                            </div>
+
+                            <style>
+                                .rating-breakdown {
+                                    text-align: left;
+                                }
+
+                                .rating-row {
+                                    font-size: 14px;
+                                    display: flex;
+                                    align-items: center;
+                                    width: 100%;
+                                }
+
+                                .star-label {
+                                    font-weight: bold;
+                                }
+
+                                .progress {
+                                    overflow: hidden;
+                                    border-radius: 6px;
+                                }
+
+                                .progress-bar {
+                                    height: 100%;
+                                    transition: width 0.6s ease;
+                                }
+
+                                .rating-count {
+                                    font-weight: bold;
+                                }
+                            </style>
+                        </div>
+                        
+                    </div>
+
+                    <div id="section-avis" class="section">
+                        <div class="mb-3">
+                        
+                            <div class="row justify-content-center mt-4">
+                                <div class="col-12 col-lg-7 mb-4">
+                                    {% if user != profile.user %}
+                                    <div class="profile-section" >
+                                        
+                                            <h6>
+                                                Laisser un avis :
+                                            </h6>
+                                            
+                                            <form method="post" action="{% url 'app:submit_review' profile.slug %}">
+                                                {% csrf_token %}
+
+                                                <div class="form-group text-start">
+                                                    <fieldset class="rating">
+                                                        <input type="radio" id="star5" name="rating" value="5" required />
+                                                        <label for="star5" title="5 étoiles">★</label>
+
+                                                        <input type="radio" id="star4" name="rating" value="4" />
+                                                        <label for="star4" title="4 étoiles">★</label>
+
+                                                        <input type="radio" id="star3" name="rating" value="3" />
+                                                        <label for="star3" title="3 étoiles">★</label>
+
+                                                        <input type="radio" id="star2" name="rating" value="2" />
+                                                        <label for="star2" title="2 étoiles">★</label>
+
+                                                        <input type="radio" id="star1" name="rating" value="1" />
+                                                        <label for="star1" title="1 étoile">★</label>
+                                                    </fieldset>
+                                                </div>
+
+                                                <div class="form-group mt-3">
+                                                    <textarea id="comment" name="comment" rows="4" class="form-control" 
+                                                        placeholder="Écrivez votre avis ici..." required></textarea>
+                                                </div>
+
+                                                <button type="submit" class="btn custom-btn mt-3 w-100" style="border-radius:12px;">
+                                                    Soumettre l'avis
+                                                </button>
+                                            </form>
+
+                                        
+                                    </div>
+                                    {% endif %}
+                                    
+                                </div>
+
+                                <div class="col-12 col-lg-5 ">
+                                    <div class="profile-section text-center">
+                                        <h6 style="font-size:24px; font-weight:bold; margin-bottom:10px;">
+                                            <i class="fas fa-star" style="color:#ec700a;"></i> 
+                                            {% if profile.review_count > 0 %}
+                                                {{ profile.average_rating|floatformat:1 }}/5
+                                            {% else %}
+                                                -/5 
+                                            {% endif %}
+                                            Avis ({{ profile.review_count }})
+                                        </h6>
+
+                                        <div class="rating-breakdown mt-3">
+                                            {% for r in rating_data %}
+                                            <div class="rating-row d-flex align-items-center mb-2">
+                                                <!-- Star label -->
+                                                <div class="star-label d-flex align-items-center justify-content-end me-2" style="width:40px;">
+                                                    {{ r.star }}<i class="fas fa-star" style="color:#ec700a; margin-left:2px;"></i>
+                                                </div>
+
+                                                <!-- Progress bar -->
+                                                <div class="progress flex-grow-1 mx-2" style="height:12px; background-color:#e0e0e0; border-radius:6px;">
+                                                    <div class="progress-bar" role="progressbar"
+                                                        style="width: {{ r.percent }}%; background-color:#ec700a;"
+                                                        aria-valuenow="{{ r.percent }}" aria-valuemin="0" aria-valuemax="100">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Count -->
+                                                <div class="rating-count" style="width:30px; text-align:right;">
+                                                    {{ r.count }}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% comment %} 
+                                        <a data-target="section-avis" class="btn btn-outline-primary btn-sm mt-2">
+                                            Voir les avis
+                                        </a> {% endcomment %}
+                                    </div>
+                                </div>
+
+                                <style>
+                                    .rating-breakdown {
+                                        text-align: left;
+                                    }
+
+                                    .rating-row {
+                                        font-size: 14px;
+                                        display: flex;
+                                        align-items: center;
+                                        width: 100%;
+                                    }
+
+                                    .star-label {
+                                        font-weight: bold;
+                                    }
+
+                                    .progress {
+                                        overflow: hidden;
+                                        border-radius: 6px;
+                                    }
+
+                                    .progress-bar {
+                                        height: 100%;
+                                        transition: width 0.6s ease;
+                                    }
+
+                                    .rating-count {
+                                        font-weight: bold;
+                                    }
+                                </style>
+                            </div>
+                            <div class="row mt-4 ">
+                                {% for review in reviews %}
+                                    <div class="col-12 col-lg-7 mt-2">
+                                        <div class="topics-detail-block bg-white shadow p-3 mb-3 rounded-3">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <a href="{% url 'app:account' review.reviewer.profile.slug %}"  class="d-flex align-items-center text-decoration-none text-dark">
+                                                    <img src="{{ review.reviewer.profile.profile_picture_url }}" width="50" height="50" class="rounded-circle me-2">
+                                                    <span class="fw-bold">{{ review.reviewer.username }}</span>
+                                                </a>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <span class="fw-semibold">{{ review.rating|floatformat:1 }}/5</span>
+                                                <i class="fas fa-star" style="color:#ec700a;"></i> 
+                                            </div>
+
+                                            <p class="mb-2">{{ review.comment }}</p>
+
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">{{ review.timestamp|date:"d/m/Y" }}</small>
+
+                                                {% if request.user == profile.user or request.user == review.reviewer %}
+                                                    <a href="{% url 'app:delete_review' review.id %}" class="text-danger small fw-semibold">
+                                                     Supprimer
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-annonces" class="section">
+                        <style>
+                            .topics-detail-block {
+                                cursor: pointer;
+                                border-radius: 8px;
+                                transition: border 0.2s, box-shadow 0.2s; /* smooth effect */
+                                border: 1px solid transparent; /* initial invisible border */
+                            }
+
+                            .topics-detail-block:hover {
+                                border: 1px solid #13547a; /* border color on hover */
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* optional shadow effect */
+                            }
+
+                        </style>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12 col-12 mt-4">
+                                    {% if request.user == profile.user %}
+                                    <div class="mb-4">
+                                        <a href="{% url 'app:create_announcement' %}" class="btn custom-btn w-100">
+                                            Publier une nouvelle annonce
+
+                                        
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                
+                                <div class="row ">
+
+                                    {% for announcement in announcements %}
+                                    <div class="col-12 col-lg-4 mb-4">
+                                        <div class="profile-item" style="display: block;">
+                                            <div class="announcement-card" onclick="window.open('{% url 'app:annonce_details' announcement.id %}', '_blank')">
+                                                <!-- Gallery -->
+                                                <div class="announcement-gallery {% if not announcement.image3 and not announcement.image4 %}single{% endif %}">
+                                                    {% if announcement.image1 %}
+                                                        <img src="{{ announcement.image1.url }}" alt="Announcement image">
+                                                    {% else %}
+                                                        <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center;">
+                                                            <i class="fas fa-image" style="font-size: 32px; color: #9ca3af;"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if announcement.image2 %}
+                                                        <img src="{{ announcement.image2.url }}" alt="Announcement image">
+                                                    {% endif %}
+                                                    
+                                                    {% if announcement.image3 %}
+                                                        <img src="{{ announcement.image3.url }}" alt="Announcement image">
+                                                    {% endif %}
+                                                    
+                                                    {% if announcement.image4 %}
+                                                        <img src="{{ announcement.image4.url }}" alt="Announcement image">
+                                                    {% endif %}
+                                                </div>
+
+                                                <!-- Content -->
+                                                <div class="announcement-content">
+                                                    <!-- Author -->
+                                                    <div class="announcement-author">
+                                                        <img src="{{ announcement.created_by.profile.profile_picture_url }}" alt="{{ announcement.created_by.username }}" class="announcement-author-pic">
+                                                        <div class="announcement-author-info">
+                                                            <div class="announcement-author-name">
+                                                                {{ announcement.created_by.username }}
+                                                                {% if announcement.created_by.profile.is_verified %}
+                                                                    <span class="verified-badge" title="Vérifié">
+                                                                        <i class="fas fa-check-circle"></i>
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="announcement-author-location">
+                                                                <i class="bi bi-geo-alt"></i>
+                                                                {{ announcement.city }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Category -->
+                                                    <span class="announcement-category category-{{ announcement.category.name_fr|slugify }}">
+                                                        {{ announcement.category.name_fr }}
+                                                    </span>
+
+                                                    <!-- Price -->
+                                                    <div class="announcement-price">
+                                                        <span class="announcement-price-label">
+                                                            {% if announcement.category %}
+                                                                {% if announcement.category.name_fr == "Demande de prestation" %}
+                                                                    Budget:
+                                                                {% elif announcement.category.name_fr == "Offre de services" %}
+                                                                    Tarif:
+                                                                {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                                                    Prix:
+                                                                {% elif announcement.category.name_fr == "Location de matériel" %}
+                                                                    Tarif/jour:
+                                                                {% elif announcement.category.name_fr == "Offre d'emploi" %}
+                                                                    Salaire:
+                                                                {% else %}
+                                                                    Budget:
+                                                                {% endif %}
+                                                            {% else %}
+                                                                Budget:
+                                                            {% endif %}
+                                                        </span>
+                                                        {% if announcement.a_convenir %}
+                                                            <span>À convenir</span>
+                                                        {% else %}
+                                                            <span>{{ announcement.budget|floatformat:2 }} {{ announcement.city.country.currency }}</span>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div class="announcement-description">
+                                                        {{ announcement.description|linebreaksbr }}
+                                                    </div>
+
+                                                    <!-- Footer 
+                                                    <div class="announcement-footer">
+                                                        <div class="announcement-footer-item">
+                                                            <i class="bi bi-calendar-event"></i>
+                                                            <span>{{ announcement.created_at|date:"d M" }}</span>
+                                                        </div>
+                                                    </div>
+                                                    -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                
+                                    {% endfor %}
+                                
+
+                                </div> 
+                        
+                                                
+                                    
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-galerie" class="section">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12 col-12 mt-4">
+                                {% if request.user == profile.user %}
+                                    <div class="mb-4">
+                                        <a href="{% url 'app:create_project' %}" class="btn custom-btn w-100">
+                                            Ajouter une réalisation
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                                <div class="row ">
+                                    {% for project in projets %}
+                                    <div class="col-12  col-lg-4 mb-4">
+                                        <div class="profile-item" style="display: block;">
+                                            <div class="announcement-card" onclick="window.open('{% url 'app:project_details' project.id %}', '_blank')">
+                                                <!-- Gallery -->
+                                                <div class="announcement-gallery {% if not project.image3 and not project.image4 %}single{% endif %}">
+                                                    {% if project.image1 %}
+                                                        <img src="{{ project.image1.url }}" alt="Project image">
+                                                    {% else %}
+                                                        <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center;">
+                                                            <i class="fas fa-image" style="font-size: 32px; color: #9ca3af;"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if project.image2 %}
+                                                        <img src="{{ project.image2.url }}" alt="Project image">
+                                                    {% endif %}
+                                                    {% if project.image3 %}
+                                                        <img src="{{ project.image3.url }}" alt="Project image">
+                                                    {% endif %}
+                                                    {% if project.image4 %}
+                                                        <img src="{{ project.image4.url }}" alt="Project image">
+                                                    {% endif %}
+                                                </div>
+
+                                                <!-- Content -->
+                                                <div class="announcement-content">
+                                                    <!-- Author -->
+                                                    <div class="announcement-author">
+                                                        <img src="{{ project.user.profile.profile_picture_url }}" alt="{{ project.user.username }}" class="announcement-author-pic">
+                                                        <div class="announcement-author-info">
+                                                            <div class="announcement-author-name">
+                                                                {{ project.user.username }}
+                                                                {% if project.user.profile.is_verified %}
+                                                                    <span class="verified-badge" title="Vérifié">
+                                                                        <i class="fas fa-check-circle"></i>
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% if project.user.profile.city %}
+                                                            <div class="announcement-author-location">
+                                                                <i class="bi bi-geo-alt"></i>
+                                                                {{ project.user.profile.city }}
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div class="announcement-description">
+                                                        {{ project.description|linebreaksbr }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        .description-clamp-project {
+                            display: -webkit-box;
+                            -webkit-box-orient: vertical;
+                            -webkit-line-clamp: 4; /* Limit to 4 lines */
+                            overflow: hidden;
+                            position: relative;
+                        }
+
+                        .clamp-link-project {
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            background: white; /* matches your container background */
+                            padding-left: 4px;
+                            font-weight: bold;
+                            color: #0d6efd;
+                            text-decoration: none;
+                        }
+                        .profile-nav {
+                            display: flex;
+                            justify-content: space-around;
+                            border-top: 1px solid #eee;
+                            border-bottom: 1px solid #eee;
+                            background: #fafafa;
+                        }
+
+                        .nav-btn {
+                            flex: 1;
+                            padding: 12px 0;
+                            font-size: 15px;
+                            font-weight: 600;
+                            border: none;
+                            background: transparent;
+                            color: #555;
+                            cursor: pointer;
+                            transition: 0.2s;
+                        }
+                        .nav-btn:hover {
+                            background: #f0f0f0;
+                        }
+                        .nav-btn.active {
+                            color: #ec700a;
+                            border-bottom: 3px solid #ec700a;
+                            background: #fff;
+                        }
+
+                        /* Sections */
+                        .profile-section {
+                            padding: 15px;
+                            margin: 0 auto;
+                            background-color: #fff;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+                        }
+                        .section {
+                            display: none;
+                            min-height: 300px;
+                        }
+                        .section.active {
+                            display: block;
+                        }
+                        .image-gallery {
+                                display: grid;
+                                grid-template-columns: repeat(2, 1fr);
+                                gap: 5px;
+                                height: 200px; /* fixed container height */
+                            }
+
+                            .image-gallery.one-row {
+                                grid-template-rows: 200px; /* 1 row for 2 images */
+                            }
+
+                            .image-gallery.two-rows {
+                                grid-template-rows: 100px 100px; /* 2 rows for 3 or 4 images */
+                            }
+
+                            .image-gallery .gallery-image {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                border-radius: 4px;
+                                cursor: pointer;
+                            }
+                    </style>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const buttons = document.querySelectorAll(".nav-btn");
+                            const sections = document.querySelectorAll(".section");
+
+                            buttons.forEach(btn => {
+                                btn.addEventListener("click", () => {
+                                    // Remove active from all
+                                    buttons.forEach(b => b.classList.remove("active"));
+                                    sections.forEach(s => s.classList.remove("active"));
+
+                                    // Add active to clicked
+                                    btn.classList.add("active");
+                                    const target = document.getElementById(btn.dataset.target);
+                                    if (target) target.classList.add("active");
+                                });
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+
+
+
+
+            <!-- Modal for Viewing Profile Picture -->
+            <div class="modal fade" id="viewProfileImageModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-transparent border-0">
+                    <div class="modal-body text-center p-0">
+                        <img src="{{ profile.profile_picture_url }}" class="rounded-circle"
+                                        style="height: 300px; width: 300px; object-fit: cover; ">
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+       
+    
+        </div>
+    </section>
+
+
+   
+    
+
+
+    <style>
+     
+        .container_mess {
+            margin-top:5px;
+            padding: 20px;
+        }
+       
+        .small-images-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping of small images */
+        }
+        
+        .small-image {
+            width: 60px; /* Fixed width for small images */
+            height: 60px; /* Fixed height for small images */
+            margin: 5px; /* Margin between small images */
+            cursor: pointer; /* Changes cursor to pointer */
+            object-fit: cover; /* Ensures images cover their area */
+            border: 2px solid transparent; /* Initial border for hover effect */
+            transition: border-color 0.3s; /* Smooth transition for border color */
+        }
+        
+        .small-image:hover {
+            border-color: #ec700a; /* Change border color on hover */
+        }
+        
+        .selected {
+            border-color: #ec700a; /* Border color for selected image */
+        }
+        
+        .hidden {
+            display: none; /* Initially hide the large image */
+        }
+        
+        .selected-image img {
+            border: 2px solid #ec700a; /* Optional: Add border to the selected image */
+        }
+        
+        
+      
+        .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; /* Space between skill items */
+    }
+
+    
+        
+        .profile-card {
+            
+            width: 100%;
+            max-width: 350px;
+
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-img img {
+            height: 150px;
+            width: 150px;
+            object-fit: cover;
+        }
+        
+        .profile-item {
+            margin-bottom: 10px;
+        }
+        
+        .profile-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .profile-value {
+            font-weight: normal;
+        }
+        
+        .profile-actions .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        
+    </style>
+
+    <style>
+        
+
+
+
+        .rating {
+            direction: rtl;
+            unicode-bidi: bidi-override;
+            font-size: 2rem;
+        }
+        .rating input {
+            display: none;
+        }
+        .rating label {
+            color: #ddd;
+            cursor: pointer;
+        }
+        .rating input:checked ~ label,
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #ec700a;  
+        }
+
+    </style>
+<style>
+            /* ===== GRID LAYOUT ===== */
+            .announcements-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+                padding: 0;
+            }
+
+            @media (max-width: 768px) {
+                .announcements-grid {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
+                }
+            }
+
+            /* ===== ANNOUNCEMENT CARD ===== */
+            
+
+            .announcement-card:hover {
+                border-color: #ec700a;
+                box-shadow: 0 12px 24px rgba(236, 112, 10, 0.12);
+                transform: translateY(-4px);
+            }
+
+            /* ===== IMAGE GALLERY ===== */
+            .announcement-gallery {
+                width: 100%;
+                height: 200px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2px;
+                background: #f3f4f6;
+                overflow: hidden;
+            }
+
+            .announcement-gallery.single {
+                grid-template-columns: 1fr;
+            }
+
+            .announcement-gallery img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+
+            .announcement-card:hover .announcement-gallery img {
+                transform: scale(1.05);
+            }
+
+          
+
+            /* Author Section */
+            .announcement-author {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .announcement-author-pic {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #ec700a;
+                flex-shrink: 0;
+            }
+
+            .announcement-author-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .announcement-author-name {
+                font-weight: 600;
+                font-size: 13px;
+                color: #1a1a1a;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .announcement-author-location {
+                font-size: 12px;
+                color: #6b7280;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .verified-badge {
+                color: #ec700a;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+
+            /* Category Badge */
+            .announcement-category {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 10px;
+                width: fit-content;
+            }
+
+            .announcement-category.demande-de-prestation {
+                background-color: #e8f7ee;
+                color: #1f8a4c;
+                border: 1px solid #bfe8cf;
+            }
+
+            .announcement-category.offre-de-services {
+                background-color: #eef4ff;
+                color: #3b5bdb;
+                border: 1px solid #cdd9ff;
+            }
+
+            .announcement-category.vente-de-materiel {
+                background-color: #fef5f0;
+                color: #ec700a;
+                border: 1px solid #fed7aa;
+            }
+
+            .announcement-category.location-de-materiel {
+                background-color: #f0f0f0;
+                color: #495057;
+                border: 1px solid #d6d6d6;
+            }
+
+            .announcement-category.offre-d-emploi {
+                background-color: #fce7f3;
+                color: #be185d;
+                border: 1px solid #fbcfe8;
+            }
+
+            /* Price Section */
+            .announcement-price {
+                font-size: 14px;
+                font-weight: 700;
+                color: #ec700a;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .announcement-price-label {
+                font-size: 12px;
+                color: #6b7280;
+                font-weight: 500;
+            }
+
+
+            /* Footer Info 
+            .announcement-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 10px;
+                border-top: 1px solid #f0f0f0;
+                font-size: 12px;
+                color: #6b7280;
+            }
+
+            .announcement-footer-item {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+                */
+
+            /* ===== LOAD MORE BUTTON ===== */
+            .load-more-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 40px;
+                padding: 20px 0;
+            }
+
+            .load-more-btn {
+                padding: 12px 32px;
+                font-size: 14px;
+                font-weight: 600;
+                background: linear-gradient(135deg, #ec700a 0%, #d45f00 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.25);
+            }
+
+            .load-more-btn:hover {
+                background: linear-gradient(135deg, #d45f00 0%, #c45200 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(236, 112, 10, 0.35);
+            }
+
+            .load-more-btn:active {
+                transform: translateY(0);
+            }
+
+            .load-more-btn i {
+                transition: transform 0.3s ease;
+            }
+
+            .load-more-btn:hover i {
+                transform: translateY(2px);
+            }
+
+            /* ===== EMPTY STATE ===== */
+            .empty-state {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px 20px;
+                color: #6b7280;
+            }
+
+            .empty-state-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+
+            /* Make all cards have equal height */
+.announcement-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;  /* ← This makes them all same height */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Make description take remaining space */
+.announcement-description {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 12px;
+    flex: 1;  /* ← This pushes footer down */
+    min-height: 57px;  /* ← Ensure minimum space (3 lines × 1.5 line-height) */
+}
+
+/* Make content flexible */
+.announcement-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;  /* ← Takes remaining vertical space */
+}
+        </style>
+    {% endblock content %}
+
+
+
+

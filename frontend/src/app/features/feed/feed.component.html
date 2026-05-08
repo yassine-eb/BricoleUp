@@ -1,0 +1,382 @@
+<!-- ===== PAGE FEED ===== -->
+<div class="feed-page">
+
+  <!-- HEADER GREETING -->
+  <div class="feed-header">
+    <div class="feed-header-inner">
+      <div class="feed-greeting-block">
+        <p class="feed-greeting-salut" id="greeting-text">Bonjour 👋</p>
+        <p class="feed-greeting-sub">Que cherchez-vous aujourd'hui ?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOGGLE OFFRES / PRESTATIONS -->
+  <div class="feed-toggle-wrap">
+    <div class="feed-toggle-pills">
+      <button class="feed-toggle-pill active" id="pill-offres" onclick="setFeedSection('offres')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Offres
+      </button>
+      <button class="feed-toggle-pill" id="pill-demandes" onclick="setFeedSection('demandes')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="12" y1="11" x2="12" y2="17"/></svg>
+        Demandes
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTRES TABS -->
+  <div class="feed-tabs-wrap">
+    <div class="feed-tabs" id="chips-container">
+      <button class="feed-tab active" data-filter="tous">Tout</button>
+    </div>
+  </div>
+
+  <!-- FEED CARDS -->
+  <div class="feed-section active" id="feed-section-offres">
+    <div class="feed-section-label">
+      <span class="feed-section-dot offre-dot"></span>Offres de service
+    </div>
+    <div class="feed-cards" id="feed-container-offres"></div>
+  </div>
+  <div class="feed-section" id="feed-section-demandes">
+    <div class="feed-section-label">
+      <span class="feed-section-dot demande-dot"></span>Demandes de prestation
+    </div>
+    <div class="feed-cards" id="feed-container-demandes"></div>
+  </div>
+  <!-- Conteneur legacy pour compatibilité -->
+  <div id="feed-container" style="display:none"></div>
+
+  <!-- LOAD MORE -->
+  <div class="feed-load-wrap">
+    <button class="feed-load-btn" id="btn-load-more" onclick="loadMore()">
+      Charger plus d'annonces
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- ===== OVERLAY ===== -->
+<div class="pu-overlay" id="pu-overlay" onclick="puOverlayClick(event)"></div>
+
+<!-- ===== MODAL CHOIX ===== -->
+<div class="pu-modal" id="modal-choix">
+  <div class="pu-modal-handle"></div>
+  <div class="pu-header">
+    <span class="pu-title">Que voulez-vous publier ?</span>
+    <button class="pu-close" onclick="puFermer()">✕</button>
+  </div>
+  <div class="pu-body">
+    <div class="pu-grid">
+      <button class="pu-choice-card pu-choice-demande" onclick="puOuvrir('modal-demande')">
+        <span class="pu-choice-icon">🙋</span>
+        <span class="pu-choice-title">Demande</span>
+        <span class="pu-choice-sub">Je cherche un prestataire</span>
+      </button>
+      <button class="pu-choice-card pu-choice-offre" onclick="puOuvrir('modal-offre')">
+        <span class="pu-choice-icon">⚡</span>
+        <span class="pu-choice-title">Offre</span>
+        <span class="pu-choice-sub">Je propose un service</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL DEMANDE ===== -->
+<div class="pu-modal pu-modal-large" id="modal-demande">
+  <div class="pu-modal-handle"></div>
+  <div class="pu-header">
+    <button class="pu-back" onclick="puOuvrir('modal-choix')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="pu-title">Poster une demande</span>
+    <button class="pu-close" onclick="puFermer()">✕</button>
+  </div>
+
+  <div class="pu-stepper" id="d-stepper">
+    <div class="pu-step-item">
+      <div class="pu-step-circle pu-active" id="d-circle-1">1</div>
+      <div class="pu-step-line" id="d-line-1"></div>
+    </div>
+    <div class="pu-step-item">
+      <div class="pu-step-circle" id="d-circle-2">2</div>
+      <div class="pu-step-line" id="d-line-2"></div>
+    </div>
+    <div class="pu-step-item">
+      <div class="pu-step-circle" id="d-circle-3">3</div>
+    </div>
+  </div>
+  <div class="pu-stepper-labels">
+    <span>Besoin</span><span>Lieu</span><span>Photos</span>
+  </div>
+
+  <!-- Étape D1 -->
+  <div class="pu-body pu-step-content pu-step-active" id="d-step-1">
+    <div class="pu-field">
+      <label class="pu-label">Catégorie</label>
+      <div class="pu-cat-grid" id="d-cat-grid">
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>🔧</span>Plomberie</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>⚡</span>Électricité</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>🌱</span>Jardinage</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>🧹</span>Ménage</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>🖥</span>Informatique</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>🎨</span>Peinture</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>📦</span>Déménagement</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'d')"><span>🔨</span>Réparation</div>
+      </div>
+    </div>
+    <div class="pu-field">
+      <label class="pu-label">Décrivez votre besoin</label>
+      <textarea class="pu-textarea" id="d-desc" placeholder="Ex : J'ai besoin d'un plombier pour réparer une fuite sous mon évier..."></textarea>
+    </div>
+    <div class="pu-field pu-row2">
+      <div>
+        <label class="pu-label">Budget min (€)</label>
+        <input class="pu-input" type="number" id="d-budget-min" placeholder="50">
+      </div>
+      <div>
+        <label class="pu-label">Budget max (€)</label>
+        <input class="pu-input" type="number" id="d-budget-max" placeholder="200">
+      </div>
+    </div>
+    <button class="pu-btn-primary pu-btn-bleu" onclick="puNextStep('d',1)">Suivant →</button>
+  </div>
+
+  <!-- Étape D2 -->
+  <div class="pu-body pu-step-content" id="d-step-2" style="display:none">
+    <div class="pu-field">
+      <label class="pu-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Adresse
+      </label>
+      <input class="pu-input" type="text" id="d-adresse" placeholder="Ex: 25 Rue Robert Latouche, Nice">
+    </div>
+    <div class="pu-field">
+      <label class="pu-label">Date souhaitée</label>
+      <input class="pu-input" type="date" id="d-date">
+    </div>
+    <div class="pu-toggle-row" id="d-urgence-row">
+      <span class="pu-toggle-label">⚡ Urgence</span>
+      <label class="pu-toggle">
+        <input type="checkbox" id="d-urgence" onchange="puToggleUrgence()">
+        <span class="pu-toggle-track"><span class="pu-toggle-thumb"></span></span>
+      </label>
+    </div>
+    <div class="pu-nav-row">
+      <button class="pu-btn-ghost" onclick="puGoStep('d',1)">← Retour</button>
+      <button class="pu-btn-primary pu-btn-bleu" onclick="puNextStep('d',2)">Suivant →</button>
+    </div>
+  </div>
+
+  <!-- Étape D3 -->
+  <div class="pu-body pu-step-content" id="d-step-3" style="display:none">
+    <div class="pu-field">
+      <label class="pu-label">Photos (optionnel)</label>
+      <p class="pu-hint">+25% de chances d'obtenir une réponse</p>
+      <div class="pu-upload-row">
+        <div class="pu-upload-zone" onclick="puTriggerFile('d-file-1')" id="d-zone-1">
+          <input type="file" id="d-file-1" accept="image/*" style="display:none" onchange="puPreview(this,'d-zone-1')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="pu-upload-zone" onclick="puTriggerFile('d-file-2')" id="d-zone-2">
+          <input type="file" id="d-file-2" accept="image/*" style="display:none" onchange="puPreview(this,'d-zone-2')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="pu-upload-zone" onclick="puTriggerFile('d-file-3')" id="d-zone-3">
+          <input type="file" id="d-file-3" accept="image/*" style="display:none" onchange="puPreview(this,'d-zone-3')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="pu-nav-row">
+      <button class="pu-btn-ghost" onclick="puGoStep('d',2)">← Retour</button>
+      <button class="pu-btn-primary pu-btn-vert" onclick="puSubmit('demande')">Publier ma demande</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL OFFRE ===== -->
+<div class="pu-modal pu-modal-large" id="modal-offre">
+  <div class="pu-modal-handle"></div>
+  <div class="pu-header">
+    <button class="pu-back" onclick="puOuvrir('modal-choix')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="pu-title">Poster une offre</span>
+    <button class="pu-close" onclick="puFermer()">✕</button>
+  </div>
+
+  <div class="pu-stepper" id="o-stepper">
+    <div class="pu-step-item">
+      <div class="pu-step-circle pu-active" id="o-circle-1">1</div>
+      <div class="pu-step-line" id="o-line-1"></div>
+    </div>
+    <div class="pu-step-item">
+      <div class="pu-step-circle" id="o-circle-2">2</div>
+    </div>
+  </div>
+  <div class="pu-stepper-labels" style="grid-template-columns:1fr 1fr">
+    <span>Votre service</span><span>Photos</span>
+  </div>
+
+  <!-- Étape O1 -->
+  <div class="pu-body pu-step-content pu-step-active" id="o-step-1">
+    <div class="pu-field">
+      <label class="pu-label">Titre de votre offre</label>
+      <input class="pu-input" type="text" id="o-titre" placeholder="Ex: Électricien disponible Nice">
+    </div>
+    <div class="pu-field">
+      <label class="pu-label">Catégorie</label>
+      <div class="pu-cat-grid">
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>🔧</span>Plomberie</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>⚡</span>Électricité</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>🌱</span>Jardinage</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>🧹</span>Ménage</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>🖥</span>Informatique</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>🎨</span>Peinture</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>📦</span>Déménagement</div>
+        <div class="pu-cat" onclick="puSelectCat(this,'o')"><span>🔨</span>Réparation</div>
+      </div>
+    </div>
+    <div class="pu-field">
+      <label class="pu-label">Description</label>
+      <textarea class="pu-textarea" id="o-desc" placeholder="Décrivez vos services, votre expérience..."></textarea>
+    </div>
+    <div class="pu-field pu-row2">
+      <div>
+        <label class="pu-label">Tarif (€/h)</label>
+        <input class="pu-input" type="number" id="o-tarif" placeholder="50">
+      </div>
+      <div>
+        <label class="pu-label">Rayon (km)</label>
+        <input class="pu-input" type="number" id="o-rayon" placeholder="20">
+      </div>
+    </div>
+    <div class="pu-toggle-row" id="o-dispo-row">
+      <span class="pu-toggle-label">✅ Disponible immédiatement</span>
+      <label class="pu-toggle">
+        <input type="checkbox" id="o-dispo" checked onchange="puToggleDispo()">
+        <span class="pu-toggle-track pu-toggle-on"><span class="pu-toggle-thumb pu-thumb-on"></span></span>
+      </label>
+    </div>
+    <button class="pu-btn-primary pu-btn-orange" onclick="puNextStep('o',1)">Suivant →</button>
+  </div>
+
+  <!-- Étape O2 -->
+  <div class="pu-body pu-step-content" id="o-step-2" style="display:none">
+    <div class="pu-field">
+      <label class="pu-label">Montrez vos réalisations</label>
+      <p class="pu-hint">Les prestataires avec photos obtiennent 3× plus de contacts</p>
+      <div class="pu-upload-row">
+        <div class="pu-upload-zone" onclick="puTriggerFile('o-file-1')" id="o-zone-1">
+          <input type="file" id="o-file-1" accept="image/*" style="display:none" onchange="puPreview(this,'o-zone-1')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="pu-upload-zone" onclick="puTriggerFile('o-file-2')" id="o-zone-2">
+          <input type="file" id="o-file-2" accept="image/*" style="display:none" onchange="puPreview(this,'o-zone-2')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="pu-upload-zone" onclick="puTriggerFile('o-file-3')" id="o-zone-3">
+          <input type="file" id="o-file-3" accept="image/*" style="display:none" onchange="puPreview(this,'o-zone-3')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="pu-nav-row">
+      <button class="pu-btn-ghost" onclick="puGoStep('o',1)">← Retour</button>
+      <button class="pu-btn-primary pu-btn-orange" onclick="puSubmit('offre')">Publier mon offre</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== POPUP CONTACTER ===== -->
+<div class="contact-overlay" id="contact-overlay" onclick="contactClose()"></div>
+
+<div class="contact-modal" id="contact-modal-offre">
+  <div class="pu-modal-handle"></div>
+  <div class="contact-head">
+    <div class="contact-av" id="contact-av">?</div>
+    <div class="contact-head-info">
+      <div class="contact-title" id="contact-title">Faire une offre</div>
+      <div class="contact-sub" id="contact-sub"></div>
+    </div>
+    <button class="contact-close" onclick="contactClose()">✕</button>
+  </div>
+  <div class="contact-body" id="contact-offre-body">
+    <div class="contact-field">
+      <label class="contact-label">💰 Votre budget</label>
+      <div class="contact-input-wrap">
+        <input class="contact-input" type="number" id="contact-prix" placeholder="Ex: 150" min="0">
+        <span class="contact-suffix">€</span>
+      </div>
+    </div>
+    <div class="contact-field">
+      <label class="contact-label">📝 Décrivez votre besoin</label>
+      <textarea class="contact-textarea" id="contact-desc" maxlength="500" placeholder="Bonjour, j'ai besoin de..." oninput="contactCount('contact-desc','contact-desc-count')"></textarea>
+      <div class="contact-char-count"><span id="contact-desc-count">0</span>/500</div>
+    </div>
+    <div class="contact-field">
+      <label class="contact-label">⏰ Délai</label>
+      <div class="contact-chips" id="contact-delai-chips">
+        <button class="contact-chip active" onclick="contactChip(this,'contact-delai-chips')">⚡ Urgent</button>
+        <button class="contact-chip" onclick="contactChip(this,'contact-delai-chips')">📅 Cette semaine</button>
+        <button class="contact-chip" onclick="contactChip(this,'contact-delai-chips')">🗓 À convenir</button>
+      </div>
+    </div>
+  </div>
+  <div class="contact-success" id="contact-offre-success">
+    <svg class="contact-success-circle" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="30" fill="none" stroke="#22C55E" stroke-width="4"/>
+      <path d="M20 36l12 12 20-20" fill="none" stroke="#22C55E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="contact-success-title">Offre envoyée !</div>
+    <p class="contact-success-sub" id="contact-offre-success-sub">Le prestataire sera notifié.</p>
+    <button class="contact-msgs-btn" onclick="navigateTo('/messages')">💬 Voir mes messages →</button>
+  </div>
+  <div class="contact-footer" id="contact-offre-footer">
+    <div class="contact-secure">🔒 Message sécurisé</div>
+    <button class="contact-send-btn" onclick="contactSendOffre()">Envoyer l'offre →</button>
+  </div>
+</div>
+
+<!-- ===== POPUP RÉPONDRE ===== -->
+<div class="contact-modal" id="contact-modal-reponse">
+  <div class="pu-modal-handle"></div>
+  <div class="contact-head">
+    <div class="contact-av" id="rep-av">?</div>
+    <div class="contact-head-info">
+      <div class="contact-title" id="rep-title">Répondre</div>
+    </div>
+    <button class="contact-close" onclick="contactClose()">✕</button>
+  </div>
+  <div class="contact-body" id="contact-rep-body">
+    <div class="contact-summary" id="contact-rep-summary"></div>
+    <div class="contact-field">
+      <label class="contact-label">💬 Votre message</label>
+      <textarea class="contact-textarea contact-textarea-tall contact-blue-focus" id="rep-msg" maxlength="500" placeholder="Bonjour, je peux vous aider avec..." oninput="contactCount('rep-msg','rep-msg-count')"></textarea>
+      <div class="contact-char-count"><span id="rep-msg-count">0</span>/500</div>
+    </div>
+    <div class="contact-field">
+      <label class="contact-label">📅 Disponibilité</label>
+      <div class="contact-chips" id="rep-dispo-chips">
+        <button class="contact-chip contact-chip-blue active" onclick="contactChip(this,'rep-dispo-chips')">Dès aujourd'hui</button>
+        <button class="contact-chip contact-chip-blue" onclick="contactChip(this,'rep-dispo-chips')">Cette semaine</button>
+        <button class="contact-chip contact-chip-blue" onclick="contactChip(this,'rep-dispo-chips')">À définir</button>
+      </div>
+    </div>
+  </div>
+  <div class="contact-success" id="contact-rep-success">
+    <svg class="contact-success-circle" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="30" fill="none" stroke="#22C55E" stroke-width="4"/>
+      <path d="M20 36l12 12 20-20" fill="none" stroke="#22C55E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="contact-success-title">Réponse envoyée !</div>
+    <p class="contact-success-sub" id="contact-rep-success-sub">Le client sera notifié.</p>
+    <button class="contact-msgs-btn" onclick="navigateTo('/messages')">💬 Voir mes messages →</button>
+  </div>
+  <div class="contact-footer" id="contact-rep-footer">
+    <button class="contact-send-btn contact-send-btn-blue" onclick="contactSendReponse()">Envoyer ma réponse →</button>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="db-wrap">
+
+  <div class="db-head">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p>Vue d'ensemble de la plateforme BricoleUp</p>
+    </div>
+    <span class="db-date" id="db-date"></span>
+  </div>
+
+  <div class="db-alert" id="adminDashboardError" hidden></div>
+
+  <!-- KPI -->
+  <div class="db-kpi-grid">
+    <div class="db-kpi">
+      <div class="db-kpi-icon" style="background:#EFF6FF;color:#1B3C6B">👥</div>
+      <div>
+        <div class="db-kpi-label">Utilisateurs</div>
+        <div class="db-kpi-val" id="db-total">—</div>
+        <div class="db-kpi-sub up" id="db-total-sub">—</div>
+      </div>
+    </div>
+    <div class="db-kpi">
+      <div class="db-kpi-icon" style="background:#FFF7ED;color:#F97316">🔨</div>
+      <div>
+        <div class="db-kpi-label">Prestataires</div>
+        <div class="db-kpi-val" id="db-prestataires">—</div>
+        <div class="db-kpi-sub up" id="db-prest-sub">—</div>
+      </div>
+    </div>
+    <div class="db-kpi">
+      <div class="db-kpi-icon" style="background:#FFFBEB;color:#F59E0B">🛡️</div>
+      <div>
+        <div class="db-kpi-label">KYC en attente</div>
+        <div class="db-kpi-val" id="db-kyc">—</div>
+        <div class="db-kpi-sub" style="color:#F59E0B">demandes en cours</div>
+      </div>
+    </div>
+    <div class="db-kpi">
+      <div class="db-kpi-icon" style="background:#F0FDF4;color:#22C55E">📋</div>
+      <div>
+        <div class="db-kpi-label">Annonces</div>
+        <div class="db-kpi-val" id="db-annonces">—</div>
+        <div class="db-kpi-sub up" id="db-annonces-sub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphes ligne 1 -->
+  <div class="db-charts-row">
+    <div class="db-chart-card db-chart-lg">
+      <div class="db-chart-head">
+        <span class="db-chart-title">Inscriptions mensuelles</span>
+        <span class="db-chart-badge">6 derniers mois</span>
+      </div>
+      <div class="db-chart-body"><canvas id="chartSignups"></canvas></div>
+    </div>
+    <div class="db-chart-card">
+      <div class="db-chart-head">
+        <span class="db-chart-title">Répartition des rôles</span>
+      </div>
+      <div class="db-chart-body"><canvas id="chartRoles"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Graphes ligne 2 -->
+  <div class="db-charts-row">
+    <div class="db-chart-card">
+      <div class="db-chart-head">
+        <span class="db-chart-title">Inscriptions — 7 derniers jours</span>
+      </div>
+      <div class="db-chart-body"><canvas id="chartDaily"></canvas></div>
+    </div>
+    <div class="db-chart-card db-chart-lg">
+      <div class="db-chart-head">
+        <span class="db-chart-title">Annonces publiées / mois</span>
+        <span class="db-chart-badge">6 derniers mois</span>
+      </div>
+      <div class="db-chart-body"><canvas id="chartAnnonces"></canvas></div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,450 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Réalisations - {{ user.username }}
+{% endblock %}
+
+{% block content %}
+
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container">
+    <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+        <div class="col-12 justify-content-center align-items-center " >
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                crossorigin="anonymous"></script>
+            <!-- annonce_details_1 -->
+            <ins class="adsbygoogle"
+                style="display:block;width:100%;height:130px;"
+                data-ad-client="ca-pub-5485706271033891"
+                data-ad-slot="1737959128"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div> 
+    </div> 
+    <div class="row justify-content-center">
+                <div class="col-lg-10 col-md-12 col-12 mb-3">
+                    <div class="profile-container">
+                        <!-- Banner -->
+                        <div class="profile-banner clickable-cover" 
+                            style="
+                                position: relative;
+                                border-radius: 12px 12px 0 0;
+                                background-size: cover;
+                                background-position: center;
+                                {% if profile.cover_picture_url %}
+                                    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%), url('{{ profile.cover_picture_url }}');
+                                {% else %}
+                                    background-color: #f0f0f0;
+                                    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+                                {% endif %}
+                                ">
+                            
+                        </div>
+                   
+
+                        <!-- Profile Info Section -->
+                        <div class="profile-main">
+                            <!-- Profile picture -->
+                            <div class="profile-picture">
+                                <img
+                                    src="{{ profile.profile_picture_url }}"
+                                    alt="{{ profile.user.username }}"
+                                    class="clickable-avatar"
+                                    
+                                >
+                            </div>
+                            <!-- User Info -->
+                            <div class="profile-info">
+
+                                <div class="row">
+                                    <div class="col-lg-6 col-12">
+
+                                        <div class="username mb-0">
+                                            {{ profile.user.username }}
+                                            {% if profile.is_verified %}
+                                            <i class="fas fa-check-circle verified-icon" title="Vérifié"></i>
+                                            {% endif %}
+                                        </div>
+                                       
+                                        <div><i class="bi bi-geo-alt"></i> 
+                                            {% if profile.city %}{{ profile.city }}{% endif %}
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <div class="row mt-2 mb-0  ">
+                                            <div class="col-12 d-flex">
+
+                                                <a href="{% url 'app:account' profile.slug %}" class="btn btn-message">
+                                                    <i class="fas fa-user"></i> Voir le profil
+
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+
+
+                            </div>
+                                
+                        </div>
+                    
+                        <!-- Profile Navigation -->
+                        <div class="profile-nav">
+                            <button class="nav-btn active" data-target="section-accueil">
+                                    Réalisations ( {{ projets.count }} )
+                            </button>
+                        </div>
+
+
+                    </div>
+                    <style>
+                        .profile-container {
+                            font-family: 'Arial', sans-serif;
+                            
+                            margin: 0 auto;
+                            background-color: #fff;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+                        }
+
+                        /* Banner */
+                        .profile-banner {
+                            width: 100%;
+                            height: 200px;
+                            background-size: cover;
+                            background-position: center;
+                            position: relative;
+                        }
+
+                        /* Main profile section */
+                        .profile-main {
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 5px;
+                            padding: 5px 5px 10px 5px;
+                            flex-wrap: wrap;
+                            position: relative;
+                        }
+
+                        /* Profile picture overlapping banner */
+                        .profile-picture {
+                            flex: 0 0 150px;
+                            margin-top: -75px; /* half of image height to overlap */
+                        }
+                        .profile-picture img {
+                            width: 150px;
+                            height: 150px;
+                            border-radius: 50%;
+                            border: 4px solid #fff;
+                            object-fit: cover;
+                        }
+                        @media (max-width: 576px) {
+                            .profile-picture {
+                                flex: 0 0 120px; /* match the smaller image width */
+                            }
+
+                            .profile-picture img {
+                                width: 120px;
+                                height: 120px;
+                                border-radius: 50%;
+                            }
+
+                        }
+
+                        
+
+                        /* Profile info */
+                        .profile-info {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                        }
+
+                        /* Username and title */
+                        .username {
+                            font-size: 24px;
+                            font-weight: bold;
+                            align-items: center;
+                        }
+                        .verified-icon { color: #ec700a; }
+                        .title {
+                            font-size: 18px;
+                            color: #555;
+                        }
+
+                        /* Statut */
+                        .profile-statut {
+                            display: inline-block;
+                            padding: 4px 10px;
+                            font-size: 13px;
+                            font-weight: 600;
+                            border-radius: 6px;
+                        }
+                   
+                        /* Buttons */
+                        .profile-actions {
+                            margin-top: 12px;
+                            display: flex;
+                            gap: 10px;
+                            flex-wrap: wrap;
+                        }
+                        .btn-edit, .btn-message {
+                            flex: 1;
+                            padding: 8px 12px;
+                            font-size: 14px;
+                            font-weight: 600;
+                            color: #fff;
+                            background-color: #ec700a;
+                            border: none;
+                            border-radius: 6px;
+                            text-align: center;
+                            cursor: pointer;
+                            transition: 0.2s;
+                            text-decoration: none;
+                        }
+                        .btn-edit:hover, .btn-message:hover { background-color: #5bb7b2; }
+
+                       
+
+                    </style>
+
+                    <div class="row justify-content-center">
+                <div class="col-lg-12 col-12 mt-4">
+                    <div class="row ">
+
+                        <div class="row ">
+                            {% for projet in projets %}
+                            <div class="col-12  col-lg-4 mb-4">
+                                <div class="profile-section topics-detail-block bg-white shadow-lg mb-1 p-2" style="cursor:pointer; border-radius:8px;"
+                                    onclick="window.open('{% url 'app:project_details' projet.id %}', '_blank')">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        
+                                        <div class="d-flex align-items-center">
+                                            <a style="font-size:15px;" class="d-flex align-items-center">
+                                                <img src="{{ projet.user.profile.profile_picture_url }}" style="width:50px; height:50px; object-fit:cover;" class="rounded-circle me-2">
+                                                
+                                                <div class="d-flex flex-column">
+                                                    <span>{{ projet.user.username }}</span>
+                                                    
+                                                </div>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-1 mt-1 description-clamp-project">
+                                            <span>{{ projet.description|linebreaksbr }}</span>
+                                            
+                                        </div>
+
+                                        {% if projet.image3 or projet.image4 %}
+                                            <div class="image-gallery two-rows">
+                                        {% else %}
+                                            <div class="image-gallery one-row">
+                                        {% endif %}
+
+                                            {% if projet.image1 %}
+                                                <img src="{{ projet.image1.url }}" class="gallery-image img-fluid">
+                                            {% endif %}
+                                            {% if projet.image2 %}
+                                                <img src="{{ projet.image2.url }}" class="gallery-image img-fluid">
+                                            {% endif %}
+                                            {% if projet.image3 %}
+                                                <img src="{{ projet.image3.url }}" class="gallery-image img-fluid">
+                                            {% endif %}
+                                            {% if projet.image4 %}
+                                                <img src="{{ projet.image4.url }}" class="gallery-image img-fluid">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                </div> 
+            </div> 
+
+    </div>
+</section>
+<style>
+                        .description-clamp-project {
+                            display: -webkit-box;
+                            -webkit-box-orient: vertical;
+                            -webkit-line-clamp: 4; /* Limit to 4 lines */
+                            overflow: hidden;
+                            position: relative;
+                        }
+
+                        .clamp-link-project {
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            background: white; /* matches your container background */
+                            padding-left: 4px;
+                            font-weight: bold;
+                            color: #0d6efd;
+                            text-decoration: none;
+                        }
+                        .profile-nav {
+                            display: flex;
+                            justify-content: space-around;
+                            border-top: 1px solid #eee;
+                            border-bottom: 1px solid #eee;
+                            background: #fafafa;
+                        }
+
+                        .nav-btn {
+                            flex: 1;
+                            padding: 12px 0;
+                            font-size: 15px;
+                            font-weight: 600;
+                            border: none;
+                            background: transparent;
+                            color: #555;
+                            cursor: pointer;
+                            transition: 0.2s;
+                        }
+                        .nav-btn:hover {
+                            background: #f0f0f0;
+                        }
+                        .nav-btn.active {
+                            color: #ec700a;
+                            border-bottom: 3px solid #ec700a;
+                            background: #fff;
+                        }
+
+                        /* Sections */
+                        .profile-section {
+                            padding: 15px;
+                            margin: 0 auto;
+                            background-color: #fff;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+                        }
+                        .section {
+                            display: none;
+                            min-height: 300px;
+                        }
+                        .section.active {
+                            display: block;
+                        }
+                        .image-gallery {
+                                display: grid;
+                                grid-template-columns: repeat(2, 1fr);
+                                gap: 5px;
+                                height: 200px; /* fixed container height */
+                            }
+
+                            .image-gallery.one-row {
+                                grid-template-rows: 200px; /* 1 row for 2 images */
+                            }
+
+                            .image-gallery.two-rows {
+                                grid-template-rows: 100px 100px; /* 2 rows for 3 or 4 images */
+                            }
+
+                            .image-gallery .gallery-image {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                border-radius: 4px;
+                                cursor: pointer;
+                            }
+                    </style>
+<style>
+     
+        .container_mess {
+            margin-top:5px;
+            padding: 20px;
+        }
+       
+        .small-images-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping of small images */
+        }
+        
+        .small-image {
+            width: 60px; /* Fixed width for small images */
+            height: 60px; /* Fixed height for small images */
+            margin: 5px; /* Margin between small images */
+            cursor: pointer; /* Changes cursor to pointer */
+            object-fit: cover; /* Ensures images cover their area */
+            border: 2px solid transparent; /* Initial border for hover effect */
+            transition: border-color 0.3s; /* Smooth transition for border color */
+        }
+        
+        .small-image:hover {
+            border-color: #ec700a; /* Change border color on hover */
+        }
+        
+        .selected {
+            border-color: #ec700a; /* Border color for selected image */
+        }
+        
+        .hidden {
+            display: none; /* Initially hide the large image */
+        }
+        
+        .selected-image img {
+            border: 2px solid #ec700a; /* Optional: Add border to the selected image */
+        }
+        
+        
+      
+        .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; /* Space between skill items */
+    }
+
+    
+        
+        .profile-card {
+            
+            width: 100%;
+            max-width: 350px;
+
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-img img {
+            height: 150px;
+            width: 150px;
+            object-fit: cover;
+        }
+        
+        .profile-item {
+            margin-bottom: 10px;
+        }
+        
+        .profile-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .profile-value {
+            font-weight: normal;
+        }
+        
+        .profile-actions .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        
+    </style>
+{% endblock %}

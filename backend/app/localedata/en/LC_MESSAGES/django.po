@@ -1,0 +1,292 @@
+msgid "BricoleUp"
+msgstr "BricoleUp"
+
+msgid "Bricolage et petits travaux : La solution pour vos services de proximité."
+msgstr "DIY and small jobs: The solution for your local services."
+
+msgid "bricoleup, BricoleUp, bricole, artisans, prestataires, diy, bricoleup, bricole up, bricoleup.com, bricolage, plombier, rénovation, outils, bricoleurs, travaux, réparation, DIY, électricité, plomberie, menuiserie, peinture, nettoyage, jardinage, maçonnerie, carreleur, installateur, rénovation intérieure, rénovation extérieure, dépannage, électricien, artisan, bricoles, devis, réparation électroménager, travaux de peinture, réparation toiture, entretien jardin, entretien maison"
+msgstr "bricoleup, BricoleUp, DIY, artisans, providers, diy, bricoleup, bricole up, bricoleup.com, home improvement, plumber, renovation, tools, handymen, work, repair, DIY, electricity, plumbing, carpentry, painting, cleaning, gardening, masonry, tiler, installer, interior renovation, exterior renovation, repair, electrician, artisan, jobs, quotes, appliance repair, painting work, roof repair, garden maintenance, home maintenance"
+
+msgid "Prestataires"
+msgstr "Providers"
+ 
+msgid "Annonces"
+msgstr "Listings"
+
+msgid "Messages"
+msgstr "Messages"
+
+msgid "Voir mon profil"
+msgstr "View my profile"
+
+msgid "Zone d'intervention"
+msgstr "Service area"
+
+msgid "Recherche des prestataires"
+msgstr "Search for providers"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Mes Favoris"
+msgstr "My Favorites"
+
+msgid "Publier une annonce"
+msgstr "Post a listing"
+
+msgid "Informations du compte"
+msgstr "Account information"
+
+msgid "Paramètres du compte"
+msgstr "Account settings"
+
+msgid "Déconnexion"
+msgstr "Log out"
+
+
+msgid "Se connecter"
+msgstr "Log in"
+
+msgid "Resources"
+msgstr "Resources"
+
+msgid "Accueil"
+msgstr "Home"
+
+msgid "Centre d’Aide"
+msgstr "Help Center"
+
+msgid "Plan du site"
+msgstr "Sitemap"
+
+msgid "Politique De Confidentialité"
+msgstr "Privacy Policy"
+
+msgid "Conditions Générales d'Utilisation"
+msgstr "Terms of Use"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Formulaire de Contact"
+msgstr "Contact Form"
+
+msgid "Copyright © 2025 BricoleUp."
+msgstr "Copyright © 2025 BricoleUp."
+
+msgid "Tous droits réservés."
+msgstr "All rights reserved."
+
+msgid "Bricolage et petits travaux"
+msgstr "DIY and Small Repairs"
+
+msgid "La solution pour vos services de proximité"
+msgstr "The solution for your local services"
+
+msgid "Aide à domicile"
+msgstr "Home Assistance"
+
+msgid "Bricolage"
+msgstr "DIY"
+
+msgid "Chauffage"
+msgstr "Heating"
+
+msgid "Déménagement"
+msgstr "Moving"
+
+msgid "Électricité"
+msgstr "Electricity"
+
+msgid "Jardinage"
+msgstr "Gardening"
+
+msgid "Maçonnerie"
+msgstr "Masonry"
+
+msgid "Ménage"
+msgstr "Cleaning"
+
+
+msgid "Peinture"
+msgstr "Painting"
+
+msgid "Plomberie"
+msgstr "Plumbing"
+
+msgid "Piscine"
+msgstr "Swimming Pool"
+
+msgid "Rénovation"
+msgstr "Renovation"
+
+msgid "Vous êtes"
+msgstr "You are"
+
+msgid "client"
+msgstr "a client"
+
+msgid "Cherchez et engagez un professionnel"
+msgstr "Find and hire a professional"
+
+msgid "Chercher des prestataires près de chez vous"
+msgstr "Search for service providers near you"
+
+msgid "Publier votre demande"
+msgstr "Post your request"
+
+msgid "Échanger avec des professionnels"
+msgstr "Communicate with professionals"
+
+msgid "prestataire"
+msgstr "Service provider"
+
+msgid "Booster votre visibilité et obtenir de nouveaux clients"
+msgstr "Boost your visibility and gain new clients"
+
+msgid "Ajouter votre profil à la recherche de prestataires"
+msgstr "Add your profile to the service provider search"
+
+msgid "Répondre aux annonces de potentiels clients"
+msgstr "Respond to potential clients’ listings"
+
+msgid "Booster votre visibilité et Obtenir de nouveaux clients"
+msgstr "Boost your visibility and gain new clients"
+
+msgid "Annonces récentes"
+msgstr "Recent listings"
+
+msgid "Prestataires actif récemment"
+msgstr "Recently active service providers"
+
+msgid "Chercher un prestataire par service"
+msgstr "Search for a service provider by service"
+
+msgid "Questions Fréquemment Posées"
+msgstr "Frequently Asked Questions"
+
+msgid "Qu'est-ce que BricoleUp ?"
+msgstr "What is BricoleUp?"
+
+msgid "BricoleUp est une plateforme innovante dédiée à la mise en relation de bricoleurs passionnés et de professionnels qualifiés avec des particuliers ayant des besoins en bricolage. Que vous ayez un projet à réaliser ou des compétences à offrir, BricoleUp facilite la rencontre entre la demande et l'offre dans le domaine du bricolage, garantissant ainsi des solutions efficaces et de qualité pour tous vos travaux."
+msgstr "BricoleUp is an innovative platform connecting passionate DIYers and qualified professionals with individuals in need of DIY services. Whether you have a project to complete or skills to offer, BricoleUp facilitates the match between demand and supply in the DIY sector, ensuring efficient and quality solutions for all your work."
+
+msgid "Rejoindre la Communauté est-il gratuit ?"
+msgstr "Is joining the Community free?"
+
+msgid "Oui ! Rejoindre la Communauté des Bricoleurs est complètement gratuit. Vous pouvez demander de l'aide, offrir vos compétences et vous connecter avec des personnes partageant les mêmes idées. N'hésitez pas à personnaliser votre profil et à présenter vos projets pour inspirer les autres !"
+msgstr "Yes! Joining the Bricoleurs Community is completely free. You can ask for help, offer your skills, and connect with like-minded people. Feel free to customize your profile and showcase your projects to inspire others!"
+
+msgid "Comment offrir vos compétences ?"
+msgstr "How to offer your skills?"
+
+msgid "Pour offrir vos services, créez simplement un profil et listez vos compétences sur notre plateforme. Des clients potentiels peuvent vous trouver en parcourant nos listes de sujets ou en utilisant des mots-clés spécifiques liés à votre expertise. Engagez-vous avec les membres de la communauté qui souhaitent embaucher des bricoleurs qualifiés comme vous !"
+msgstr "To offer your services, simply create a profile and list your skills on our platform. Potential clients can find you by browsing our topic lists or using specific keywords related to your expertise. Engage with community members looking to hire qualified DIYers like you!"
+
+msgid "Recevez notre newsletter"
+msgstr "Subscribe to our newsletter"
+
+msgid "Email Address"
+msgstr "Email Address"
+
+msgid "S'abonner"
+msgstr "Subscribe"
+
+msgid "BricoleUp : Connexion"
+msgstr "BricoleUp: Login"
+
+msgid "Connectez-vous ou créez votre compte"
+msgstr "Log in or create your account"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Mot de passe"
+msgstr "Password"
+
+msgid "Mot de passe oublié?"
+msgstr "Forgot password?"
+
+msgid "Vous n'avez pas de compte?"
+msgstr "Don't have an account?"
+
+msgid "Inscrivez-vous"
+msgstr "Sign up"
+
+msgid "Se connecter..."
+msgstr "Logging in..."
+
+msgid "Rechercher un service..."
+msgstr "Search for a service..."
+
+msgid "Ville"
+msgstr "City"
+
+msgid "Filtres"
+msgstr "Filters"
+
+msgid "Trier par"
+msgstr "Sort by"
+
+msgid "Avis"
+msgstr "Rating"
+
+msgid "Distance"
+msgstr "Distance"
+
+msgid "Type de compte"
+msgstr "Account type"
+
+msgid "Particulier"
+msgstr "Individual"
+
+msgid "Professionnel"
+msgstr "Professional"
+
+msgid "Vérifié"
+msgstr "Verified"
+
+msgid "Comptes vérifiés uniquement"
+msgstr "Verified accounts only"
+
+msgid "Rayon de recherche (en km)"
+msgstr "Search radius (km)"
+
+msgid "Tout effacer"
+msgstr "Clear all"
+
+msgid "Rechercher"
+msgstr "Search"
+
+msgid "BricoleUp : Inscription"
+msgstr "BricoleUp: Sign Up"
+
+msgid "Nom d'utilisateur"
+msgstr "Username"
+
+msgid "S'inscrire →"
+msgstr "Sign Up →"
+
+msgid "Inscription..."
+msgstr "Signing up..."
+
+msgid "Vous avez déjà un compte?"
+msgstr "Already have an account?"
+
+msgid "En cliquant sur"
+msgstr "By clicking on"
+
+msgid "vous acceptez les"
+msgstr "you agree to the"
+
+msgid "CGU"
+msgstr "Terms of Service"
+
+msgid "et la"
+msgstr "and the"
+
+msgid "Politique de confidentialité"
+msgstr "Privacy Policy"
+
+msgid "de BricoleUp."
+msgstr "of BricoleUp."

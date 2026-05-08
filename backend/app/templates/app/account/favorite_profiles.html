@@ -1,0 +1,111 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Mes Favoris - Profils
+{% endblock %}
+
+{% block content %}
+
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container mb-5">
+    
+    <div class="row justify-content-center mt-5">
+        <div class=" col-12 col-lg-6 mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            
+            <h6 class="mb-4 fw-bold text-dark">
+                <i class="fas fa-heart"></i> Mes Favoris
+            </h6>
+                {% for profile in profiles %}
+                <div class="col-lg-12 profile-item">
+                    <div class="topics-detail-block bg-white shadow-lg mt-1 mb-1 p-2" style="cursor:pointer; border-radius:8px;"
+                            onclick="window.open('{% url 'app:account' profile.slug %}', '_blank')">
+                        <div class="row align-items-center">
+                        
+                                    <div class="col-12 d-flex justify-content-between align-items-center infos-bottom-btn">
+            
+                                        <!-- Left: Verification Status -->
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <a class="d-flex align-items-center" href="{% url 'app:account' profile.slug %}" target="_blank" style="cursor:on;" >
+                                                <img src="{{ profile.profile_picture_url }}" class="rounded-circle me-2" style="height: 55px; width:55px; object-fit: cover;">
+                                                <div class="d-flex flex-column">
+                                                    <span>{{ profile.user.username }}{% if profile.is_verified %}
+                                                <i class="fas fa-check-circle" style="color: #0dc0c7;" title="Vérifié"></i>
+                                                {% endif %}
+                                                        
+                                                        
+                    
+                                                    </span>
+                                                    <span style="font-size:14px; font-weight:semi-bold;">
+                                                            <i class="bi bi-geo-alt"></i> {{ profile.city }}
+                                                        </span>
+                                                    
+
+                                                
+                                                </div>
+                                            </a>
+                                            
+                                        </div>
+                                        
+                                        
+                                        <!-- Right: Actions -->
+                                        <div class="d-flex align-items-center gap-2">
+                                            
+                                            {% if distance  %}
+                                            <span class="profile-value">
+                                                <i class="fas fa-location-arrow me-1"></i>{{ distance|floatformat:2}} 
+                                                        km
+                                            </span>
+                                            {% endif %}
+                                                    
+                                        
+                                        </div>
+                                        
+                                    
+                                    </div>
+                            
+                        </div>
+                        
+                        
+                    </div>
+                
+                </div>
+                {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+        <div class="col-12 justify-content-center align-items-center " >
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                crossorigin="anonymous"></script>
+            <!-- annonce_details_1 -->
+            <ins class="adsbygoogle"
+                style="display:block;width:100%;height:130px;"
+                data-ad-client="ca-pub-5485706271033891"
+                data-ad-slot="1737959128"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div> 
+    </div> 
+</div> 
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}
+

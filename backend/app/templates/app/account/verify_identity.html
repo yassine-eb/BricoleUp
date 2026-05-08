@@ -1,0 +1,1503 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Identité - Confiance & Vérification
+{% endblock %}
+
+{% block content %}
+
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container">
+    <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+        <div class="col-12 justify-content-center align-items-center " >
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                crossorigin="anonymous"></script>
+            <!-- annonce_details_1 -->
+            <ins class="adsbygoogle"
+                style="display:block;width:100%;height:130px;"
+                data-ad-client="ca-pub-5485706271033891"
+                data-ad-slot="1737959128"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div> 
+    </div>
+    
+    <div class="row justify-content-center mt-2  mb-5">
+            <div class=" col-12 col-lg-6  mb-5 p-3" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+               {% if error_message %}
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i> {{ error_message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                <h6 class="mb-4 fw-bold text-dark">
+                        <i class="fas fa-shield"></i> Identifiants & Vérification
+                    </h6>
+                <div class="list-group-item list-group-item-action d-flex align-items-center mb-2">
+                            <i class="fas fa-id-card text-secondary me-3"></i>
+                            <div class="flex-grow-1">Identité</div>
+
+                             {% if profile.is_identity_verified %}
+                                        <i class="fas fa-check-circle text-success ms-1"></i>
+                                    {% else %}
+                                        <i class="fas fa-times-circle text-danger ms-1"></i>
+                                    {% endif %} 
+                        </div>
+                <form method="POST" action="{% url 'app:account_verification' %}" enctype="multipart/form-data" onsubmit="showSettingsLoader(event)">  
+                    {% csrf_token %}
+                    
+                        
+                        
+                            
+                        <div class="row ">
+
+                            <div class ="col-12 col-lg-6 mb-3">
+                                <label style="font-weight:bold; display: inline-block; color: #13547a;" >
+                                    Statut
+                                </label>
+
+                                <input type="text" class="form-control" value="{{ profile.statut }}" readonly>
+                            </div>
+                            {% if profile.statut == 'particulier' %}
+                            
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label style="font-weight:bold; display: inline-block; color: #13547a;" >
+                                        Civilité
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.gender }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label style="font-weight:bold; display: inline-block; color: #13547a;" >
+                                        Prénom
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.prenom }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label style="font-weight:bold; display: inline-block; color: #13547a;" >
+                                        Nom
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.nom }}" readonly>
+                                </div>
+                            
+                                {% if not profile.is_identity_verified_request %}
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <label style="font-weight:bold; display: inline-block; color: #13547a;">Pièce d’identité
+                                            <span class="ms-1 text-primary" style="cursor: pointer;"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="click"
+                                                data-bs-placement="right"
+                                                data-bs-content="Carte d’identité, passeport ou permis de conduire en cours de validité. Le document doit être lisible et en couleur.">
+                                                ⓘ
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-lg-12 mb-3">
+                                        <div class="file-upload-container">
+                                            <!-- Hidden file input -->
+                                            <input type="file" 
+                                                class="form-control file-input-hidden" 
+                                                id="piece_identite" 
+                                                name="piece_identite" 
+                                                accept="image/*,.pdf" 
+                                                required
+                                                style="display: none;">
+
+                                            <!-- File upload area -->
+                                            <div class="file-upload-area" id="uploadArea">
+                                                <div class="upload-placeholder">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <p class="upload-text">Cliquez ou glissez votre fichier ici</p>
+                                                    <p class="upload-subtext">JPG, PNG ou PDF (Max 10MB)</p>
+                                                </div>
+                                                <button type="button" class="btn btn-upload" id="uploadBtn">
+                                                    <i class="fas fa-plus-circle me-2"></i>
+                                                    Télécharger un fichier
+                                                </button>
+                                            </div>
+
+                                            <!-- File uploaded state -->
+                                            <div class="file-uploaded-area" id="uploadedArea" style="display: none;">
+                                                <div class="uploaded-file-info">
+                                                    <div class="file-icon-wrapper">
+                                                        <i class="fas fa-file" id="fileIcon"></i>
+                                                    </div>
+                                                    
+                                                    <div class="file-details">
+                                                        <p class="file-name" id="fileName">Aucun fichier sélectionné</p>
+                                                        <p class="file-size" id="fileSize">0 MB</p>
+                                                    </div>
+
+                                                    <div class="file-actions">
+                                                        <button type="button" class="btn-action view-btn" id="viewBtn" title="Voir le fichier">
+                                                            <i class="fas fa-eye"></i>
+                                                            <span>Voir</span>
+                                                        </button>
+                                                        <button type="button" class="btn-action modify-btn" id="modifyBtn" title="Modifier le fichier">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span>Modifier</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- File Preview Modal -->
+                                        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="previewModalLabel">Aperçu du fichier</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div id="previewContent">
+                                                            <!-- Image preview -->
+                                                            <img id="imagePreview" src="" alt="Preview" style="max-width: 100%; height: auto; display: none;">
+                                                            
+                                                            <!-- PDF preview -->
+                                                            <div id="pdfPreview" style="display: none;">
+                                                                <iframe id="pdfFrame" style="width: 100%; height: 500px; border: none;"></iframe>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <style>
+                                            .file-upload-container {
+                                                width: 100%;
+                                            }
+
+                                            /* ===== UPLOAD AREA ===== */
+                                            .file-upload-area {
+                                                border: 2px dashed #e5e7eb;
+                                                border-radius: 12px;
+                                                padding: 32px 24px;
+                                                text-align: center;
+                                                background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+                                                transition: all 0.3s ease;
+                                                cursor: pointer;
+                                            }
+
+                                            .file-upload-area:hover {
+                                                border-color: #ec700a;
+                                                background: linear-gradient(135deg, #fff5f0 0%, #fef5f0 100%);
+                                            }
+
+                                            .file-upload-area.dragover {
+                                                border-color: #ec700a;
+                                                background-color: #fef5f0;
+                                                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.15);
+                                            }
+
+                                            .upload-placeholder {
+                                                margin-bottom: 16px;
+                                            }
+
+                                            .upload-placeholder i {
+                                                font-size: 48px;
+                                                color: #ec700a;
+                                                margin-bottom: 12px;
+                                                display: block;
+                                            }
+
+                                            .upload-text {
+                                                font-size: 14px;
+                                                font-weight: 600;
+                                                color: #1a1a1a;
+                                                margin: 0 0 4px 0;
+                                            }
+
+                                            .upload-subtext {
+                                                font-size: 12px;
+                                                color: #6b7280;
+                                                margin: 0;
+                                            }
+
+                                            .btn-upload {
+                                                background-color: #ec700a;
+                                                color: white;
+                                                border: none;
+                                                padding: 10px 20px;
+                                                border-radius: 8px;
+                                                font-size: 13px;
+                                                font-weight: 600;
+                                                cursor: pointer;
+                                                transition: all 0.3s ease;
+                                                text-transform: uppercase;
+                                                letter-spacing: 0.5px;
+                                            }
+
+                                            .btn-upload:hover {
+                                                background-color: #d45f00;
+                                                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.3);
+                                                transform: translateY(-2px);
+                                            }
+
+                                            .btn-upload:active {
+                                                transform: translateY(0);
+                                            }
+
+                                            /* ===== UPLOADED FILE STATE ===== */
+                                            .file-uploaded-area {
+                                                border: 1px solid #e5e7eb;
+                                                border-radius: 12px;
+                                                padding: 20px;
+                                                background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+                                            }
+
+                                            .uploaded-file-info {
+                                                display: flex;
+                                                align-items: center;
+                                                gap: 16px;
+                                            }
+
+                                            .file-icon-wrapper {
+                                                flex-shrink: 0;
+                                                width: 56px;
+                                                height: 56px;
+                                                background: white;
+                                                border-radius: 12px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                border: 1px solid #e5e7eb;
+                                                font-size: 24px;
+                                                color: #ec700a;
+                                            }
+
+                                            .file-icon-wrapper i.pdf {
+                                                color: #dc2626;
+                                            }
+
+                                            .file-details {
+                                                flex: 1;
+                                            }
+
+                                            .file-name {
+                                                font-size: 14px;
+                                                font-weight: 600;
+                                                color: #1a1a1a;
+                                                margin: 0 0 4px 0;
+                                                word-break: break-word;
+                                            }
+
+                                            .file-size {
+                                                font-size: 12px;
+                                                color: #6b7280;
+                                                margin: 0;
+                                            }
+
+                                            .file-actions {
+                                                display: flex;
+                                                gap: 12px;
+                                                flex-shrink: 0;
+                                            }
+
+                                            .btn-action {
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                gap: 6px;
+                                                padding: 10px 16px;
+                                                border-radius: 8px;
+                                                border: none;
+                                                cursor: pointer;
+                                                font-size: 13px;
+                                                font-weight: 600;
+                                                transition: all 0.3s ease;
+                                                text-decoration: none;
+                                                min-width: 100px;
+                                            }
+
+                                            .view-btn {
+                                                background-color: #e0e7ff;
+                                                color: #3b5bdb;
+                                                border: 1px solid #cdd9ff;
+                                            }
+
+                                            .view-btn:hover {
+                                                background-color: #c7d2fe;
+                                                box-shadow: 0 4px 12px rgba(59, 91, 219, 0.15);
+                                                transform: translateY(-2px);
+                                            }
+
+                                            .modify-btn {
+                                                background-color: #fef5f0;
+                                                color: #ec700a;
+                                                border: 1px solid #fed7aa;
+                                            }
+
+                                            .modify-btn:hover {
+                                                background-color: #fed7aa;
+                                                box-shadow: 0 4px 12px rgba(236, 112, 10, 0.15);
+                                                transform: translateY(-2px);
+                                            }
+
+                                            .btn-action:active {
+                                                transform: translateY(0);
+                                            }
+
+                                            .btn-action i {
+                                                font-size: 14px;
+                                            }
+
+                                            /* ===== RESPONSIVE ===== */
+                                            @media (max-width: 768px) {
+                                                .file-upload-area {
+                                                    padding: 24px 16px;
+                                                }
+
+                                                .upload-placeholder i {
+                                                    font-size: 36px;
+                                                }
+
+                                                .uploaded-file-info {
+                                                    flex-direction: column;
+                                                    text-align: center;
+                                                }
+
+                                                .file-details {
+                                                    width: 100%;
+                                                }
+
+                                                .file-actions {
+                                                    width: 100%;
+                                                    justify-content: center;
+                                                }
+
+                                                .btn-action {
+                                                    flex: 1;
+                                                    min-width: auto;
+                                                }
+
+                                                .btn-action span {
+                                                    display: none;
+                                                }
+
+                                                .btn-action {
+                                                    width: 48px;
+                                                    height: 48px;
+                                                    padding: 0;
+                                                }
+                                            }
+
+                                            @media (max-width: 576px) {
+                                                .file-upload-area {
+                                                    padding: 20px 12px;
+                                                }
+
+                                                .upload-placeholder i {
+                                                    font-size: 32px;
+                                                }
+
+                                                .upload-text {
+                                                    font-size: 13px;
+                                                }
+
+                                                .file-icon-wrapper {
+                                                    width: 48px;
+                                                    height: 48px;
+                                                    font-size: 20px;
+                                                }
+
+                                                .file-name {
+                                                    font-size: 13px;
+                                                }
+                                            }
+
+                                            /* ===== MODAL ===== */
+                                            .modal-content {
+                                                border-radius: 12px;
+                                                border: 1px solid #e5e7eb;
+                                            }
+
+                                            .modal-header {
+                                                border-bottom: 1px solid #e5e7eb;
+                                                padding: 20px;
+                                            }
+
+                                            .modal-title {
+                                                font-weight: 700;
+                                                color: #1a1a1a;
+                                            }
+
+                                            .modal-body {
+                                                padding: 20px;
+                                                background: #f9fafb;
+                                            }
+
+                                            .modal-footer {
+                                                border-top: 1px solid #e5e7eb;
+                                                padding: 16px 20px;
+                                                background: white;
+                                            }
+                                        </style>
+
+                                        <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const fileInput = document.getElementById('piece_identite');
+                                            const uploadArea = document.getElementById('uploadArea');
+                                            const uploadedArea = document.getElementById('uploadedArea');
+                                            const uploadBtn = document.getElementById('uploadBtn');
+                                            const viewBtn = document.getElementById('viewBtn');
+                                            const modifyBtn = document.getElementById('modifyBtn');
+                                            const fileName = document.getElementById('fileName');
+                                            const fileSize = document.getElementById('fileSize');
+                                            const fileIcon = document.getElementById('fileIcon');
+                                            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+                                            let selectedFile = null;
+
+                                            // Click on upload area to open file picker
+                                            uploadArea.addEventListener('click', () => fileInput.click());
+                                            
+                                            // Click upload button
+                                            uploadBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                fileInput.click();
+                                            });
+
+                                            // Drag and drop
+                                            uploadArea.addEventListener('dragover', (e) => {
+                                                e.preventDefault();
+                                                uploadArea.classList.add('dragover');
+                                            });
+
+                                            uploadArea.addEventListener('dragleave', () => {
+                                                uploadArea.classList.remove('dragover');
+                                            });
+
+                                            uploadArea.addEventListener('drop', (e) => {
+                                                e.preventDefault();
+                                                uploadArea.classList.remove('dragover');
+                                                const files = e.dataTransfer.files;
+                                                if (files.length > 0) {
+                                                    handleFile(files[0]);
+                                                }
+                                            });
+
+                                            // File input change
+                                            fileInput.addEventListener('change', (e) => {
+                                                if (e.target.files.length > 0) {
+                                                    handleFile(e.target.files[0]);
+                                                }
+                                            });
+
+                                            // Handle file selection
+                                            function handleFile(file) {
+                                                // Validate file type
+                                                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+                                                if (!allowedTypes.includes(file.type)) {
+                                                    alert('Veuillez sélectionner une image (JPG, PNG, GIF, WebP) ou un PDF');
+                                                    return;
+                                                }
+
+                                                // Validate file size (10MB)
+                                                const maxSize = 10 * 1024 * 1024;
+                                                if (file.size > maxSize) {
+                                                    alert('Le fichier dépasse la taille maximale de 10MB');
+                                                    return;
+                                                }
+
+                                                selectedFile = file;
+                                                updateFileDisplay(file);
+                                            }
+
+                                            // Update file display
+                                            function updateFileDisplay(file) {
+                                                // Update file name and size
+                                                fileName.textContent = file.name;
+                                                fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+                                                // Update icon based on file type
+                                                if (file.type.startsWith('image/')) {
+                                                    fileIcon.classList.remove('pdf');
+                                                    fileIcon.classList.add('fas', 'fa-image');
+                                                } else if (file.type === 'application/pdf') {
+                                                    fileIcon.classList.remove('fa-image');
+                                                    fileIcon.classList.add('fas', 'fa-file-pdf', 'pdf');
+                                                }
+
+                                                // Show uploaded area, hide upload area
+                                                uploadArea.style.display = 'none';
+                                                uploadedArea.style.display = 'block';
+                                            }
+
+                                            // View file
+                                            viewBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                if (selectedFile) {
+                                                    const reader = new FileReader();
+                                                    const imagePreview = document.getElementById('imagePreview');
+                                                    const pdfPreview = document.getElementById('pdfPreview');
+                                                    const pdfFrame = document.getElementById('pdfFrame');
+
+                                                    reader.onload = function (event) {
+                                                        if (selectedFile.type.startsWith('image/')) {
+                                                            imagePreview.src = event.target.result;
+                                                            imagePreview.style.display = 'block';
+                                                            pdfPreview.style.display = 'none';
+                                                        } else if (selectedFile.type === 'application/pdf') {
+                                                            pdfFrame.src = event.target.result;
+                                                            pdfPreview.style.display = 'block';
+                                                            imagePreview.style.display = 'none';
+                                                        }
+                                                    };
+
+                                                    reader.readAsDataURL(selectedFile);
+                                                    previewModal.show();
+                                                }
+                                            });
+
+                                            // Modify file (re-upload)
+                                            modifyBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                fileInput.click();
+                                            });
+
+                                            // Check if file already exists on page load
+                                            // (If you want to load existing files from server)
+                                            function checkExistingFile() {
+                                                // If you have an existing file from database, initialize here
+                                                const existingFile = '{{ document_url }}'; // Pass from Django context
+                                                if (existingFile) {
+                                                    // You can load existing document
+                                                }
+                                            }
+                                        });
+                                        </script>                                    
+                                    </div>
+                                                                    
+                            
+                                {% endif %}
+                                {% if profile.is_identity_verified or profile.is_identity_verified_request %}
+                                    <div class="file-uploaded-area">
+                                        <div class="uploaded-file-info">
+                                            <div class="file-icon-wrapper">
+                                                {% if 'pdf' in profile.piece_identite.url %}
+                                                    <i class="fas fa-file-pdf" style="color: #dc2626;"></i>
+                                                {% else %}
+                                                    <i class="fas fa-image" style="color: #ec700a;"></i>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="file-details">
+                                                <p class="file-name">{{ profile.piece_identite.name|truncatechars:40 }}</p>
+                                                <p class="file-size">
+                                                    {% if profile.piece_identite.size %}
+                                                        {{ profile.piece_identite.size|filesizeformat }}
+                                                    {% else %}
+                                                        Fichier téléchargé
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+
+                                            <div class="file-actions">
+                                                <button type="button" class="btn-action view-btn" id="viewBtn_piece_identite_verified" title="Voir le fichier">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span>Voir</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- File Preview Modal -->
+                                    <div class="modal fade" id="previewModal_piece_identite" tabindex="-1" aria-labelledby="previewModalLabel_piece_identite" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="previewModalLabel_piece_identite">Aperçu du fichier</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="previewContent_piece_identite">
+                                                        <img id="imagePreview_piece_identite" src="" alt="Preview" style="max-width: 100%; height: auto; display: none;">
+                                                        <div id="pdfPreview_piece_identite" style="display: none;">
+                                                            <iframe id="pdfFrame_piece_identite" style="width: 100%; height: 500px; border: none;"></iframe>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                        const viewBtn = document.getElementById('viewBtn_piece_identite_verified');
+                                        const previewModal = new bootstrap.Modal(document.getElementById('previewModal_piece_identite'));
+                                        const existingFileUrl = '{{ profile.piece_identite.url }}';
+
+                                        if (viewBtn) {
+                                            viewBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                const imagePreview = document.getElementById('imagePreview_piece_identite');
+                                                const pdfPreview = document.getElementById('pdfPreview_piece_identite');
+                                                const pdfFrame = document.getElementById('pdfFrame_piece_identite');
+
+                                                if (existingFileUrl.toLowerCase().endsWith('.pdf') || existingFileUrl.includes('pdf')) {
+                                                    pdfFrame.src = existingFileUrl;
+                                                    imagePreview.style.display = 'none';
+                                                    pdfPreview.style.display = 'block';
+                                                } else {
+                                                    imagePreview.src = existingFileUrl;
+                                                    imagePreview.style.display = 'block';
+                                                    pdfPreview.style.display = 'none';
+                                                }
+
+                                                previewModal.show();
+                                            });
+                                        }
+                                    });
+                                    </script>
+                                {% endif %}
+                            {% elif profile.statut == 'entreprise' %}
+                            
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label style="font-weight:bold; display: inline-block; color: #13547a;" >
+                                        Nom commercial
+                                    </label>
+
+                                    <input type="text" class="form-control" value="{{ profile.nom_commercial }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-3">
+                                    <label style="font-weight:bold; display: inline-block; color: #13547a;" >
+                                        Numéro SIRET
+                                    </label>
+
+                                    <input type="text" class="form-control mb-2" value="{{ profile.siret }}" readonly>
+                                </div>
+                                <div class ="col-12 col-lg-6 mb-0 mt-0">
+
+                                </div>
+                                
+                                {% if not profile.is_identity_verified_request %}
+                                    <div class="col-12 col-lg-6 mb-3">
+                                            <label style="font-weight:bold; display: inline-block; color: #13547a;" >Extrait KBIS ou Avis SIRENE
+                                            <span class="ms-1 text-primary" style="cursor: pointer;"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="click"
+                                                data-bs-placement="right"
+                                                data-bs-content="Document officiel prouvant l’existence de l’entreprise (KBIS ou avis de situation INSEE).">
+                                                ⓘ
+                                            </span>
+
+                                            </label>
+                                    </div>
+                                    <div class="col-12 col-lg-12 mb-3">
+                                        <div class="file-upload-container">
+                                            <!-- Hidden file input -->
+                                            <input type="file" 
+                                                class="form-control file-input-hidden" 
+                                                id="document_entreprise" 
+                                                name="document_entreprise" 
+                                                accept="image/*,.pdf" 
+                                                required
+                                                style="display: none;">
+
+                                            <!-- File upload area -->
+                                            <div class="file-upload-area" id="uploadArea_entreprise">
+                                                <div class="upload-placeholder">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <p class="upload-text">Cliquez ou glissez votre fichier ici</p>
+                                                    <p class="upload-subtext">JPG, PNG ou PDF (Max 10MB)</p>
+                                                </div>
+                                                <button type="button" class="btn btn-upload" id="uploadBtn_entreprise">
+                                                    <i class="fas fa-plus-circle me-2"></i>
+                                                    Télécharger un fichier
+                                                </button>
+                                            </div>
+
+                                            <!-- File uploaded state -->
+                                            <div class="file-uploaded-area" id="uploadedArea_entreprise" style="display: none;">
+                                                <div class="uploaded-file-info">
+                                                    <div class="file-icon-wrapper">
+                                                        <i class="fas fa-file" id="fileIcon_entreprise"></i>
+                                                    </div>
+                                                    
+                                                    <div class="file-details">
+                                                        <p class="file-name" id="fileName_entreprise">Aucun fichier sélectionné</p>
+                                                        <p class="file-size" id="fileSize_entreprise">0 MB</p>
+                                                    </div>
+
+                                                    <div class="file-actions">
+                                                        <button type="button" class="btn-action view-btn" id="viewBtn_entreprise" title="Voir le fichier">
+                                                            <i class="fas fa-eye"></i>
+                                                            <span>Voir</span>
+                                                        </button>
+                                                        <button type="button" class="btn-action modify-btn" id="modifyBtn_entreprise" title="Modifier le fichier">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span>Modifier</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- File Preview Modal -->
+                                        <div class="modal fade" id="previewModal_entreprise" tabindex="-1" aria-labelledby="previewModalLabel_entreprise" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="previewModalLabel_entreprise">Aperçu du fichier</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div id="previewContent_entreprise">
+                                                            <!-- Image preview -->
+                                                            <img id="imagePreview_entreprise" src="" alt="Preview" style="max-width: 100%; height: auto; display: none;">
+                                                            
+                                                            <!-- PDF preview -->
+                                                            <div id="pdfPreview_entreprise" style="display: none;">
+                                                                <iframe id="pdfFrame_entreprise" style="width: 100%; height: 500px; border: none;"></iframe>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                            const fileInput = document.getElementById('document_entreprise');
+                                            const uploadArea = document.getElementById('uploadArea_entreprise');
+                                            const uploadedArea = document.getElementById('uploadedArea_entreprise');
+                                            const uploadBtn = document.getElementById('uploadBtn_entreprise');
+                                            const viewBtn = document.getElementById('viewBtn_entreprise');
+                                            const modifyBtn = document.getElementById('modifyBtn_entreprise');
+                                            const fileName = document.getElementById('fileName_entreprise');
+                                            const fileSize = document.getElementById('fileSize_entreprise');
+                                            const fileIcon = document.getElementById('fileIcon_entreprise');
+                                            const previewModal = new bootstrap.Modal(document.getElementById('previewModal_entreprise'));
+                                            let selectedFile = null;
+
+                                            // Click on upload area to open file picker
+                                            uploadArea.addEventListener('click', () => fileInput.click());
+                                            
+                                            // Click upload button
+                                            uploadBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                fileInput.click();
+                                            });
+
+                                            // Drag and drop
+                                            uploadArea.addEventListener('dragover', (e) => {
+                                                e.preventDefault();
+                                                uploadArea.classList.add('dragover');
+                                            });
+
+                                            uploadArea.addEventListener('dragleave', () => {
+                                                uploadArea.classList.remove('dragover');
+                                            });
+
+                                            uploadArea.addEventListener('drop', (e) => {
+                                                e.preventDefault();
+                                                uploadArea.classList.remove('dragover');
+                                                const files = e.dataTransfer.files;
+                                                if (files.length > 0) {
+                                                    handleFile(files[0]);
+                                                }
+                                            });
+
+                                            // File input change
+                                            fileInput.addEventListener('change', (e) => {
+                                                if (e.target.files.length > 0) {
+                                                    handleFile(e.target.files[0]);
+                                                }
+                                            });
+
+                                            // Handle file selection
+                                            function handleFile(file) {
+                                                // Validate file type
+                                                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+                                                if (!allowedTypes.includes(file.type)) {
+                                                    alert('Veuillez sélectionner une image (JPG, PNG, GIF, WebP) ou un PDF');
+                                                    return;
+                                                }
+
+                                                // Validate file size (10MB)
+                                                const maxSize = 10 * 1024 * 1024;
+                                                if (file.size > maxSize) {
+                                                    alert('Le fichier dépasse la taille maximale de 10MB');
+                                                    return;
+                                                }
+
+                                                selectedFile = file;
+                                                updateFileDisplay(file);
+                                            }
+
+                                            // Update file display
+                                            function updateFileDisplay(file) {
+                                                // Update file name and size
+                                                fileName.textContent = file.name;
+                                                fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+                                                // Update icon based on file type
+                                                if (file.type.startsWith('image/')) {
+                                                    fileIcon.classList.remove('pdf');
+                                                    fileIcon.classList.add('fas', 'fa-image');
+                                                } else if (file.type === 'application/pdf') {
+                                                    fileIcon.classList.remove('fa-image');
+                                                    fileIcon.classList.add('fas', 'fa-file-pdf', 'pdf');
+                                                }
+
+                                                // Show uploaded area, hide upload area
+                                                uploadArea.style.display = 'none';
+                                                uploadedArea.style.display = 'block';
+                                            }
+
+                                            // View file
+                                            viewBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                if (selectedFile) {
+                                                    const reader = new FileReader();
+                                                    const imagePreview = document.getElementById('imagePreview_entreprise');
+                                                    const pdfPreview = document.getElementById('pdfPreview_entreprise');
+                                                    const pdfFrame = document.getElementById('pdfFrame_entreprise');
+
+                                                    reader.onload = function (event) {
+                                                        if (selectedFile.type.startsWith('image/')) {
+                                                            imagePreview.src = event.target.result;
+                                                            imagePreview.style.display = 'block';
+                                                            pdfPreview.style.display = 'none';
+                                                        } else if (selectedFile.type === 'application/pdf') {
+                                                            pdfFrame.src = event.target.result;
+                                                            pdfPreview.style.display = 'block';
+                                                            imagePreview.style.display = 'none';
+                                                        }
+                                                    };
+
+                                                    reader.readAsDataURL(selectedFile);
+                                                    previewModal.show();
+                                                }
+                                            });
+
+                                            // Modify file (re-upload)
+                                            modifyBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                fileInput.click();
+                                            });
+                                        });
+                                        </script>                                    
+                                    </div>
+                                    
+                                {% endif %}
+                                {% if profile.is_identity_verified or profile.is_identity_verified_request %}
+                                    <div class="file-uploaded-area">
+                                        <div class="uploaded-file-info">
+                                            <div class="file-icon-wrapper">
+                                                {% if 'pdf' in profile.document_entreprise.url %}
+                                                    <i class="fas fa-file-pdf" style="color: #dc2626;"></i>
+                                                {% else %}
+                                                    <i class="fas fa-image" style="color: #ec700a;"></i>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="file-details">
+                                                <p class="file-name">{{ profile.document_entreprise.name|truncatechars:40 }}</p>
+                                                <p class="file-size">
+                                                    {% if profile.document_entreprise.size %}
+                                                        {{ profile.document_entreprise.size|filesizeformat }}
+                                                    {% else %}
+                                                        Fichier téléchargé
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+
+                                            <div class="file-actions">
+                                                <button type="button" class="btn-action view-btn" id="viewBtn_entreprise_verified" title="Voir le fichier">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span>Voir</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- File Preview Modal -->
+                                    <div class="modal fade" id="previewModal_entreprise" tabindex="-1" aria-labelledby="previewModalLabel_entreprise" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="previewModalLabel_entreprise">Aperçu du fichier</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="previewContent_entreprise">
+                                                        <img id="imagePreview_entreprise" src="" alt="Preview" style="max-width: 100%; height: auto; display: none;">
+                                                        <div id="pdfPreview_entreprise" style="display: none;">
+                                                            <iframe id="pdfFrame_entreprise" style="width: 100%; height: 500px; border: none;"></iframe>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        const viewBtn = document.getElementById('viewBtn_entreprise_verified');
+                                        const previewModal = new bootstrap.Modal(document.getElementById('previewModal_entreprise'));
+                                        const existingFileUrl = '{{ profile.document_entreprise.url }}';
+
+                                        if (viewBtn) {
+                                            viewBtn.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                const imagePreview = document.getElementById('imagePreview_entreprise');
+                                                const pdfPreview = document.getElementById('pdfPreview_entreprise');
+                                                const pdfFrame = document.getElementById('pdfFrame_entreprise');
+
+                                                if (existingFileUrl.toLowerCase().endsWith('.pdf') || existingFileUrl.includes('pdf')) {
+                                                    pdfFrame.src = existingFileUrl;
+                                                    imagePreview.style.display = 'none';
+                                                    pdfPreview.style.display = 'block';
+                                                } else {
+                                                    imagePreview.src = existingFileUrl;
+                                                    imagePreview.style.display = 'block';
+                                                    pdfPreview.style.display = 'none';
+                                                }
+
+                                                previewModal.show();
+                                            });
+                                        }
+                                    });
+                                    </script>
+                                {% endif %}
+
+                            {% endif %}
+                        {% if profile.is_identity_verified %}
+
+                            <!-- ✅ VERIFIED -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#editInfosModal">
+                                    modifier
+                                </a>
+                            </div>
+
+                        {% elif profile.is_identity_verified_request %}
+
+                            <!-- ⏳ PENDING -->
+                            <div class="d-flex justify-content-end text-warning mt-3">
+                                Vérification en cours...
+                            </div>
+
+                        {% else %}
+
+                            <!-- ❌ NOT VERIFIED -->
+                            <div class="col-12 mt-4">
+                                <button id="settingsSubmitBtn"
+                                        type="submit"
+                                        name="action"
+                                        value="verify_identity"
+                                        class="btn btn-message w-100">
+                                    Soumettre pour vérification
+                                </button>
+                            </div>
+
+                        {% endif %}
+                            </div>
+                </form> 
+                <script>
+            
+
+            function showSettingsLoader(event) {
+                const btn = document.getElementById("settingsSubmitBtn");
+                event.preventDefault();
+                let loaderText = `Envoi...`;
+
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                ${loaderText}`;
+                btn.disabled = true;
+                event.target.submit();
+            }
+        </script>
+                <div class="modal fade" id="editInfosModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+
+                            <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modifier Mes Informations</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <form id="updateEmailForm" method="POST" action="{% url 'app:update_infos' %}">
+                                {% csrf_token %}
+
+                                <div class="modal-body">
+                                    
+                                    <div class="row mt-1 mb-1">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="statut" class="input-title">Statut <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="statut" name="statut">
+                                            <option value="particulier" {% if profile.statut == "particulier" %}selected{% endif %}>Particulier</option>
+                                            <option value="entreprise" {% if profile.statut == "entreprise" %}selected{% endif %}>Entreprise</option>
+                                        </select>
+                                    </div>
+                                    <!-- Civilité -->
+                                    <div class="col-md-6 mb-3 statut-fields particulier-field">
+                                        <label for="gender" class="input-title">Civilité</label>
+                                        <select name="gender" id="gender" class="form-select">
+                                            <option value="" {% if not profile.gender %}selected{% endif %}>
+                                                Non précisée
+                                            </option>
+                                            <option value="M." {% if profile.gender == "M." %}selected{% endif %}>
+                                                M.
+                                            </option>
+                                            <option value="Mme" {% if profile.gender == "Mme" %}selected{% endif %}>
+                                                Mme
+                                            </option>
+                                            <option value="Autre" {% if profile.gender == "Autre" %}selected{% endif %}>
+                                                Autre
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <!-- Nom commercial -->
+                                    <div class="col-md-6 mb-3 statut-fields entreprise-field">
+                                        <label for="nom_commercial" class="input-title">Nom commercial</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="nom_commercial"
+                                            name="nom_commercial"
+                                            value="{{ profile.nom_commercial|default:'' }}"
+                                            required
+                                        >
+                                    </div>
+
+                                    <!-- Prénom -->
+                                    <div class="col-md-6 mb-3 statut-fields particulier-field">
+                                        <label for="prenom" class="input-title">Prénom</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="prenom"
+                                            name="prenom"
+                                            value="{{ profile.prenom|default:'' }}"
+                                            required
+                                        >
+                                    </div>
+
+                                    <!-- Nom -->
+                                    <div class="col-md-6 mb-3 statut-fields particulier-field">
+                                        <label for="nom" class="input-title">Nom</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="nom"
+                                            name="nom"
+                                            value="{{ profile.nom|default:'' }}"
+                                            required
+                                        >
+                                    </div>
+
+                                    <!-- SIRET -->
+                                    <div class="col-md-6 mb-3 statut-fields entreprise-field">
+                                        <label for="siret" class="input-title">Numéro SIRET</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="siret"
+                                            name="siret"
+                                            value="{{ profile.siret|default:'' }}"
+                                            required
+                                        >
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const statutSelect = document.getElementById('statut');
+
+                                            function toggleFields() {
+                                                const value = statutSelect.value;
+
+                                                document.querySelectorAll('.statut-fields').forEach(el => el.style.display = 'none');
+
+                                                if (value === 'particulier') {
+                                                    document.querySelectorAll('.particulier-field').forEach(el => el.style.display = 'block');
+                                                } else if (value === 'entreprise') {
+                                                    document.querySelectorAll('.entreprise-field').forEach(el => el.style.display = 'block');
+                                                }
+                                            }
+
+                                            statutSelect.addEventListener('change', toggleFields);
+                                            toggleFields();
+                                        });
+
+                                    </script>
+                                    </div>
+
+                                    
+
+                                    
+
+                                    <div class="col-12 mt-3">
+                                        <label class="field-label-custom mb-2">
+                                            <i class="bi bi-lock" style="color: #ec700a; font-size: 18px; margin-right: 8px;"></i>
+                                            <span style="font-weight: 500; color: #333;">Mot de passe</span>
+                                        </label>
+                                        <div style="position: relative;">
+                                            <input type="password" name="password2" id="password2" class="form-control" style="border-radius: 8px; padding: 12px 14px;"
+                                                placeholder="Entrez votre mot de passe"
+                                                required>
+
+                                            <button type="button" id="togglePassword" class="btn-toggle-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af;">
+                                                <i class="bi bi-eye-slash" id="eyeIcon2"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            let togglePassword2 = document.getElementById("togglePassword");
+                                            let passwordInput2 = document.getElementById("password2");
+                                            let eyeIcon2 = document.getElementById("eyeIcon2");
+                                        
+                                            togglePassword2.addEventListener("click", function (e) {
+                                                e.preventDefault();
+                                                if (passwordInput2.type === "password") {
+                                                    passwordInput2.type = "text";
+                                                    eyeIcon2.classList.remove("bi-eye-slash");
+                                                    eyeIcon2.classList.add("bi-eye");
+                                                } else {
+                                                    passwordInput2.type = "password";
+                                                    eyeIcon2.classList.remove("bi-eye");
+                                                    eyeIcon2.classList.add("bi-eye-slash");
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-message w-100">
+                                        Enregistrer
+                                    </button>
+                                </div>
+
+                            </form>
+
+                            </div>
+                        </div>
+                    </div>      
+            </div> 
+       
+    </div> 
+
+
+</div> 
+</section>
+
+
+<style>
+    .btn-edit, .btn-message {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #ec700a;
+        border: none;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+    }
+    .btn-edit:hover, .btn-message:hover { background-color: #f47a17;} 
+
+</style>
+
+<style>
+    .file-upload-container {
+        width: 100%;
+    }
+
+    /* ===== UPLOAD AREA ===== */
+    .file-upload-area {
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        padding: 32px 24px;
+        text-align: center;
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-upload-area:hover {
+        border-color: #ec700a;
+        background: linear-gradient(135deg, #fff5f0 0%, #fef5f0 100%);
+    }
+
+    .file-upload-area.dragover {
+        border-color: #ec700a;
+        background-color: #fef5f0;
+        box-shadow: 0 4px 12px rgba(236, 112, 10, 0.15);
+    }
+
+    .upload-placeholder {
+        margin-bottom: 16px;
+    }
+
+    .upload-placeholder i {
+        font-size: 48px;
+        color: #ec700a;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .upload-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 4px 0;
+    }
+
+    .upload-subtext {
+        font-size: 12px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .btn-upload {
+        background-color: #ec700a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-upload:hover {
+        background-color: #d45f00;
+        box-shadow: 0 4px 12px rgba(236, 112, 10, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-upload:active {
+        transform: translateY(0);
+    }
+
+    /* ===== UPLOADED FILE STATE ===== */
+    .file-uploaded-area {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+
+    .uploaded-file-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .file-icon-wrapper {
+        flex-shrink: 0;
+        width: 56px;
+        height: 56px;
+        background: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e5e7eb;
+        font-size: 24px;
+        color: #ec700a;
+    }
+
+    .file-icon-wrapper i.pdf {
+        color: #dc2626;
+    }
+
+    .file-details {
+        flex: 1;
+    }
+
+    .file-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 4px 0;
+        word-break: break-word;
+    }
+
+    .file-size {
+        font-size: 12px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+
+    .btn-action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        min-width: 100px;
+    }
+
+    .view-btn {
+        background-color: #e0e7ff;
+        color: #3b5bdb;
+        border: 1px solid #cdd9ff;
+    }
+
+    .view-btn:hover {
+        background-color: #c7d2fe;
+        box-shadow: 0 4px 12px rgba(59, 91, 219, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .modify-btn {
+        background-color: #fef5f0;
+        color: #ec700a;
+        border: 1px solid #fed7aa;
+    }
+
+    .modify-btn:hover {
+        background-color: #fed7aa;
+        box-shadow: 0 4px 12px rgba(236, 112, 10, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .btn-action:active {
+        transform: translateY(0);
+    }
+
+    .btn-action i {
+        font-size: 14px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .file-upload-area {
+            padding: 24px 16px;
+        }
+
+        .upload-placeholder i {
+            font-size: 36px;
+        }
+
+        .uploaded-file-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .file-details {
+            width: 100%;
+        }
+
+        .file-actions {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: auto;
+        }
+
+        .btn-action span {
+            display: none;
+        }
+
+        .btn-action {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .file-upload-area {
+            padding: 20px 12px;
+        }
+
+        .upload-placeholder i {
+            font-size: 32px;
+        }
+
+        .upload-text {
+            font-size: 13px;
+        }
+
+        .file-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            font-size: 20px;
+        }
+
+        .file-name {
+            font-size: 13px;
+        }
+    }
+
+    /* ===== MODAL ===== */
+    .modal-content {
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 20px;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .modal-body {
+        padding: 20px;
+        background: #f9fafb;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e5e7eb;
+        padding: 16px 20px;
+        background: white;
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Votre profil BricoleUp est incomplet</title>
+  <style>
+    /* Reset */
+    body { margin: 0; padding: 0; background-color: #F2F2F2; font-family: Georgia, 'Times New Roman', serif; }
+    table { border-spacing: 0; border-collapse: collapse; }
+    td { padding: 0; }
+    img { border: 0; display: block; }
+    a { text-decoration: none; }
+
+    /* Wrapper */
+    .wrapper { background-color: #F2F2F2; padding: 32px 16px; }
+    .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; }
+
+    /* Header */
+    .header { background-color: #1B3C6B; padding: 32px 40px 28px; text-align: center; }
+    .logo { font-family: 'Poppins', Arial, sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 0.5px; margin: 0; }
+    .logo-bricole { color: #ffffff; }
+    .logo-up { color: #F97316; }
+    .tagline { font-family: Arial, sans-serif; font-size: 11px; color: #999999; margin: 6px 0 0; letter-spacing: 1.2px; text-transform: uppercase; }
+
+    /* Body */
+    .body { padding: 36px 40px 28px; }
+    .greeting { font-size: 16px; color: #1a1a1a; margin: 0 0 14px; }
+    .lead { font-size: 15px; line-height: 1.75; color: #333333; margin: 0 0 26px; }
+
+    /* Missing fields box */
+    .missing-box { background-color: #FFF4EE; border-left: 3px solid #F97316; border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 28px; }
+    .missing-label { font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; letter-spacing: 1.2px; text-transform: uppercase; color: #C2561A; margin: 0 0 12px; }
+    .missing-item { font-family: Arial, sans-serif; font-size: 14px; color: #333333; padding: 5px 0; display: flex; align-items: center; }
+    .bullet { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background-color: #F97316; margin-right: 10px; flex-shrink: 0; }
+
+    /* Stats */
+    .stats-row { display: flex; gap: 10px; margin-bottom: 28px; }
+    .stat-card { flex: 1; background-color: #F9F9F9; border-radius: 8px; border: 1px solid #EEEEEE; padding: 14px 12px; text-align: center; }
+    .stat-num { font-family: Arial, sans-serif; font-size: 22px; font-weight: bold; color: #1a1a1a; margin: 0 0 4px; }
+    .stat-desc { font-family: Arial, sans-serif; font-size: 11px; color: #888888; margin: 0; line-height: 1.4; }
+
+    /* CTA */
+    .cta-wrap { text-align: center; margin: 28px 0 32px; }
+    .cta-btn { display: inline-block; background-color: #F97316; color: #ffffff !important; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; letter-spacing: 0.5px; padding: 15px 40px; border-radius: 4px; }
+
+    /* Closing */
+    .closing { font-size: 14px; color: #555555; line-height: 1.8; margin: 0; }
+
+    /* Footer */
+    .footer { background-color: #F5F5F5; border-top: 1px solid #EEEEEE; padding: 20px 40px; text-align: center; }
+    .footer p { font-family: Arial, sans-serif; font-size: 11px; color: #AAAAAA; margin: 4px 0; line-height: 1.6; }
+    .footer a { color: #AAAAAA; text-decoration: underline; }
+
+    /* Mobile */
+    @media only screen and (max-width: 480px) {
+      .body { padding: 28px 24px 20px; }
+      .header { padding: 24px 24px 20px; }
+      .stats-row { flex-direction: column; }
+      .footer { padding: 16px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="email-container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap" rel="stylesheet">
+      <p class="logo"><span class="logo-bricole">Bricole</span><span class="logo-up">Up</span></p>
+   
+    </div>
+
+    <!-- BODY -->
+    <div class="body">
+      <p class="greeting">Bonjour <strong>{{ username }}</strong>,</p>
+
+      <p class="lead">
+        Les clients parcourent des dizaines de profils avant de choisir.<br>
+        Un profil incomplet est souvent <em>ignoré</em> — même si vous êtes le meilleur pour le job.
+      </p>
+
+      <!-- Missing fields -->
+      <div class="missing-box">
+        <p class="missing-label">Il vous manque encore</p>
+        <!-- Répétez ce bloc pour chaque élément manquant -->
+        {% for field in missing_fields %}
+        <div class="missing-item">
+          <span class="bullet"></span>
+          <span>{{ field }}</span>
+        </div>
+        {% endfor %}
+        <!--
+        Exemple rendu statique :
+        <div class="missing-item"><span class="bullet"></span><span>Photo de profil</span></div>
+        <div class="missing-item"><span class="bullet"></span><span>Présentation / bio</span></div>
+        <div class="missing-item"><span class="bullet"></span><span>Zone d'intervention</span></div>
+        -->
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <p class="stat-num">3×</p>
+          <p class="stat-desc">plus de contacts avec un profil complet</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-num">5 min</p>
+          <p class="stat-desc">suffisent pour tout renseigner</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-num">100%</p>
+          <p class="stat-desc">gratuit pour les prestataires</p>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-wrap">
+        <a href="https://bricoleup.com/" class="cta-btn">Compléter mon profil</a>
+      </div>
+
+      <p class="closing">
+        À très vite,<br>
+        <strong>L'équipe BricoleUp</strong>
+      </p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      
+      <p>© 2026 BricoleUp &nbsp;·&nbsp; <a href="https://bricoleup.com">bricoleup.com</a></p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}
+    Paramètres du compte
+{% endblock %}
+
+{% block content %}
+
+
+<section class=" d-flex flex-column justify-content-center align-items-center h-100"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container mt-5">
+
+
+    <div class="row justify-content-center">
+       
+        <div class="col-12 col-lg-8 mb-5">
+            
+            
+        <div class="row mt-4 mb-5 p-2" style="background-color: white;border-radius: 8px;border: 1px solid #ddd;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+               
+        <h6 style="font-size: 24px;font-weight: bold;">
+            Paramètres & Sécurité
+        </h6>
+        
+   
+        <form  method="POST" action="{% url 'app:account_settings' %}" onsubmit="showSettingsLoader(event)">
+            {% csrf_token %}
+              
+
+                <div class="row mb-2">
+
+                    <div class="col-12 col-lg-4 mb-3">
+    <label for="profile_visibility" class="form-label">
+        Qui peut voir mon profil ?
+    </label>
+    <select class="form-select" id="profile_visibility" name="profile_visibility">
+        <option value="everyone" {% if profile.profile_visibility == 'everyone' %}selected{% endif %}>
+            Tout le monde
+        </option>
+        <option value="members" {% if profile.profile_visibility == 'members' %}selected{% endif %}>
+            Seulement les membres de BricoleUp
+        </option>
+        <option value="verified_members" {% if profile.profile_visibility == 'verified_members' %}selected{% endif %}>
+            Seulement les membres vérifiés
+        </option>
+    </select>
+</div>
+
+
+
+                    <div class="col-12 col-lg-4 mb-3">
+                        <label class="form-label d-block">
+                                Qui peut m'envoyer un message ?
+                         
+                        </label>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="message_privacy" id="message_everyone" value="everyone"
+                                {% if profile.message_privacy == 'everyone' %}checked{% endif %}>
+                            <label class="form-check-label" for="message_everyone">
+                                    Tout le monde
+                               
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="message_privacy" id="message_members" value="members"
+                                {% if profile.message_privacy == 'members' %}checked{% endif %}>
+                            <label class="form-check-label" for="message_members">
+                                    Seulement les membres de BricoleUp
+                               
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="message_privacy" id="message_verified" value="verified_members"
+                                {% if profile.message_privacy == 'verified_members' %}checked{% endif %}>
+                            <label class="form-check-label" for="message_verified">
+                                    Seulement les membres vérifiés
+                              
+                            </label>
+                        </div>
+                    </div>
+
+
+                                    <!-- Request Privacy -->
+                    <div class="col-12 col-lg-4 mb-3">
+                        <label class="form-label d-block">
+                                Qui peut m'envoyer une demande ?
+                            
+                        </label>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="request_privacy" id="request_everyone" value="everyone"
+                                {% if profile.request_privacy == 'everyone' %}checked{% endif %}>
+                            <label class="form-check-label" for="request_everyone">
+                                    Tout le monde
+                                
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="request_privacy" id="request_members" value="members"
+                                {% if profile.request_privacy == 'members' %}checked{% endif %}>
+                            <label class="form-check-label" for="request_members">
+                                    Seulement les membres de BricoleUp
+                               
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="request_privacy" id="request_verified" value="verified_members"
+                                {% if profile.request_privacy == 'verified_members' %}checked{% endif %}>
+                            <label class="form-check-label" for="request_verified">
+                                    Seulement les membres vérifiés
+                                
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Success Message -->
+                {% if message_succ %}
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i> {{ message_succ }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% if message_error %}
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i> {{ message_error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+
+                <!-- Submit Button -->
+                <div class="col-12">
+                    <button id="settingsSubmitBtn" type="submit" class="btn custom-btn w-100">
+                            Enregistrer
+                    </button>
+                </div>
+
+        </form>
+        <script>
+            
+
+            function showSettingsLoader(event) {
+                const btn = document.getElementById("settingsSubmitBtn");
+                event.preventDefault();
+                let loaderText = `Sauvegarde...`;
+
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                ${loaderText}`;
+                btn.disabled = true;
+                event.target.submit();
+            }
+        </script>
+        </div>
+        </div>
+    </div>
+
+</div>
+<style>
+    .button-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .btn-choice {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: bold;
+       
+        text-decoration: none;
+        
+    }
+
+    
+
+    /* Selected State */
+    .btn-choice.selected {
+        background-color: #ec700a; /* Green when selected */
+       
+    }
+
+
+    
+</style>
+
+    <style>
+        .form-label{
+        font-weight: bold;
+        
+        color: #333;
+        }
+        .form-section {
+        background-color: #f9f9f9;
+        padding: 2rem;
+        border-radius: 10px;
+        }
+        .btn-primary {
+        background-color: #ec700a;
+        border: none;
+        }
+        .btn-primary:hover {
+        background-color: #5bbab0;
+        }
+  </style>
+
+</section>
+
+
+
+{% endblock %}
+
+

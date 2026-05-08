@@ -1,0 +1,97 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+
+{% block content %}
+
+<section class="section-padding" >
+    <style>
+        /* Notification list styles */
+        .notifications-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .notifications-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notifications-list li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;  /* Default background color for each notification */
+            transition: background-color 0.3s ease;
+        }
+
+        .notifications-list li:hover {
+            background-color: #f1f1f1;  /* Slightly change background on hover */
+        }
+
+        .notifications-list li a {
+            text-decoration: none;
+            color: #333;
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-list li a:hover {
+            text-decoration: underline;
+        }
+
+        .notification-meta {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        /* Optional: Style for notification title */
+        .notification-title {
+            font-weight: bold;
+        }
+
+        /* Optional: Style for notification description */
+        .notification-description {
+            margin-top: 5px;
+            color: #555;
+        }
+    </style>
+   
+    <div class="notifications-container">
+        <ul class="notifications-list">
+            {% for notification in notifications %}
+                <li>
+                    <!-- Dynamic href link for each notification -->
+                    <a href="{{ notification.link|default:'#' }}">
+                        <div>
+                            <div class="notification-title">{{ notification.title }}</div>
+                            <div class="notification-description">{{ notification.description }}</div>
+                            <div class="notification-meta">
+                                <small>{{ notification.created_at }}</small>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+
+
+
+
+
+
+{% endblock %}
+

@@ -1,0 +1,109 @@
+
+{% extends "app/base.html" %}
+{% load static %}
+{% block content %}
+<title>{% block title %}bricoleup : Étapes pour afficher votre profil dans les recherches de prestataires{% endblock %}</title>
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+
+            <div class="col-lg-12 col-12 mb-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">BricoleUp</a></li>
+
+                        <li class="breadcrumb-item active" aria-current="page">{% if language == 'fr' %}
+                            Centre d’Aide
+                        {% elif language == 'ar' %}
+                            مركز المساعدة
+                        {% else %}
+                            Help Center
+                        {% endif %}</li>
+                        
+                    </ol>
+                </nav>
+
+                <h2 class="text-white text-center" style="font-size: 32px; font-weight: bold;">Étapes pour afficher votre profil dans les recherches de prestataires </h2>
+
+            </div>
+
+           
+
+        </div>
+    </div>
+</header>
+<section class="topics-detail-section section-padding" id="topics-detail">
+    
+    <div class="container my-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold"> {{ blog.content}}</h2>
+            <p class="text-muted">Optimisez votre visibilité et attirez plus de clients en quelques étapes simples.</p>
+        </div>
+       
+        
+        <div class="card p-4 shadow-sm">
+            <h4 class="fw-bold">1️⃣ Créez un Compte et Complétez vos Informations</h4>
+            <ul>
+                <li>Inscrivez-vous et remplissez tous les champs demandés.</li>
+                <li>Indiquez votre <strong>titre de profil, tarif horaire, ville et zone d’intervention</strong>.</li>
+                <li>
+                    Rédigez une <strong>description détaillée</strong> de votre profil.
+                </li>
+                <li>Sélectionnez les <strong>services</strong> que vous proposez.</li>
+                <li >
+                    Ajoutez une <strong>photo de profil professionnelle</strong>.
+                </li>
+                <li>Vérifiez votre <strong>profil</strong> en validant votre adresse email, numéro de téléphone et identité.</li>
+
+                
+            </ul>
+            <p class="text-primary"><strong>💡 Astuce :</strong> Un profil complet augmente vos chances d'apparaître en tête des recherches.</p>
+            <p class="text-primary"><strong>🎯 Objectif :</strong> Rassurez les clients en mettant en avant votre expertise.</p>
+
+        </div>
+    
+       
+    
+        <div class="card p-4 shadow-sm mt-3">
+            <h4 class="fw-bold">2️⃣ Obtenez des Avis et Ajouter des projets à votre Portfolio </h4>
+            <ul>
+                <li>Demandez à vos clients de laisser un <strong>avis</strong> sur votre profil.</li>
+                <li>Ajoutez de nouveaux <strong>projets à votre Portfolio</strong>.</li>
+                <li>Un profil avec plusieurs avis et projets <strong>4x plus consulté</strong>.</li>
+            </ul>
+            <p class="text-primary"><strong>⭐ Bon à savoir :</strong> Plus vous avez d’avis positifs, plus votre profil est mis en avant.</p>
+        </div>
+    
+        <div class="card p-4 shadow-sm mt-3">
+            <h4 class="fw-bold">3️⃣ Activez les Notifications et Répondez Rapidement</h4>
+            <ul>
+                <li>Activez les <strong>notifications</strong> pour ne rien manquer.</li>
+                <li>Répondez rapidement pour améliorer votre <strong>taux de réponse</strong>.</li>
+            </ul>
+            <p class="text-primary"><strong>🚀 Astuce :</strong> Un bon taux de réponse améliore votre classement dans les recherches.</p>
+        </div>
+    
+        <div class="card p-4 shadow-sm mt-3">
+            <h4 class="fw-bold">4️⃣ Mettez à Jour votre Profil Régulièrement</h4>
+            <ul>
+                <li>Ajoutez de nouveaux <strong>projets à votre Portfolio</strong>.</li>
+                <li>Mettez à jour vos <strong>tarifs et zone d’intervention</strong>.</li>
+                <li>Ajoutez toute <strong>nouvelle compétence</strong> acquise.</li>
+            </ul>
+            <p class="text-primary"><strong>📌 Conseil :</strong> Un profil actif et mis à jour est mieux référencé.</p>
+        </div>
+    
+        <div class="text-center mt-4">
+            <h4 class="fw-bold">Conclusion</h4>
+            <p>En suivant ces étapes, vous optimisez votre visibilité et attirez plus de clients. Un profil bien rempli, des avis positifs et une bonne réactivité sont les clés du succès.</p>
+            <a href="{% url 'app:user_login' %}" class="btn btn-success btn-lg">
+                🚀 Rejoignez-nous dès aujourd’hui !
+            </a>
+        </div>
+    </div>
+    
+</section>
+
+
+
+{% endblock %}

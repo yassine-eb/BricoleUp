@@ -1,0 +1,281 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}
+Mes Favoris
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<section class="section-padding mt-5" id="section_2">
+       
+    <div class="container">
+        <div class="row mt-5">
+            <ul class="nav nav-tabs mt-4" id="favoritesTab" role="tablist">
+                
+                <!-- Favorite Profiles Tab -->
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="profiles-tab" data-bs-toggle="tab" data-bs-target="#profiles-tab-pane" type="button" role="tab" aria-controls="profiles-tab-pane" aria-selected="false">
+                            Profils 
+                       
+                    </button>
+                </li>
+
+                <!-- Favorite Announcements Tab -->
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link " id="announcements-tab" data-bs-toggle="tab" data-bs-target="#announcements-tab-pane" type="button" role="tab" aria-controls="announcements-tab-pane" aria-selected="true">
+                            Annonces 
+                     
+                    </button>
+                </li>
+    
+                
+    
+            </ul>
+    
+            <div class="tab-content mt-3" id="favoritesTabContent">
+                <!-- Favorite Profils Content -->
+                <div class="tab-pane fade show active" id="profiles-tab-pane" role="tabpanel" aria-labelledby="profiles-tab" tabindex="0">
+                    <div class="row justify-content-center align-items-center">
+                        {% for profile in profiles %}
+                        <div class="col-lg-6 profile-item">
+                            <div class="topics-detail-block bg-white shadow-lg mt-1 mb-1 p-2" style="cursor:pointer; border-radius:8px;"
+                                    onclick="window.open('{% url 'app:account' profile.slug %}', '_blank')">
+                                <div class="row align-items-center">
+                                
+                                            <div class="col-12 d-flex justify-content-between align-items-center infos-bottom-btn">
+                    
+                                                <!-- Left: Verification Status -->
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <a class="d-flex align-items-center" href="{% url 'app:account' profile.slug %}" target="_blank" style="cursor:on;" >
+                                                        <img src="{{ profile.profile_picture_url }}" class="rounded-circle me-2" style="height: 55px; width:55px; object-fit: cover;">
+                                                        <div class="d-flex flex-column">
+                                                            <span>{{ profile.user.username }}{% if profile.is_verified %}
+                                                        <i class="fas fa-check-circle" style="color: #0dc0c7;" title="Vérifié"></i>
+                                                        {% endif %}
+                                                                
+                                                                
+                            
+                                                            </span>
+                                                            <span style="font-size:14px; font-weight:semi-bold;">
+                                                                    <i class="bi bi-geo-alt"></i> {{ profile.city }}
+                                                                </span>
+                                                            
+
+                                                        
+                                                        </div>
+                                                    </a>
+                                                    
+                                                </div>
+                                                
+                                                
+                                                <!-- Right: Actions -->
+                                                <div class="d-flex align-items-center gap-2">
+                                                    
+                                                    {% if distance  %}
+                                                    <span class="profile-value">
+                                                        <i class="fas fa-location-arrow me-1"></i>{{ distance|floatformat:2}} 
+                                                                km
+                                                    </span>
+                                                    {% endif %}
+                                                            
+                                                
+                                                </div>
+                                                
+                                            
+                                            </div>
+                                    
+                                </div>
+                                
+                                
+                            </div>
+                        
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Favorite Announcements Content -->
+                <div class="tab-pane fade " id="announcements-tab-pane" role="tabpanel" aria-labelledby="announcements-tab" tabindex="0">
+                    <div class="row justify-content-center align-items-center">
+                        {% for announcement in announcements %}
+                        <div class="col-12 col-lg-4  mb-1 profile-item">
+                            <div class="profile-section topics-detail-block bg-white shadow-lg mb-1 p-2" style="cursor:pointer; border-radius:8px;"
+                                onclick="window.open('{% url 'app:annonce_details' announcement.id %}', '_blank')">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    
+                                    <div class="d-flex align-items-center ">
+                                        <a style="font-size:15px;" href="{% url 'app:account' announcement.created_by.profile.slug %}" target="_blank" class="d-flex align-items-center">
+                                            <img src="{{ announcement.created_by.profile.profile_picture_url }}" style="width:50px; height:50px; object-fit:cover;" class="rounded-circle me-2">
+                                            
+                                            <div class="d-flex flex-column">
+                                                <span class="single-line-truncate">{{ announcement.created_by.username }}</span>
+                                                <span class="single-line-truncate" style="font-size:14px; font-weight:semi-bold;">
+                                                    <i class="bi bi-geo-alt"></i> {{ announcement.city }}
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                {% if announcement.category %}
+                                    {% if announcement.category.name_fr == "Demande de prestation" %}
+                                        <span class="badge bg-success">{{ announcement.category.name_fr }}</span>
+                                    {% elif announcement.category.name_fr == "Offre de services" %}
+                                        <span class="badge " style="background-color: #cce5ff; color: #004085;">{{ announcement.category.name_fr }}</span>
+                                    {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                        <span class="badge bg-warning text-dark">{{ announcement.category.name_fr }}</span>
+                                    {% elif announcement.category.name_fr == "Location de matériel" %}
+                                        <span class="badge bg-secondary">{{ announcement.category.name_fr }}</span>
+                                    {% elif announcement.category.name_fr == "Offre d’emploi" %}
+                                        <span class="badge bg-danger">{{ announcement.category.name_fr }}</span>
+                                    {% else %}
+                                        <span class="badge bg-dark">{{ announcement.category.name_fr }}</span>
+                                    {% endif %}
+                                {% endif %}
+                                            
+                                            <a style="font-size:14px; font-weight:bold;">
+                                                {% if announcement.category %}
+                                                    {% if announcement.category.name_fr == "Demande de prestation" %}
+                                                        Budget :
+                                                    {% elif announcement.category.name_fr == "Offre de services" %}
+                                                        Tarif :
+                                                    {% elif announcement.category.name_fr == "Vente de matériel" %}
+                                                        Prix de vente :
+                                                    {% elif announcement.category.name_fr == "Location de matériel" %}
+                                                        Tarif de location par jour :
+                                                    {% elif announcement.category.name_fr == "Offre d’emploi" %}
+                                                        Rémunération par mois :
+                                                    {% else %}
+                                                        Budget :
+                                                    {% endif %}
+                                                {% else %}
+                                                    Budget :
+                                                {% endif %}
+                                                {% if announcement.a_convenir %}
+                                                    À convenir
+                                                {% else %}
+                                                    {{ announcement.budget_min|floatformat:2 }} {{ announcement.city.country.currency }}
+                                                {% endif %}
+                                            </a>
+                                    <div class="mb-1 mt-1 description-clamp">
+                                        <span>{{ announcement.description|linebreaksbr }}</span>
+                                    
+                                    </div>
+                                    <style>
+                                        .single-line-truncate {
+            display: block;           /* ensures each span is block-like inside flex column */
+            white-space: nowrap;      /* prevent line breaks */
+            overflow: hidden;         /* hide overflow */
+            text-overflow: ellipsis;  /* show "..." when text is too long */
+            }
+
+                                        .description-clamp {
+                                            display: -webkit-box;
+                                            -webkit-box-orient: vertical;
+                                            -webkit-line-clamp: 4; /* Limit to 4 lines */
+                                            overflow: hidden;
+                                            position: relative;
+                                            line-height: 1.5rem; /* Adjust based on your font size */
+                                            min-height: calc(1.5rem * 4); /* Reserve space for 4 lines */
+                                            }
+
+                                        .clamp-link {
+                                            position: absolute;
+                                            bottom: 0;
+                                            right: 0;
+                                            background: white; /* matches your container background */
+                                            padding-left: 4px;
+                                            font-weight: bold;
+                                            color: #0d6efd;
+                                            text-decoration: none;
+                                        }
+                                        .image-ggallery {
+                                            display: grid;
+                                            grid-template-columns: repeat(2, 1fr);
+                                            gap: 5px;
+                                            height: 150px; /* fixed container height */
+                                        }
+
+                                        .image-ggallery.one-row {
+                                            grid-template-rows: 150px; /* 1 row for 2 images */
+                                        }
+
+                                        .image-ggallery.two-rows {
+                                            grid-template-rows: 75px 75px; /* 2 rows for 3 or 4 images */
+                                        }
+
+                                        .image-ggallery .ggallery-image {
+                                            width: 100%;
+                                            height: 100%;
+                                            object-fit: cover;
+                                            border-radius: 4px;
+                                            cursor: pointer;
+                                        }
+
+
+                                    </style>
+
+                                    {% if announcement.image3 or announcement.image4 %}
+                                        <div class="image-ggallery two-rows">
+                                    {% else %}
+                                        <div class="image-ggallery one-row">
+                                    {% endif %}
+
+                                        {% if announcement.image1 %}
+                                        <a href="{% url 'app:annonce_details' announcement.id %}" target="_blank">
+                                            <img src="{{ announcement.image1.url }}" class="ggallery-image img-fluid">
+                                        </a>
+                                        {% endif %}
+                                        {% if announcement.image2 %}
+                                        <a href="{% url 'app:annonce_details' announcement.id %}" target="_blank">
+                                            <img src="{{ announcement.image2.url }}" class="ggallery-image img-fluid">
+                                        </a>
+                                        {% endif %}
+                                        {% if announcement.image3 %}
+                                        <a href="{% url 'app:annonce_details' announcement.id %}" target="_blank">
+                                            <img src="{{ announcement.image3.url }}" class="ggallery-image img-fluid">
+                                        </a>
+                                        {% endif %}
+                                        {% if announcement.image4 %}
+                                        <a href="{% url 'app:annonce_details' announcement.id %}" target="_blank">
+                                            <img src="{{ announcement.image4.url }}" class="ggallery-image img-fluid">
+                                        </a>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                                
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+               
+                </div>
+    
+                
+                
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+            .topics-detail-block {
+  cursor: pointer;
+  border-radius: 8px;
+  transition: border 0.2s, box-shadow 0.2s; /* smooth effect */
+  border: 1px solid transparent; /* initial invisible border */
+}
+
+.topics-detail-block:hover {
+  border: 1px solid #13547a; /* border color on hover */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* optional shadow effect */
+}
+
+        </style>
+   
+{% endblock content %}

@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BricoleUp — Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ===== RESET & ROOT ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bleu         : #1B3C6B;
+  --bleu-dark    : #132d52;
+  --bleu-light   : #EFF6FF;
+  --orange       : #F97316;
+  --orange-light : #FFF7ED;
+  --vert         : #22C55E;
+  --vert-light   : #F0FDF4;
+  --gris         : #64748B;
+  --gris-light   : #F1F5F9;
+  --border       : #E2E8F0;
+  --texte        : #0F172A;
+  --bg           : #F4F7FB;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--texte);
+  min-height: 100vh;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  height: 64px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+.navbar.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.14); }
+
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.nav-logo {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  flex-shrink: 0;
+  margin-right: 24px;
+}
+.nav-logo-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.nav-logo-title .bricole { color: var(--bleu); }
+.nav-logo-title .up { color: var(--orange); }
+.nav-logo-location {
+  font-size: 0.75rem;
+  color: var(--gris);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.nav-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  height: 64px;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 18px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  gap: 2px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  min-width: 64px;
+  position: relative;
+}
+.nav-tab svg { width: 22px; height: 22px; color: inherit; }
+.nav-tab-label { font-size: 0.78rem; font-family: 'Poppins', sans-serif; font-weight: 500; }
+.nav-tab.active {
+  background: var(--bleu-light);
+  color: var(--bleu);
+  border-bottom-color: var(--bleu);
+}
+.nav-tab:not(.active) { color: var(--gris); }
+.nav-tab:not(.active):hover { color: var(--bleu); background: var(--bleu-light); }
+
+.nav-tab-plus { position: relative; }
+.nav-tab-plus .plus-circle {
+  width: 30px; height: 30px;
+  background: var(--vert);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+}
+.nav-tab-plus .plus-circle svg { width: 16px; height: 16px; }
+
+.nav-avatar {
+  width: 28px; height: 28px;
+  background: var(--bleu);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+.nav-icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--gris);
+  transition: border-color 0.15s, color 0.15s;
+  position: relative;
+}
+.nav-icon-btn:hover { border-color: var(--bleu); color: var(--bleu); }
+.nav-notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--orange);
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.feed-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-col {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+}
+
+/* ===== GREETING BLOCK ===== */
+.greeting-block {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.greeting-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--texte);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.greeting-sub {
+  font-size: 0.85rem;
+  color: var(--gris);
+  margin-top: 2px;
+  font-weight: 400;
+  font-family: 'DM Sans', sans-serif;
+}
+.search-bar-trigger {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  background: var(--gris-light);
+  color: var(--gris);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.search-bar-trigger:hover, .search-bar-trigger:focus {
+  border-color: var(--bleu);
+  background: #fff;
+  outline: none;
+  color: var(--texte);
+}
+
+/* ===== FILTERS BLOCK ===== */
+.filters-block {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chips-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+.chips-scroll::-webkit-scrollbar { display: none; }
+.chip {
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: #fff;
+  color: var(--texte);
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.chip:hover { border-color: var(--bleu); color: var(--bleu); background: var(--bleu-light); }
+.chip.active { background: var(--bleu); color: #fff; border-color: var(--bleu); }
+.btn-voir-thematiques {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  color: var(--bleu);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-voir-thematiques:hover { border-color: var(--bleu); background: var(--bleu-light); }
+
+/* ===== FEED ===== */
+#feed-container { }
+
+/* ===== CARD TYPE A — CLIENT ===== */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--gris-light);
+}
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--gris);
+}
+.card-header-left svg { width: 14px; height: 14px; }
+.card-header-right { font-size: 0.78rem; color: var(--gris); }
+
+.card-body { padding: 16px; }
+
+.card-user-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #fff;
+  flex-shrink: 0;
+  font-family: 'Poppins', sans-serif;
+}
+.avatar-lg { width: 48px; height: 48px; position: relative; }
+.avatar-badge {
+  position: absolute;
+  bottom: -2px; right: -4px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  white-space: nowrap;
+  border: 1px solid #fff;
+  font-family: 'DM Sans', sans-serif;
+}
+.avatar-badge.pro { background: var(--bleu); color: #fff; }
+.avatar-badge.part { background: var(--gris); color: #fff; }
+
+.card-user-info { flex: 1; min-width: 0; }
+.card-user-name { font-weight: 700; font-size: 0.95rem; color: var(--texte); }
+.card-user-meta { font-size: 0.8rem; color: var(--gris); margin-top: 2px; }
+.card-user-budget { font-size: 0.8rem; color: var(--gris); margin-top: 2px; }
+
+.card-description {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--texte);
+  line-height: 1.6;
+}
+
+.card-photos {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.photo-placeholder {
+  height: 90px;
+  flex: 1;
+  border-radius: 6px;
+  background: var(--gris-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gris);
+  font-size: 1.4rem;
+}
+
+.card-badge-replies {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.badge-replies {
+  font-size: 0.78rem;
+  color: var(--vert);
+  font-weight: 600;
+}
+.badge-no-replies { color: var(--gris); font-weight: 400; }
+
+.card-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--gris-light);
+  display: flex;
+  align-items: stretch;
+}
+.card-footer-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  font-size: 0.85rem;
+  color: var(--gris);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.card-footer-btn:hover.like-btn { color: var(--orange); background: var(--orange-light); }
+.card-footer-btn:hover.recommend-btn { color: var(--bleu); background: var(--bleu-light); }
+.card-footer-btn:hover.reply-btn { color: var(--vert); background: var(--vert-light); }
+.card-footer-btn.reply-btn { font-weight: 600; }
+.card-footer-btn svg { width: 16px; height: 16px; }
+.card-footer-btn.liked { color: var(--orange); }
+.card-footer-sep {
+  width: 1px;
+  background: var(--gris-light);
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+/* ===== CARD TYPE B — PRESTATAIRE ===== */
+.card-presta {
+  background: #fff;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+.card-presta-header {
+  padding: 12px 16px;
+  background: var(--orange-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.presta-header-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge-offre {
+  background: var(--orange);
+  color: #fff;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+}
+.badge-metier {
+  background: #fff;
+  color: var(--orange);
+  border: 1px solid var(--orange);
+  border-radius: 50px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  font-family: 'DM Sans', sans-serif;
+}
+.presta-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.online-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.online-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--vert);
+  animation: pulse-green 1.5s infinite;
+}
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.online-dot.offline { background: var(--gris); animation: none; }
+.online-badge.online { color: var(--vert); }
+.online-badge.offline { color: var(--gris); }
+.presta-time { font-size: 0.75rem; color: var(--gris); }
+
+.card-presta-body { padding: 16px; }
+
+.portfolio-grid {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.portfolio-item {
+  height: 100px;
+  flex: 1;
+  border-radius: 8px;
+  background: var(--gris-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gris);
+  font-size: 1.5rem;
+}
+
+.presta-rating-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+.rating-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.star { color: #FBBF24; font-size: 1rem; }
+.rating-score { font-weight: 700; color: var(--texte); }
+.rating-count { color: var(--gris); font-size: 0.82rem; }
+.tarif-right { text-align: right; }
+.tarif-val { font-weight: 700; color: var(--bleu); font-size: 1rem; }
+.tarif-label { color: var(--gris); font-size: 0.72rem; display: block; }
+
+.card-presta-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--gris-light);
+  display: flex;
+  gap: 10px;
+}
+.btn-contacter {
+  flex: 1;
+  background: var(--bleu);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-contacter:hover { background: var(--bleu-dark); }
+.btn-favoris, .btn-voir-profil {
+  padding: 9px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--gris);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-favoris:hover { border-color: var(--orange); color: var(--orange); }
+.btn-favoris.active { border-color: var(--orange); color: var(--orange); }
+.btn-voir-profil:hover { border-color: var(--bleu); color: var(--bleu); }
+
+/* ===== CARD 3 NESTED (demande privée avec prestataire imbriqué) ===== */
+.nested-presta {
+  background: var(--gris-light);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+}
+.nested-presta-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.nested-photos {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.nested-photo {
+  height: 70px;
+  flex: 1;
+  border-radius: 6px;
+  background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gris);
+  font-size: 1.2rem;
+}
+.nested-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 0.82rem;
+}
+
+/* ===== LOAD MORE BUTTON ===== */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 24px;
+}
+.btn-load-more {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  padding: 10px 28px;
+  font-size: 0.9rem;
+  color: var(--texte);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-load-more:hover { border-color: var(--bleu); box-shadow: 0 2px 8px rgba(27,60,107,0.1); }
+
+/* ===== SIDEBAR ===== */
+.sidebar-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.sidebar-toggle-label {
+  font-size: 0.82rem;
+  color: var(--gris);
+  font-family: 'DM Sans', sans-serif;
+}
+.toggle-pills {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  overflow: hidden;
+}
+.toggle-pill {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  background: #fff;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.toggle-pill.active-client { background: var(--bleu); color: #fff; }
+.toggle-pill.active-presta { background: var(--orange); color: #fff; }
+.toggle-pill:not(.active-client):not(.active-presta) { color: var(--texte); }
+
+/* ===== SIDEBAR CARD ===== */
+.sidebar-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.sidebar-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--texte);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  color: var(--gris);
+  display: block;
+  margin-bottom: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.form-label.bold { font-weight: 600; color: var(--texte); }
+
+.form-textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 0.2s;
+}
+.form-textarea:focus { border-color: var(--bleu); outline: none; }
+
+.form-input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--bleu); outline: none; }
+
+.form-select {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+.form-select:focus { border-color: var(--bleu); outline: none; }
+
+.upload-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.upload-zone {
+  width: 70px; height: 70px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  background: var(--gris-light);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: var(--gris);
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.upload-zone:hover { border-color: var(--bleu); background: var(--bleu-light); }
+
+.sidebar-address-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  gap: 12px;
+}
+.address-label { font-weight: 600; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; }
+.address-val {
+  font-size: 0.82rem;
+  color: var(--gris);
+  text-align: right;
+  flex: 1;
+}
+.address-chevron { color: var(--bleu); cursor: pointer; font-size: 1rem; }
+
+.btn-cta-vert {
+  width: 100%;
+  background: var(--vert);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 13px;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.15s;
+}
+.btn-cta-vert:hover { background: #16a34a; }
+
+.btn-cta-orange {
+  width: 100%;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 13px;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.15s;
+}
+.btn-cta-orange:hover { background: #e0650f; }
+
+.form-row-2col {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.form-row-2col > * { flex: 1; }
+
+/* ===== TOGGLE SWITCH ===== */
+.toggle-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.toggle-switch-label { font-size: 0.88rem; font-family: 'DM Sans', sans-serif; color: var(--texte); }
+.toggle-switch {
+  position: relative;
+  width: 44px; height: 24px;
+  flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.toggle-slider:before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--vert); }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+/* ===== SIDEBAR BOTTOM ===== */
+.sidebar-bottom {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.sidebar-bottom-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--texte);
+  margin-bottom: 8px;
+}
+.sidebar-bottom-desc {
+  font-size: 0.85rem;
+  color: var(--gris);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.btn-proposer {
+  width: 100%;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 11px 20px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-proposer:hover { background: #e0650f; }
+.sidebar-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+.mini-stats {
+  display: flex;
+  gap: 12px;
+}
+.mini-stat {
+  flex: 1;
+  background: var(--gris-light);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.mini-stat-val {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: block;
+}
+.mini-stat-val.bleu { color: var(--bleu); }
+.mini-stat-val.orange { color: var(--orange); }
+.mini-stat-label { font-size: 0.75rem; color: var(--gris); display: block; margin-top: 2px; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.55);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+.modal-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--texte);
+}
+.modal-close {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gris-light);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gris);
+  transition: background 0.15s;
+}
+.modal-close:hover { background: var(--border); }
+
+/* ===== STEPPER ===== */
+.stepper {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px 0;
+  gap: 0;
+}
+.stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+.stepper-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  background: var(--border);
+  color: var(--gris);
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  z-index: 1;
+}
+.stepper-circle.active { background: var(--bleu); color: #fff; }
+.stepper-circle.done { background: var(--vert); color: #fff; }
+.stepper-label { font-size: 0.72rem; color: var(--gris); text-align: center; font-family: 'DM Sans', sans-serif; }
+.stepper-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin-bottom: 18px;
+  transition: background 0.2s;
+}
+.stepper-line.done { background: var(--vert); }
+
+.modal-body { padding: 20px 24px; }
+.modal-step { display: none; }
+.modal-step.active { display: block; }
+
+.modal-footer {
+  padding: 16px 24px 20px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+}
+.btn-modal-prev {
+  padding: 10px 24px;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  background: #fff;
+  color: var(--gris);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s;
+}
+.btn-modal-prev:hover { border-color: var(--bleu); color: var(--bleu); }
+.btn-modal-next {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 50px;
+  background: var(--bleu);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: background 0.15s;
+}
+.btn-modal-next:hover { background: var(--bleu-dark); }
+.btn-modal-submit {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 50px;
+  background: var(--vert);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: background 0.15s;
+}
+.btn-modal-submit:hover { background: #16a34a; }
+
+.radio-type-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.radio-type-option {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  transition: border-color 0.15s, background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.radio-type-option input { display: none; }
+.radio-type-option:has(input:checked) { border-color: var(--bleu); background: var(--bleu-light); }
+
+.urgence-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  margin-top: 12px;
+}
+.urgence-label { font-size: 0.9rem; font-family: 'DM Sans', sans-serif; }
+.toggle-switch-urgence {
+  position: relative;
+  width: 44px; height: 24px;
+}
+.toggle-switch-urgence input { opacity: 0; width: 0; height: 0; }
+.toggle-slider-urgence {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.toggle-slider-urgence:before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s;
+}
+.toggle-switch-urgence input:checked + .toggle-slider-urgence { background: #EF4444; }
+.toggle-switch-urgence input:checked + .toggle-slider-urgence:before { transform: translateX(20px); }
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.cat-item {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cat-item:hover { border-color: var(--bleu); background: var(--bleu-light); }
+.cat-item.selected { border-color: var(--bleu); background: var(--bleu-light); color: var(--bleu); }
+.cat-item .cat-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 16px;
+  }
+  .sidebar-col {
+    width: 100%;
+    position: static;
+  }
+  .nav-tabs { gap: 0; }
+  .nav-tab { padding: 6px 10px; min-width: 48px; }
+  .nav-tab-label { font-size: 0.7rem; }
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .nav-logo { margin-right: 8px; }
+  .nav-tabs { gap: 0; }
+  .nav-tab { padding: 6px 8px; min-width: 42px; }
+  .nav-right { gap: 6px; }
+  .form-row-2col { flex-direction: column; }
+}
+
+/* ===== UTILITY ===== */
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+
+    <a class="nav-logo" href="#">
+      <span class="nav-logo-title">
+        <span class="bricole">Bricole</span><span class="up">Up</span>
+      </span>
+      <span class="nav-logo-location">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Nice (Sophia-Antipolis)
+      </span>
+    </a>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" id="tab-accueil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="nav-tab-label">Accueil</span>
+      </button>
+      <button class="nav-tab" id="tab-offreurs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-tab-label">Offreurs</span>
+      </button>
+      <button class="nav-tab nav-tab-plus" id="tab-demande" onclick="openModal()">
+        <div class="plus-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span class="nav-tab-label">Demande</span>
+      </button>
+      <button class="nav-tab" id="tab-abonnement">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <span class="nav-tab-label">Abonnement</span>
+      </button>
+      <button class="nav-tab" id="tab-moi">
+        <div class="nav-avatar">YA</div>
+        <span class="nav-tab-label">Moi</span>
+      </button>
+    </div>
+
+    <div class="nav-right">
+      <button class="nav-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="nav-notif-dot"></span>
+      </button>
+      <button class="nav-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="main-container">
+
+  <!-- ===== COLONNE GAUCHE — FEED ===== -->
+  <div class="feed-col">
+
+    <!-- ===== GREETING BLOCK ===== -->
+    <div class="greeting-block">
+      <div class="greeting-text" id="greeting-text">
+        Bonjour Yassine 👋
+        <span class="greeting-sub" id="greeting-sub"></span>
+      </div>
+      <button class="search-bar-trigger" onclick="openModal()">De quoi avez-vous besoin aujourd'hui ?</button>
+    </div>
+
+    <!-- ===== FILTRES THÉMATIQUES ===== -->
+    <div class="filters-block">
+      <div class="chips-scroll" id="chips-container">
+        <button class="chip active" data-filter="tous">Tous</button>
+        <button class="chip" data-filter="plomberie">Plomberie</button>
+        <button class="chip" data-filter="electricite">Électricité</button>
+        <button class="chip" data-filter="jardinage">Jardinage</button>
+        <button class="chip" data-filter="menage">Ménage</button>
+        <button class="chip" data-filter="demenagement">Déménagement</button>
+        <button class="chip" data-filter="informatique">Informatique</button>
+        <button class="chip" data-filter="peinture">Peinture</button>
+        <button class="chip" data-filter="reparation">Réparation</button>
+        <button class="chip" data-filter="cours">Cours</button>
+      </div>
+      <button class="btn-voir-thematiques">Voir toutes les thématiques →</button>
+    </div>
+
+    <!-- ===== FEED D'ANNONCES ===== -->
+    <div id="feed-container">
+
+      <!-- CARD 1 — TYPE A — CLIENT DEMANDE PUBLIQUE -->
+      <div class="card" data-categorie="reparation">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Demande publique
+          </div>
+          <div class="card-header-right">postée hier</div>
+        </div>
+        <div class="card-body">
+          <div class="card-user-row">
+            <div class="avatar" style="background:#7C3AED;">VD</div>
+            <div class="card-user-info">
+              <div class="card-user-name">Veronique D.</div>
+              <div class="card-user-meta">Nice (Bellet-Magnan) — 2,9 km</div>
+              <div class="card-user-budget">Budget : À convenir</div>
+            </div>
+          </div>
+          <div class="card-description">
+            Bonjour, je cherche une personne pour réparer ma machine à laver. Elle ne démarre plus et le voyant clignote.
+          </div>
+          <div class="card-badge-replies">
+            <span class="badge-replies">1 réponse</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="card-footer-btn like-btn" onclick="toggleLike(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="like-count">J'aime</span>
+          </button>
+          <div class="card-footer-sep"></div>
+          <button class="card-footer-btn recommend-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Recommander
+          </button>
+          <div class="card-footer-sep"></div>
+          <button class="card-footer-btn reply-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Répondre
+          </button>
+        </div>
+      </div>
+
+      <!-- CARD 2 — TYPE B — PRESTATAIRE -->
+      <div class="card-presta" data-categorie="reparation">
+        <div class="card-presta-header">
+          <div class="presta-header-left">
+            <span class="badge-offre">⚡ Offre de service</span>
+            <span class="badge-metier">Technicien élec.</span>
+          </div>
+          <div class="presta-header-right">
+            <div class="online-badge offline">
+              <div class="online-dot offline"></div>
+              En ligne hier
+            </div>
+            <span class="presta-time">il y a 5 min</span>
+          </div>
+        </div>
+        <div class="card-presta-body">
+          <div class="card-user-row">
+            <div style="position:relative;flex-shrink:0;">
+              <div class="avatar avatar-lg" style="background:#EA580C;">HA</div>
+              <span class="avatar-badge part">Particulier</span>
+            </div>
+            <div class="card-user-info">
+              <div class="card-user-name">Hamdi A.</div>
+              <div class="card-user-meta" style="color:var(--orange);font-weight:600;">Technicien électroménager</div>
+              <div class="card-user-meta">Nice (ACROPOLIS) — 5,2 km</div>
+            </div>
+          </div>
+          <div class="card-description">
+            Bonjour, je suis technicien spécialisé en dépannage électroménager. Intervention rapide sur Nice et alentours.
+          </div>
+          <div class="portfolio-grid">
+            <div class="portfolio-item">📸</div>
+            <div class="portfolio-item">📸</div>
+            <div class="portfolio-item">📸</div>
+          </div>
+          <div class="presta-rating-row">
+            <div class="rating-left">
+              <span class="star">★</span>
+              <span class="rating-score">4,8/5</span>
+              <span class="rating-count">(12 avis)</span>
+            </div>
+            <div class="tarif-right">
+              <span class="tarif-val">~40€/h</span>
+              <span class="tarif-label">Tarif indicatif</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-presta-footer">
+          <button class="btn-contacter">💬 Contacter</button>
+          <button class="btn-favoris" onclick="toggleFavoris(this)">♡ Favoris</button>
+          <button class="btn-voir-profil">👁 Voir profil</button>
+        </div>
+      </div>
+
+      <!-- CARD 3 — TYPE A — CLIENT DEMANDE PRIVÉE -->
+      <div class="card" data-categorie="reparation">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Demande privée
+          </div>
+          <div class="card-header-right">postée hier</div>
+        </div>
+        <div class="card-body">
+          <div class="card-user-row">
+            <div class="avatar" style="background:#7C3AED;">VD</div>
+            <div class="card-user-info">
+              <div class="card-user-name">Veronique D.</div>
+              <div class="card-user-meta">Nice (Bellet-Magnan) — 2,9 km</div>
+              <div class="card-user-budget">Dépannage électroménager · 1 offreur contacté</div>
+            </div>
+          </div>
+          <div class="nested-presta">
+            <div class="nested-presta-row">
+              <div style="position:relative;flex-shrink:0;">
+                <div class="avatar" style="background:#EA580C;width:40px;height:40px;font-size:0.8rem;">HA</div>
+                <span class="avatar-badge part" style="font-size:0.55rem;padding:1px 4px;">Particulier</span>
+              </div>
+              <div class="card-user-info">
+                <div class="card-user-name" style="font-size:0.88rem;">Hamdi A.</div>
+                <div class="card-user-meta" style="color:var(--orange);font-weight:600;font-size:0.78rem;">Technicien électroménager</div>
+                <div class="card-user-meta" style="font-size:0.78rem;">Nice (ACROPOLIS) — 5,2 km</div>
+              </div>
+            </div>
+            <div class="nested-photos">
+              <div class="nested-photo">📸</div>
+              <div class="nested-photo">📸</div>
+            </div>
+            <div class="nested-rating">
+              <span class="star" style="font-size:0.85rem;">★</span>
+              <span style="font-weight:700;font-size:0.82rem;">4,8/5</span>
+              <span style="color:var(--gris);font-size:0.78rem;">(12 avis)</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="card-footer-btn like-btn" onclick="toggleLike(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="like-count">J'aime</span>
+          </button>
+          <div class="card-footer-sep"></div>
+          <button class="card-footer-btn recommend-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Recommander
+          </button>
+          <div class="card-footer-sep"></div>
+          <button class="card-footer-btn reply-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Répondre
+          </button>
+        </div>
+      </div>
+
+      <!-- CARD 4 — TYPE B — PRESTATAIRE (Sophie M.) -->
+      <div class="card-presta" data-categorie="menage">
+        <div class="card-presta-header">
+          <div class="presta-header-left">
+            <span class="badge-offre">⚡ Offre de service</span>
+            <span class="badge-metier">Ménage</span>
+          </div>
+          <div class="presta-header-right">
+            <div class="online-badge online">
+              <div class="online-dot"></div>
+              En ligne
+            </div>
+            <span class="presta-time">il y a 12 min</span>
+          </div>
+        </div>
+        <div class="card-presta-body">
+          <div class="card-user-row">
+            <div style="position:relative;flex-shrink:0;">
+              <div class="avatar avatar-lg" style="background:#0891B2;">SM</div>
+              <span class="avatar-badge pro">Pro ✓</span>
+            </div>
+            <div class="card-user-info">
+              <div class="card-user-name">Sophie M.</div>
+              <div class="card-user-meta" style="color:var(--orange);font-weight:600;">Femme de ménage</div>
+              <div class="card-user-meta">Nice (Promenade des Anglais) — 3,1 km</div>
+            </div>
+          </div>
+          <div class="card-description">
+            Professionnelle du ménage, je propose nettoyage complet, repassage et entretien régulier. Références disponibles.
+          </div>
+          <div class="portfolio-grid">
+            <div class="portfolio-item">📸</div>
+            <div class="portfolio-item">📸</div>
+            <div class="portfolio-item">📸</div>
+          </div>
+          <div class="presta-rating-row">
+            <div class="rating-left">
+              <span class="star">★</span>
+              <span class="rating-score">4,9/5</span>
+              <span class="rating-count">(34 avis)</span>
+            </div>
+            <div class="tarif-right">
+              <span class="tarif-val">~25€/h</span>
+              <span class="tarif-label">Tarif indicatif</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-presta-footer">
+          <button class="btn-contacter">💬 Contacter</button>
+          <button class="btn-favoris" onclick="toggleFavoris(this)">♡ Favoris</button>
+          <button class="btn-voir-profil">👁 Voir profil</button>
+        </div>
+      </div>
+
+      <!-- CARD 5 — TYPE A — CLIENT DEMANDE PUBLIQUE (Naziha K.) -->
+      <div class="card" data-categorie="electricite">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Demande publique
+          </div>
+          <div class="card-header-right">postée aujourd'hui</div>
+        </div>
+        <div class="card-body">
+          <div class="card-user-row">
+            <div class="avatar" style="background:#D97706;">NK</div>
+            <div class="card-user-info">
+              <div class="card-user-name">Naziha K.</div>
+              <div class="card-user-meta">Nice (Libération) — 4,1 km</div>
+              <div class="card-user-budget">Budget : 100–200€</div>
+            </div>
+          </div>
+          <div class="card-description">
+            Bonjour, je cherche un électricien pour installation de 3 prises supplémentaires dans mon salon.
+          </div>
+          <div class="card-badge-replies">
+            <span class="badge-replies badge-no-replies">Aucune réponse</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="card-footer-btn like-btn" onclick="toggleLike(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="like-count">J'aime</span>
+          </button>
+          <div class="card-footer-sep"></div>
+          <button class="card-footer-btn recommend-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Recommander
+          </button>
+          <div class="card-footer-sep"></div>
+          <button class="card-footer-btn reply-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Répondre
+          </button>
+        </div>
+      </div>
+
+      <!-- CARD 6 — TYPE B — PRESTATAIRE (Karim L.) -->
+      <div class="card-presta" data-categorie="electricite">
+        <div class="card-presta-header">
+          <div class="presta-header-left">
+            <span class="badge-offre">⚡ Offre de service</span>
+            <span class="badge-metier">Électricien</span>
+          </div>
+          <div class="presta-header-right">
+            <div class="online-badge online">
+              <div class="online-dot"></div>
+              En ligne
+            </div>
+            <span class="presta-time">il y a 2 min</span>
+          </div>
+        </div>
+        <div class="card-presta-body">
+          <div class="card-user-row">
+            <div style="position:relative;flex-shrink:0;">
+              <div class="avatar avatar-lg" style="background:#1B3C6B;">KL</div>
+              <span class="avatar-badge pro">Pro ✓</span>
+            </div>
+            <div class="card-user-info">
+              <div class="card-user-name">Karim L.</div>
+              <div class="card-user-meta" style="color:var(--orange);font-weight:600;">Électricien certifié</div>
+              <div class="card-user-meta">Antibes — 12 km</div>
+            </div>
+          </div>
+          <div class="card-description">
+            Électricien certifié RGE avec 15 ans d'expérience. Mise aux normes, dépannage, installation complète.
+          </div>
+          <div class="portfolio-grid">
+            <div class="portfolio-item">📸</div>
+            <div class="portfolio-item">📸</div>
+            <div class="portfolio-item">📸</div>
+          </div>
+          <div class="presta-rating-row">
+            <div class="rating-left">
+              <span class="star">★</span>
+              <span class="rating-score">4,7/5</span>
+              <span class="rating-count">(28 avis)</span>
+            </div>
+            <div class="tarif-right">
+              <span class="tarif-val">~55€/h</span>
+              <span class="tarif-label">Tarif indicatif</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-presta-footer">
+          <button class="btn-contacter">💬 Contacter</button>
+          <button class="btn-favoris" onclick="toggleFavoris(this)">♡ Favoris</button>
+          <button class="btn-voir-profil">👁 Voir profil</button>
+        </div>
+      </div>
+
+    </div><!-- /feed-container -->
+
+    <!-- ===== LOAD MORE ===== -->
+    <div class="load-more-wrap">
+      <button class="btn-load-more" id="btn-load-more" onclick="loadMore()">Charger plus d'annonces ↓</button>
+    </div>
+
+  </div><!-- /feed-col -->
+
+  <!-- ===== SIDEBAR DROITE ===== -->
+  <div class="sidebar-col">
+
+    <!-- Toggle Client / Prestataire -->
+    <div class="sidebar-toggle-row">
+      <span class="sidebar-toggle-label">Vue :</span>
+      <div class="toggle-pills">
+        <button class="toggle-pill active-client" id="pill-client" onclick="switchView('client')">👤 Client</button>
+        <button class="toggle-pill" id="pill-presta" onclick="switchView('presta')">🔨 Prestataire</button>
+      </div>
+    </div>
+
+    <!-- ===== SIDEBAR HAUTE VERSION CLIENT ===== -->
+    <div class="sidebar-card" id="sidebar-client">
+      <div class="sidebar-card-title">
+        <span>🌐</span> Demande publique
+      </div>
+      <label class="form-label">Décrivez votre besoin</label>
+      <textarea class="form-textarea" placeholder="Bonjour,"></textarea>
+
+      <label class="form-label bold mt-12" style="margin-top:16px;font-weight:600;display:block;">Ajoutez des photos</label>
+      <p class="form-label mt-4" style="font-size:0.78rem;margin-bottom:10px;">Augmentez vos chances de faire affaire de 25% en illustrant votre besoin.</p>
+      <div class="upload-row">
+        <div class="upload-zone">📷</div>
+        <div class="upload-zone">📷</div>
+        <div class="upload-zone">📷</div>
+      </div>
+
+      <div class="sidebar-address-row">
+        <span class="address-label">Adresse</span>
+        <span class="address-val">25 Rue Robert Latouche,<br>06200 Nice</span>
+        <span class="address-chevron">›</span>
+      </div>
+
+      <button class="btn-cta-vert" onclick="openModal()">Poster ma demande</button>
+    </div>
+
+    <!-- ===== SIDEBAR HAUTE VERSION PRESTATAIRE ===== -->
+    <div class="sidebar-card" id="sidebar-presta" style="display:none;">
+      <div class="sidebar-card-title">
+        <span>🔨</span> Proposer mes services
+      </div>
+
+      <label class="form-label">Titre de votre offre</label>
+      <input class="form-input mb-12" type="text" placeholder="Ex: Plombier disponible Nice et alentours">
+
+      <label class="form-label">Catégorie</label>
+      <select class="form-input mb-12" style="appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2364748B%27 stroke-width=%272%27%3E%3Cpolyline points=%276 9 12 15 18 9%27%3E%3C/polyline%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;">
+        <option>Plomberie</option>
+        <option>Électricité</option>
+        <option>Ménage</option>
+        <option>Jardinage</option>
+        <option>Informatique</option>
+        <option>Autre</option>
+      </select>
+
+      <label class="form-label">Description de votre offre</label>
+      <textarea class="form-textarea mb-12" placeholder="Bonjour, je suis..." style="min-height:80px;"></textarea>
+
+      <div class="form-row-2col mb-12">
+        <div>
+          <label class="form-label">Tarif horaire (€)</label>
+          <input class="form-input" type="number" placeholder="45">
+        </div>
+        <div>
+          <label class="form-label">Rayon (km)</label>
+          <input class="form-input" type="number" placeholder="20">
+        </div>
+      </div>
+
+      <div class="toggle-switch-row">
+        <span class="toggle-switch-label">Disponibilité immédiate</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-dispo">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <label class="form-label bold" style="margin-top:16px;font-weight:600;display:block;margin-bottom:8px;">Photos portfolio</label>
+      <div class="upload-row">
+        <div class="upload-zone">📷</div>
+        <div class="upload-zone">📷</div>
+        <div class="upload-zone">📷</div>
+      </div>
+
+      <button class="btn-cta-orange">Publier mon offre</button>
+    </div>
+
+    <!-- ===== SIDEBAR BASSE ===== -->
+    <div class="sidebar-bottom">
+      <div class="sidebar-bottom-title">Arrondissez vos fins de mois 💰</div>
+      <div class="sidebar-bottom-desc">
+        Répondez aux demandes postées autour de chez vous et générez-vous un complément de revenus.
+      </div>
+      <button class="btn-proposer">Proposer mes services</button>
+      <div class="sidebar-sep"></div>
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <span class="mini-stat-val bleu">500K+</span>
+          <span class="mini-stat-label">Membres actifs</span>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-stat-val orange">12K+</span>
+          <span class="mini-stat-label">Demandes/mois</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sidebar-col -->
+
+</div><!-- /main-container -->
+
+<!-- ===== MODAL POSTER UNE DEMANDE ===== -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <div class="modal-title">📋 Poster une demande</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper" id="stepper">
+      <div class="stepper-item">
+        <div class="stepper-circle active" id="step-circle-1">1</div>
+        <div class="stepper-label">Besoin</div>
+      </div>
+      <div class="stepper-line" id="step-line-1"></div>
+      <div class="stepper-item">
+        <div class="stepper-circle" id="step-circle-2">2</div>
+        <div class="stepper-label">Localisation</div>
+      </div>
+      <div class="stepper-line" id="step-line-2"></div>
+      <div class="stepper-item">
+        <div class="stepper-circle" id="step-circle-3">3</div>
+        <div class="stepper-label">Photos</div>
+      </div>
+    </div>
+
+    <!-- Étape 1 -->
+    <div class="modal-body">
+      <div class="modal-step active" id="modal-step-1">
+        <div class="cat-grid" id="cat-grid">
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">🔧</span>Plomberie</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">⚡</span>Électricité</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">🌱</span>Jardinage</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">🧹</span>Ménage</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">🖥</span>Informatique</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">🎨</span>Peinture</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">📦</span>Déménagement</div>
+          <div class="cat-item" onclick="selectCat(this)"><span class="cat-icon">🔨</span>Réparation</div>
+        </div>
+        <label class="form-label bold mb-8" style="font-weight:600;">Description</label>
+        <textarea class="form-textarea mb-12" id="modal-desc" placeholder="Bonjour, j'ai besoin de..." style="min-height:90px;"></textarea>
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <div style="flex:1;">
+            <label class="form-label">Budget estimé</label>
+            <input class="form-input" type="text" id="modal-budget" placeholder="Ex: 80">
+          </div>
+          <div style="flex:1;">
+            <label class="form-label">Unité</label>
+            <select class="form-input" style="appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2364748B%27 stroke-width=%272%27%3E%3Cpolyline points=%276 9 12 15 18 9%27%3E%3C/polyline%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;">
+              <option>€ fixe</option>
+              <option>€/h</option>
+              <option>À convenir</option>
+            </select>
+          </div>
+        </div>
+        <label class="form-label bold mb-8" style="font-weight:600;">Type de demande</label>
+        <div class="radio-type-row">
+          <label class="radio-type-option">
+            <input type="radio" name="demande-type" value="publique" checked>
+            🌐 Demande publique
+          </label>
+          <label class="radio-type-option">
+            <input type="radio" name="demande-type" value="privee">
+            🔒 Demande privée
+          </label>
+        </div>
+      </div>
+
+      <!-- Étape 2 -->
+      <div class="modal-step" id="modal-step-2">
+        <label class="form-label bold mb-8" style="font-weight:600;">Adresse</label>
+        <input class="form-input mb-12" type="text" id="modal-adresse" placeholder="Ex: 25 Rue Robert Latouche, Nice" value="25 Rue Robert Latouche, 06200 Nice">
+        <label class="form-label bold mb-8" style="font-weight:600;">Date souhaitée</label>
+        <input class="form-input mb-12" type="date" id="modal-date">
+        <div class="urgence-toggle-row" id="urgence-row">
+          <span class="urgence-label">⚡ Urgence</span>
+          <label class="toggle-switch-urgence">
+            <input type="checkbox" id="toggle-urgence" onchange="toggleUrgence()">
+            <span class="toggle-slider-urgence"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Étape 3 -->
+      <div class="modal-step" id="modal-step-3">
+        <label class="form-label bold mb-8" style="font-weight:600;">Ajoutez des photos</label>
+        <p class="form-label mb-12" style="font-size:0.82rem;color:var(--gris);">Illustrez votre besoin pour augmenter vos chances de trouver.</p>
+        <div class="upload-row" style="margin-bottom:24px;">
+          <div class="upload-zone" style="width:100%;max-width:110px;height:90px;flex:1;">📷</div>
+          <div class="upload-zone" style="width:100%;max-width:110px;height:90px;flex:1;">📷</div>
+          <div class="upload-zone" style="width:100%;max-width:110px;height:90px;flex:1;">📷</div>
+        </div>
+        <p style="font-size:0.82rem;color:var(--gris);text-align:center;">Vous pouvez ignorer cette étape et publier sans photo.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer" id="modal-footer">
+      <button class="btn-modal-prev" id="btn-prev" onclick="stepPrev()" style="display:none;">← Précédent</button>
+      <button class="btn-modal-next" id="btn-next" onclick="stepNext()">Suivant →</button>
+      <button class="btn-modal-submit" id="btn-submit" onclick="submitModal()" style="display:none;">Publier ma demande ✓</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== NAVBAR SCROLL SHADOW =====
+window.addEventListener('scroll', () => {
+  const navbar = document.getElementById('navbar');
+  navbar.classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// ===== NAV TABS =====
+document.querySelectorAll('.nav-tab:not(.nav-tab-plus)').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ===== MODAL =====
+let currentStep = 1;
+const totalSteps = 3;
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  goToStep(1);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function goToStep(step) {
+  currentStep = step;
+  for (let i = 1; i <= totalSteps; i++) {
+    const stepEl = document.getElementById(`modal-step-${i}`);
+    stepEl.classList.toggle('active', i === step);
+
+    const circle = document.getElementById(`step-circle-${i}`);
+    circle.classList.remove('active', 'done');
+    if (i < step) { circle.classList.add('done'); circle.textContent = '✓'; }
+    else if (i === step) { circle.classList.add('active'); circle.textContent = i; }
+    else { circle.textContent = i; }
+
+    if (i < totalSteps) {
+      const line = document.getElementById(`step-line-${i}`);
+      if (line) line.classList.toggle('done', i < step);
+    }
+  }
+
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const btnSubmit = document.getElementById('btn-submit');
+
+  btnPrev.style.display = step > 1 ? 'block' : 'none';
+  btnNext.style.display = step < totalSteps ? 'block' : 'none';
+  btnSubmit.style.display = step === totalSteps ? 'block' : 'none';
+}
+
+function stepNext() {
+  if (currentStep === 1) {
+    const desc = document.getElementById('modal-desc').value.trim();
+    if (!desc) {
+      document.getElementById('modal-desc').style.borderColor = '#EF4444';
+      document.getElementById('modal-desc').focus();
+      setTimeout(() => document.getElementById('modal-desc').style.borderColor = '', 2000);
+      return;
+    }
+  }
+  if (currentStep < totalSteps) goToStep(currentStep + 1);
+}
+
+function stepPrev() {
+  if (currentStep > 1) goToStep(currentStep - 1);
+}
+
+function submitModal() {
+  closeModal();
+  alert('Votre demande a été publiée avec succès ! 🎉');
+}
+
+function selectCat(el) {
+  document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleUrgence() {
+  const row = document.getElementById('urgence-row');
+  const checked = document.getElementById('toggle-urgence').checked;
+  row.style.borderColor = checked ? '#EF4444' : 'var(--border)';
+  row.style.background = checked ? '#FEF2F2' : '';
+}
+
+// ===== TOGGLE CLIENT / PRESTATAIRE =====
+function switchView(mode) {
+  const sidebarClient = document.getElementById('sidebar-client');
+  const sidebarPresta = document.getElementById('sidebar-presta');
+  const pillClient = document.getElementById('pill-client');
+  const pillPresta = document.getElementById('pill-presta');
+  const greetingText = document.getElementById('greeting-text');
+  const greetingSub = document.getElementById('greeting-sub');
+
+  sidebarClient.style.display = mode === 'client' ? 'block' : 'none';
+  sidebarPresta.style.display = mode === 'presta' ? 'block' : 'none';
+
+  if (mode === 'client') {
+    pillClient.className = 'toggle-pill active-client';
+    pillPresta.className = 'toggle-pill';
+    greetingText.childNodes[0].textContent = 'Bonjour Yassine 👋 ';
+    greetingSub.textContent = '';
+  } else {
+    pillClient.className = 'toggle-pill';
+    pillPresta.className = 'toggle-pill active-presta';
+    greetingText.childNodes[0].textContent = 'Bonjour Ahmed 👋 ';
+    greetingSub.textContent = '· Vos matchs du jour : 8 nouvelles demandes';
+  }
+
+  sidebarClient.style.animation = 'none';
+  sidebarPresta.style.animation = 'none';
+  setTimeout(() => {
+    sidebarClient.style.animation = '';
+    sidebarPresta.style.animation = '';
+  }, 10);
+}
+
+// ===== FILTRES CHIPS =====
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+
+    const filter = chip.dataset.filter;
+    const allCards = document.querySelectorAll('#feed-container [data-categorie]');
+    allCards.forEach(card => {
+      if (filter === 'tous' || card.dataset.categorie === filter) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+// ===== TOGGLE J'AIME =====
+function toggleLike(btn) {
+  const isLiked = btn.classList.toggle('liked');
+  const countEl = btn.querySelector('.like-count');
+  const svg = btn.querySelector('svg');
+  if (isLiked) {
+    svg.style.fill = 'var(--orange)';
+    svg.style.stroke = 'var(--orange)';
+    countEl.textContent = 'J\'aimé ♥';
+    btn.style.color = 'var(--orange)';
+  } else {
+    svg.style.fill = 'none';
+    svg.style.stroke = 'currentColor';
+    countEl.textContent = 'J\'aime';
+    btn.style.color = '';
+  }
+}
+
+// ===== TOGGLE FAVORIS PRESTATAIRE =====
+function toggleFavoris(btn) {
+  btn.classList.toggle('active');
+  if (btn.classList.contains('active')) {
+    btn.textContent = '♥ Favoris';
+  } else {
+    btn.textContent = '♡ Favoris';
+  }
+}
+
+// ===== INFINITE SCROLL — CHARGER PLUS =====
+let loadMoreCount = 0;
+
+const moreCardsData = [
+  {
+    type: 'client',
+    isPrivate: false,
+    categorie: 'jardinage',
+    avatar: 'MR', avatarBg: '#16A34A',
+    name: 'Marc R.', ville: 'Nice (Cimiez) — 3,4 km', budget: '50–100€',
+    desc: 'Bonjour, je cherche quelqu\'un pour entretenir mon jardin (taille, tonte) une fois par mois.',
+    time: 'postée il y a 3h', replies: '2 réponses',
+  },
+  {
+    type: 'presta',
+    categorie: 'jardinage',
+    avatar: 'JB', avatarBg: '#15803D',
+    name: 'Jean-Baptiste V.', metier: 'Jardinier paysagiste', badge: 'pro',
+    ville: 'Nice (Saint-Isidore) — 8 km', online: true, onlineText: 'En ligne',
+    desc: 'Jardinier paysagiste diplômé, je prends en charge l\'entretien de vos espaces verts toute l\'année.',
+    rating: '4,6', reviews: 19, tarif: '~35€/h', time: 'il y a 1h'
+  },
+  {
+    type: 'client',
+    isPrivate: false,
+    categorie: 'informatique',
+    avatar: 'LP', avatarBg: '#2563EB',
+    name: 'Lucas P.', ville: 'Antibes — 11 km', budget: 'À convenir',
+    desc: 'Besoin d\'aide pour configurer mon réseau Wi-Fi et installer un NAS à la maison.',
+    time: 'postée il y a 1h', replies: 'Aucune réponse',
+  }
+];
+
+function buildClientCard(d) {
+  const repliesClass = d.replies === 'Aucune réponse' ? 'badge-no-replies' : '';
+  return `
+  <div class="card" data-categorie="${d.categorie}" style="animation:fadeSlideUp 0.3s ease both;">
+    <div class="card-header">
+      <div class="card-header-left">
+        ${d.isPrivate
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Demande privée`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Demande publique`
+        }
+      </div>
+      <div class="card-header-right">${d.time}</div>
+    </div>
+    <div class="card-body">
+      <div class="card-user-row">
+        <div class="avatar" style="background:${d.avatarBg};">${d.avatar}</div>
+        <div class="card-user-info">
+          <div class="card-user-name">${d.name}</div>
+          <div class="card-user-meta">${d.ville}</div>
+          <div class="card-user-budget">Budget : ${d.budget}</div>
+        </div>
+      </div>
+      <div class="card-description">${d.desc}</div>
+      <div class="card-badge-replies">
+        <span class="badge-replies ${repliesClass}">${d.replies}</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="card-footer-btn like-btn" onclick="toggleLike(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="like-count">J'aime</span>
+      </button>
+      <div class="card-footer-sep"></div>
+      <button class="card-footer-btn recommend-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Recommander
+      </button>
+      <div class="card-footer-sep"></div>
+      <button class="card-footer-btn reply-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Répondre
+      </button>
+    </div>
+  </div>`;
+}
+
+function buildPrestaCard(d) {
+  const dotClass = d.online ? '' : 'offline';
+  const badgeHtml = d.badge === 'pro'
+    ? `<span class="avatar-badge pro">Pro ✓</span>`
+    : `<span class="avatar-badge part">Particulier</span>`;
+  return `
+  <div class="card-presta" data-categorie="${d.categorie}" style="animation:fadeSlideUp 0.3s ease both;">
+    <div class="card-presta-header">
+      <div class="presta-header-left">
+        <span class="badge-offre">⚡ Offre de service</span>
+        <span class="badge-metier">${d.metier}</span>
+      </div>
+      <div class="presta-header-right">
+        <div class="online-badge ${d.online ? 'online' : 'offline'}">
+          <div class="online-dot ${dotClass}"></div>
+          ${d.onlineText}
+        </div>
+        <span class="presta-time">${d.time}</span>
+      </div>
+    </div>
+    <div class="card-presta-body">
+      <div class="card-user-row">
+        <div style="position:relative;flex-shrink:0;">
+          <div class="avatar avatar-lg" style="background:${d.avatarBg};">${d.avatar}</div>
+          ${badgeHtml}
+        </div>
+        <div class="card-user-info">
+          <div class="card-user-name">${d.name}</div>
+          <div class="card-user-meta" style="color:var(--orange);font-weight:600;">${d.metier}</div>
+          <div class="card-user-meta">${d.ville}</div>
+        </div>
+      </div>
+      <div class="card-description">${d.desc}</div>
+      <div class="portfolio-grid">
+        <div class="portfolio-item">📸</div>
+        <div class="portfolio-item">📸</div>
+        <div class="portfolio-item">📸</div>
+      </div>
+      <div class="presta-rating-row">
+        <div class="rating-left">
+          <span class="star">★</span>
+          <span class="rating-score">${d.rating}/5</span>
+          <span class="rating-count">(${d.reviews} avis)</span>
+        </div>
+        <div class="tarif-right">
+          <span class="tarif-val">${d.tarif}</span>
+          <span class="tarif-label">Tarif indicatif</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-presta-footer">
+      <button class="btn-contacter">💬 Contacter</button>
+      <button class="btn-favoris" onclick="toggleFavoris(this)">♡ Favoris</button>
+      <button class="btn-voir-profil">👁 Voir profil</button>
+    </div>
+  </div>`;
+}
+
+function loadMore() {
+  const feed = document.getElementById('feed-container');
+  const currentFilter = document.querySelector('.chip.active')?.dataset.filter || 'tous';
+
+  moreCardsData.forEach(d => {
+    const html = d.type === 'client' ? buildClientCard(d) : buildPrestaCard(d);
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    const card = wrapper.firstChild;
+    feed.appendChild(card);
+
+    if (currentFilter !== 'tous' && card.dataset.categorie !== currentFilter) {
+      card.style.display = 'none';
+    }
+  });
+
+  loadMoreCount++;
+  const btn = document.getElementById('btn-load-more');
+  if (loadMoreCount >= 2) {
+    btn.textContent = 'Plus aucune annonce pour le moment';
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'default';
+  }
+}
+
+// ===== KEYBOARD CLOSE MODAL =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>

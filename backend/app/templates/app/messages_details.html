@@ -1,0 +1,259 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}
+Messages - {{ recipient.profile.user.username }}
+{% endblock %}
+
+{% block content %}
+        
+
+
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script>
+// Add CSRF token to all HTMX requests
+document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+});
+</script>
+<section class=" d-flex flex-column justify-content-center align-items-center"  style="background-color: #f5f5f5;margin-top: 65px; ">
+
+<div class="container ">
+    <div class="row justify-content-center align-items-center text-center mb-5 mt-5" >
+        <div class="col-12 justify-content-center align-items-center " >
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5485706271033891"
+                crossorigin="anonymous"></script>
+            <!-- annonce_details_1 -->
+            <ins class="adsbygoogle"
+                style="display:block;width:100%;height:130px;"
+                data-ad-client="ca-pub-5485706271033891"
+                data-ad-slot="1737959128"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div> 
+    </div> 
+<div class="row justify-content-center">
+       
+        <div class="col-12 col-lg-6 mb-5">
+    <div class="chat-container">
+        <!-- Chat Header -->
+        <div class="chat-header d-flex align-items-center p-2 border-bottom">
+            <!-- Go Back Button -->
+            <a href="{% url 'app:messages' %}" class="btn btn-link p-0 me-2 d-flex align-items-center">
+                <i class="bi bi-arrow-left fs-4"></i>
+            </a>
+
+            <!-- Recipient Info -->
+            <a href="{% url 'app:account' recipient.profile.slug %}" class="d-flex align-items-center text-decoration-none">
+                <img src="{{ recipient.profile.profile_picture_url }}" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+                <span class="fw-bold text-dark">{{ recipient.profile.user.username }}</span>
+            </a>
+        </div>
+
+
+        <!-- Messages Container -->
+        <div id="messagesresultsSection" class="chat overflow-auto p-3" hx-get="{% url 'app:messages_details' recipient.profile.slug %}?partial=true"
+     hx-trigger="every 2s"
+     hx-swap="innerHTML">
+            {% include "app/partials/messages_results.html" %}
+        </div>
+        <!-- File Preview Area -->
+		<div id="file-preview" class="file-preview"></div>
+        <!-- Form to Send Message -->
+        <form method="post" enctype="multipart/form-data"
+              hx-post="{% url 'app:messages_details' recipient.profile.slug %}" 
+              hx-target="#messagesresultsSection" hx-swap="innerHTML" hx-include="[name='body'], [name='file']"
+              class="chat-input d-flex align-items-center p-2 border-top bg-light">
+            {% csrf_token %}
+            <input type="file" id="file" name="file" style="display:none;">
+            <button type="button" class="btn btn-link me-2 p-0" onclick="document.getElementById('file').click();">
+                <i class="bi bi-paperclip fs-4"></i>
+            </button>
+            <input type="text" name="body" class="form-control me-2" placeholder="Envoyer un message" required></input>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+    </div>
+    </div>
+    </div>
+</section>
+<script>
+    document.getElementById('file').addEventListener('change', function() {
+        const previewContainer = document.getElementById('file-preview');
+        previewContainer.innerHTML = ''; // Clear previous previews
+
+        const file = this.files[0];
+        if (file) {
+            const fileType = file.type.split('/')[0];
+
+            if (fileType === 'image') {
+                // Create an image preview
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(img.src); // Free memory
+                };
+                previewContainer.appendChild(img);
+            } else {
+                // Create a text preview for non-image files
+                const fileName = document.createElement('p');
+                fileName.textContent = `Selected file: ${file.name}`;
+                previewContainer.appendChild(fileName);
+            }
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatContainer = document.getElementById("messagesresultsSection");
+        const form = document.querySelector("form[hx-post]");
+        const submitButton = form.querySelector("button[type='submit']");
+        const submitIcon = submitButton.querySelector("i");
+        
+        // Function to scroll chat to bottom
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Initial scroll on page load
+        scrollToBottom();
+
+        // HTMX events
+        form.addEventListener("htmx:beforeRequest", function() {
+            // Disable button and show loading
+            submitButton.disabled = true;
+            submitIcon.classList.add("rotate"); // You can add CSS animation for rotate
+        });
+
+        form.addEventListener("htmx:afterRequest", function() {
+            // Enable button and remove loading
+            submitButton.disabled = false;
+            submitIcon.classList.remove("rotate");
+
+            // Clear form inputs
+    const bodyInput = form.querySelector("[name='body']");
+    if(bodyInput) bodyInput.value = "";  // Works for both input or textarea
+
+    const fileInput = form.querySelector("[name='file']");
+    if(fileInput) fileInput.value = "";
+
+    // Clear the file preview
+    const previewContainer = document.getElementById("file-preview");
+    if(previewContainer) previewContainer.innerHTML = "";
+
+            // Scroll chat to bottom after new message loads
+            scrollToBottom();
+        });
+
+        // Optional: scroll down when user uploads a file
+        const fileInput = document.getElementById("file");
+        fileInput.addEventListener("change", function() {
+            scrollToBottom();
+        });
+    });
+</script>
+<style>
+    
+    .file-preview {
+        margin-top: 10px;
+    }
+    .file-preview img {
+        max-width: 100px;
+        max-height: 100px;
+        display: block;
+    }
+
+/* Simple rotate animation for loading icon */
+.rotate {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Full height minus navbar */
+.chat-section {
+    height: calc(100vh); /* Adjust 70px for your navbar height */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #f5f5f5;
+}
+
+/* Chat container */
+.chat-container {
+    width: 100%;
+    height: 500px;
+    
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Chat header */
+.chat-header {
+    background-color: #fff;
+    z-index: 2;
+}
+
+/* Chat messages area */
+.chat {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f8f8f8;
+}
+
+
+
+/* File preview */
+#file-preview img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+
+    .bubble {
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 0px;
+        width: fit-content;
+        max-width: 70%;
+    }
+    
+    .bubble.me {
+        background-color: #dcf8c6;
+        margin-left: auto;
+    }
+        
+    .bubble.you {
+        background-color: #f1f0f0;
+        
+    }
+    .timestamp {
+        padding: 0px;
+        border-radius: 0px;
+        margin-top: 0px;
+        margin-bottom: 10px;
+        width: fit-content;
+        max-width: 70%;
+        font-size:12px;
+    }
+    
+    .timestamp.me {
+        margin-left: auto;
+    }
+    
+    
+    
+</style>
+  
+{% endblock %}

@@ -1,0 +1,23 @@
+<form method="post">
+    {% csrf_token %}
+
+    <label class="form-label">Code de vérification</label>
+    <input
+        type="text"
+        name="otp"
+        class="form-control"
+        maxlength="6"
+        required
+        placeholder="Entrez le code reçu"
+    >
+
+    <button class="btn btn-primary mt-3 w-100">
+        Vérifier
+    </button>
+</form>
+
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} mt-3">
+    {{ message|linebreaks }}
+</div>
+{% endfor %}

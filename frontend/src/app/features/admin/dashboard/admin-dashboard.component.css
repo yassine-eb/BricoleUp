@@ -1,0 +1,155 @@
+.db-wrap {
+  padding: 28px 32px 48px;
+}
+
+.db-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.db-head h1 {
+  margin: 0;
+  font-family: "Poppins", system-ui, sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 800;
+  color: #1B3C6B;
+}
+
+.db-head p {
+  margin: 6px 0 0;
+  color: #64748B;
+  font-size: 0.88rem;
+}
+
+.db-date {
+  color: #64748B;
+  font-size: 0.82rem;
+}
+
+.db-alert {
+  margin: -10px 0 20px;
+  border: 1px solid #FEE2E2;
+  border-left: 3px solid #EF4444;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fff;
+  color: #B91C1C;
+  font-weight: 700;
+}
+
+/* KPI */
+.db-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.db-kpi {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+}
+
+.db-kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.db-kpi-label {
+  color: #64748B;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.db-kpi-val {
+  font-family: "Poppins", system-ui, sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1;
+}
+
+.db-kpi-sub {
+  margin-top: 5px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.db-kpi-sub.up { color: #22C55E; }
+
+/* Charts */
+.db-charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.db-charts-row:nth-child(even) {
+  grid-template-columns: 1fr 2fr;
+}
+
+.db-chart-card {
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  background: #fff;
+  padding: 20px 22px;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+}
+
+.db-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.db-chart-title {
+  font-family: "Poppins", system-ui, sans-serif;
+  font-weight: 700;
+  color: #1B3C6B;
+  font-size: 0.95rem;
+}
+
+.db-chart-badge {
+  background: #EFF6FF;
+  color: #1B3C6B;
+  border-radius: 50px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.db-chart-body {
+  position: relative;
+  height: 220px;
+}
+
+@media (max-width: 1100px) {
+  .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .db-charts-row,
+  .db-charts-row:nth-child(even) { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .db-wrap { padding: 16px; }
+  .db-kpi-grid { grid-template-columns: 1fr; }
+}

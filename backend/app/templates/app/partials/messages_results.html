@@ -1,0 +1,24 @@
+<div class="chat active-chat" >
+	{% for message in messages %}
+	<div class="bubble {% if message.sender == request.user %}me{% else %}you{% endif %}">
+		{{ message.body|safe }}
+		{% if message.file %}
+				<div class="file-preview">
+					<a href="{{ message.file.url }}" download target="_blank"><img src="{{ message.file.url }}" alt="file" width="60" height="60" ></a>
+				</div>
+			
+		{% endif %}
+	</div>
+	<div class="timestamp {% if message.sender == request.user %}me{% else %}you{% endif %}">
+		{{ message.timestamp|date:"d/m/Y H:i" }}
+	</div>
+	{% endfor %}
+	<style>
+		.bubble {
+			word-break: break-word;
+			overflow-wrap: break-word;
+			max-width: 100%;
+		}
+		
+	</style>
+</div>

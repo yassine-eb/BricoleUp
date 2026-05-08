@@ -1,0 +1,292 @@
+msgid "BricoleUp"
+msgstr "بريكول أب"
+
+msgid "Bricolage et petits travaux : La solution pour vos services de proximité."
+msgstr "أعمال الصيانة والأشغال الصغيرة: الحل لخدماتك المحلية."
+
+msgid "bricoleup, BricoleUp, bricole, artisans, prestataires, diy, bricoleup, bricole up, bricoleup.com, bricolage, plombier, rénovation, outils, bricoleurs, travaux, réparation, DIY, électricité, plomberie, menuiserie, peinture, nettoyage, jardinage, maçonnerie, carreleur, installateur, rénovation intérieure, rénovation extérieure, dépannage, électricien, artisan, bricoles, devis, réparation électroménager, travaux de peinture, réparation toiture, entretien jardin, entretien maison"
+msgstr "بريكول أب، بريكول أب، أعمال صيانة، حرفيون، مقدمو خدمات، افعلها بنفسك، أدوات، أعمال كهربائية، سباكة، نجارة، طلاء، تنظيف، حدائق، بناء، بلاط، تركيب، تجديد داخلي، تجديد خارجي، صيانة عاجلة، كهربائي، حرفي، تقديرات، إصلاح الأجهزة، أعمال الطلاء، إصلاح السقف، صيانة الحدائق، صيانة المنزل"
+ 
+msgid "Prestataires"
+msgstr "المقدّمون للخدمة"
+
+msgid "Annonces"
+msgstr "الإعلانات"
+
+msgid "Messages"
+msgstr "الرسائل"
+
+msgid "Voir mon profil"
+msgstr "عرض ملفي الشخصي"
+
+msgid "Zone d'intervention"
+msgstr "منطقة العمل"
+
+msgid "Recherche des prestataires"
+msgstr "البحث عن مقدمي الخدمة"
+
+msgid "Notifications"
+msgstr "الإشعارات"
+
+msgid "Mes Favoris"
+msgstr "المفضلة"
+
+msgid "Publier une annonce"
+msgstr "نشر إعلان"
+
+msgid "Informations du compte"
+msgstr "معلومات الحساب"
+
+msgid "Paramètres du compte"
+msgstr "إعدادات الحساب"
+
+msgid "Déconnexion"
+msgstr "تسجيل الخروج"
+
+msgid "Se connecter"
+msgstr "تسجيل الدخول"
+
+msgid "Resources"
+msgstr "الموارد"
+
+msgid "Accueil"
+msgstr "الرئيسية"
+
+msgid "Centre d’Aide"
+msgstr "مركز المساعدة"
+
+msgid "Plan du site"
+msgstr "خريطة الموقع"
+
+msgid "Politique De Confidentialité"
+msgstr "سياسة الخصوصية"
+
+msgid "Conditions Générales d'Utilisation"
+msgstr "الشروط والأحكام"
+
+msgid "Contact"
+msgstr "اتصل بنا"
+
+msgid "Formulaire de Contact"
+msgstr "نموذج الاتصال"
+
+msgid "Copyright © 2025 BricoleUp."
+msgstr "حقوق النشر © 2025 بريكول أب."
+
+msgid "Tous droits réservés."
+msgstr "جميع الحقوق محفوظة."
+
+msgid "Bricolage et petits travaux"
+msgstr "أعمال الصيانة والأشغال الصغيرة"
+
+msgid "La solution pour vos services de proximité"
+msgstr "الحل لخدماتك المحلية"
+
+msgid "Aide à domicile"
+msgstr "المساعدة المنزلية"
+
+msgid "Bricolage"
+msgstr "أعمال الصيانة"
+
+msgid "Chauffage"
+msgstr "التدفئة"
+
+msgid "Déménagement"
+msgstr "نقل الأثاث"
+
+msgid "Électricité"
+msgstr "الكهرباء"
+
+msgid "Jardinage"
+msgstr "البستنة"
+
+msgid "Maçonnerie"
+msgstr "الخرسانة والبناء"
+
+msgid "Ménage"
+msgstr "التنظيف المنزلي"
+
+msgid "Peinture"
+msgstr "الدهان"
+
+msgid "Plomberie"
+msgstr "السباكة"
+
+msgid "Piscine"
+msgstr "حمام السباحة"
+
+msgid "Rénovation"
+msgstr "التجديد"
+
+msgid "Vous êtes"
+msgstr "أنت"
+
+msgid "client"
+msgstr "عميل"
+
+msgid "Cherchez et engagez un professionnel"
+msgstr "ابحث واستعن بمحترف"
+
+msgid "Chercher des prestataires près de chez vous"
+msgstr "ابحث عن مزودي خدمات بالقرب منك"
+
+msgid "Publier votre demande"
+msgstr "انشر طلبك"
+
+msgid "Échanger avec des professionnels"
+msgstr "تبادل مع المحترفين"
+
+msgid "prestataire"
+msgstr "مزود خدمة"
+
+msgid "Booster votre visibilité et obtenir de nouveaux clients"
+msgstr "عزز ظهورك واحصل على عملاء جدد"
+
+msgid "Ajouter votre profil à la recherche de prestataires"
+msgstr "أضف ملفك الشخصي إلى البحث عن مزودي الخدمات"
+
+
+msgid "Répondre aux annonces de potentiels clients"
+msgstr "الرد على إعلانات العملاء المحتملين"
+
+msgid "Booster votre visibilité et Obtenir de nouveaux clients"
+msgstr "عزز ظهورك واحصل على عملاء جدد"
+
+msgid "Annonces récentes"
+msgstr "الإعلانات الحديثة"
+
+msgid "Prestataires actif récemment"
+msgstr "مزودو خدمات نشطون مؤخراً"
+
+msgid "Chercher un prestataire par service"
+msgstr "ابحث عن مزود خدمة حسب الخدمة"
+
+msgid "Questions Fréquemment Posées"
+msgstr "الأسئلة المتكررة"
+
+msgid "Qu'est-ce que BricoleUp ?"
+msgstr "ما هو BricoleUp؟"
+
+msgid "BricoleUp est une plateforme innovante dédiée à la mise en relation de bricoleurs passionnés et de professionnels qualifiés avec des particuliers ayant des besoins en bricolage. Que vous ayez un projet à réaliser ou des compétences à offrir, BricoleUp facilite la rencontre entre la demande et l'offre dans le domaine du bricolage, garantissant ainsi des solutions efficaces et de qualité pour tous vos travaux."
+msgstr "BricoleUp هي منصة مبتكرة تهدف إلى ربط الحرفيين الشغوفين والمحترفين المؤهلين بالأفراد الذين لديهم احتياجات في أعمال الصيانة والبناء. سواء كان لديك مشروع لتنفيذه أو مهارات لتقديمها، تسهل BricoleUp اللقاء بين العرض والطلب في مجال الأعمال اليدوية، مما يضمن حلولاً فعالة وعالية الجودة لجميع أعمالك."
+
+msgid "Rejoindre la Communauté est-il gratuit ?"
+msgstr "هل الانضمام إلى المجتمع مجاني؟"
+
+msgid "Oui ! Rejoindre la Communauté des Bricoleurs est complètement gratuit. Vous pouvez demander de l'aide, offrir vos compétences et vous connecter avec des personnes partageant les mêmes idées. N'hésitez pas à personnaliser votre profil et à présenter vos projets pour inspirer les autres !"
+msgstr "نعم! الانضمام إلى مجتمع الحرفيين مجاني تمامًا. يمكنك طلب المساعدة، تقديم مهاراتك، والتواصل مع أشخاص يشاركونك الأفكار نفسها. لا تتردد في تخصيص ملفك الشخصي وعرض مشاريعك لإلهام الآخرين."
+
+msgid "Comment offrir vos compétences ?"
+msgstr "كيف تقدم مهاراتك؟"
+
+msgid "Pour offrir vos services, créez simplement un profil et listez vos compétences sur notre plateforme. Des clients potentiels peuvent vous trouver en parcourant nos listes de sujets ou en utilisant des mots-clés spécifiques liés à votre expertise. Engagez-vous avec les membres de la communauté qui souhaitent embaucher des bricoleurs qualifiés comme vous !"
+msgstr "لتقديم خدماتك، قم بإنشاء ملف شخصي ببساطة وسرد مهاراتك على منصتنا. يمكن للعملاء المحتملين العثور عليك من خلال تصفح قوائم الموضوعات أو استخدام الكلمات المفتاحية المتعلقة بخبرتك. تواصل مع أعضاء المجتمع الذين يرغبون في توظيف حرفيين مؤهلين مثلك!"
+
+msgid "Recevez notre newsletter"
+msgstr "اشترك في النشرة الإخبارية لدينا"
+
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+msgid "S'abonner"
+msgstr "اشترك"
+
+msgid "BricoleUp : Connexion"
+msgstr "BricoleUp: تسجيل الدخول"
+
+msgid "Connectez-vous ou créez votre compte"
+msgstr "سجّل الدخول أو أنشئ حسابك"
+
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+msgid "Mot de passe"
+msgstr "كلمة المرور"
+
+msgid "Mot de passe oublié?"
+msgstr "نسيت كلمة المرور؟"
+
+msgid "Vous n'avez pas de compte?"
+msgstr "ليس لديك حساب؟"
+
+msgid "Inscrivez-vous"
+msgstr "سجّل الآن"
+
+msgid "Se connecter..."
+msgstr "تسجيل الدخول..."
+
+msgid "Rechercher un service..."
+msgstr "ابحث عن خدمة..."
+
+msgid "Ville"
+msgstr "المدينة"
+
+msgid "Filtres"
+msgstr "الفلاتر"
+
+msgid "Trier par"
+msgstr "فرز حسب"
+
+msgid "Avis"
+msgstr "التقييمات"
+
+msgid "Distance"
+msgstr "المسافة"
+
+msgid "Type de compte"
+msgstr "نوع الحساب"
+
+msgid "Particulier"
+msgstr "فردي"
+
+msgid "Professionnel"
+msgstr "مهني"
+
+msgid "Vérifié"
+msgstr "تم التحقق"
+
+msgid "Comptes vérifiés uniquement"
+msgstr "الحسابات الموثقة فقط"
+
+msgid "Rayon de recherche (en km)"
+msgstr "نطاق البحث (بالكم)"
+
+msgid "Tout effacer"
+msgstr "مسح الكل"
+
+msgid "Rechercher"
+msgstr "بحث"
+
+msgid "BricoleUp : Inscription"
+msgstr "BricoleUp: التسجيل"
+
+msgid "Nom d'utilisateur"
+msgstr "اسم المستخدم"
+
+msgid "S'inscrire →"
+msgstr "سجّل الآن →"
+
+msgid "Inscription..."
+msgstr "جاري التسجيل..."
+
+msgid "Vous avez déjà un compte?"
+msgstr "هل لديك حساب بالفعل؟"
+
+msgid "En cliquant sur"
+msgstr "بالنقر على"
+
+msgid "vous acceptez les"
+msgstr "أنت توافق على"
+
+msgid "CGU"
+msgstr "الشروط والأحكام"
+
+msgid "et la"
+msgstr "و"
+
+msgid "Politique de confidentialité"
+msgstr "سياسة الخصوصية"
+
+msgid "de BricoleUp."
+msgstr "لموقع BricoleUp."
+
