@@ -1,12 +1,8 @@
 [phases.setup]
-nixPkgs = ["python311", "libpq"]
+nixPkgs = ["python311Full", "libpq"]
 
 [phases.install]
-cmds = [
-  "pip install --upgrade pip",
-  "pip uninstall -y psycopg2 psycopg2-binary || true",
-  "pip install -r requirements.txt"
-]
+cmds = ["python3.11 -m pip install -r requirements.txt"]
 
 [start]
-cmd = "gunicorn bricoleup.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+cmd = "python3.11 -m gunicorn bricoleup.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
