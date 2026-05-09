@@ -264,6 +264,18 @@ blockquote { margin: 0 0 18px; color: var(--bleu); font-size: 1.25rem; font-styl
 .modal-stack { display: grid; gap: 10px; }
 .social-btn, .role-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 2px solid #E2E8F0; border-radius: 14px; padding: 15px 20px; background: #F8FAFC; color: #0F172A; font: 600 0.95rem "DM Sans", system-ui, sans-serif; cursor: pointer; transition: all 0.18s ease; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
 .social-btn:hover, .role-btn:hover { background: #EFF6FF; border-color: #1B3C6B; color: #1B3C6B; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(27,60,107,.1); }
+
+/* Role cards avec icone + texte */
+.role-btn-card {
+  display: flex; align-items: center; justify-content: flex-start;
+  gap: 16px; padding: 18px 20px; border-radius: 16px; text-align: left;
+}
+.role-btn-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+.role-btn-text { display: flex; flex-direction: column; gap: 2px; }
+.role-btn-title { font-size: 1rem; font-weight: 800; color: #0F172A; }
+.role-btn-sub { font-size: .78rem; color: #64748B; font-weight: 500; }
+.role-btn-card:hover .role-btn-title { color: #1B3C6B; }
+.role-btn-card:hover .role-btn-sub { color: #3B82F6; }
 .social-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex: 0 0 22px; }
 .facebook-icon { border-radius: 50%; background: #1877F2; color: #fff; font: 800 1rem Arial, sans-serif; }
 .divider { display: flex; align-items: center; gap: 14px; margin: 14px 0; color: #94A3B8; font-size: 0.86rem; }
