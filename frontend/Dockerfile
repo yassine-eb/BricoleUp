@@ -1,15 +1,13 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 COPY . .
-RUN npx ng build --configuration production
+RUN npm run build -- --configuration production
 
-FROM node:20-alpine
-WORKDIR /app
-COPY --from=build /app/dist/bricoleup/browser ./public
-COPY server.js .
-RUN npm install express
+FROM nginx:alpine
+RUN rm -rf /usr/share/nginx/html/*
+COPY nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY --from=build /app/dist/bricoleup/browser /usr/share/nginx/html
 EXPOSE 8080
-ENV PORT=8080
-CMD ["node", "server.js"]
+CMD ["/bin/sh", "-c", "PORT=${PORT:-8080} envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
