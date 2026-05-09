@@ -265,18 +265,20 @@
 
 <div id="overlay" aria-hidden="true"></div>
 
-<!-- ===== MODAL A ===== -->
+<!-- ===== MODAL A — choix rôle inscription ===== -->
 <div class="modal" id="modal-a" role="dialog" aria-modal="true" aria-labelledby="modal-a-title">
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
-  <h2 id="modal-a-title">Rejoignez-nous !</h2>
-  <p class="modal-subtitle">Les habitants et professionnels de votre quartier répondent à tous vos besoins.</p>
-  <div class="modal-stack">
-    <button class="social-btn" type="button" data-open="modal-c">
-      <span class="social-icon" aria-hidden="true">👤</span>
-      M'inscrire avec un e-mail
+  <h2 id="modal-a-title">Je m'inscris en tant que :</h2>
+  <div class="modal-stack" style="margin-top:8px">
+    <button class="role-btn" type="button" data-open="modal-d">
+      🏠 Particulier
+    </button>
+    <div class="divider">ou</div>
+    <button class="role-btn" type="button" data-open="modal-e">
+      🔧 Prestataire / Auto-entrepreneur
     </button>
   </div>
-  <div class="modal-link">Déjà inscrit ? <button type="button" data-open="modal-b">Me connecter</button></div>
+  <div class="modal-link" style="margin-top:20px">Déjà inscrit ? <button type="button" data-open="modal-b">Me connecter</button></div>
 </div>
 
 <!-- ===== MODAL B ===== -->
@@ -314,7 +316,7 @@
 
 <!-- ===== MODAL D — Inscription Particulier ===== -->
 <div class="modal" id="modal-d" role="dialog" aria-modal="true" aria-labelledby="modal-d-title">
-  <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
+  <button class="modal-back" type="button" data-back="modal-a" aria-label="Retour">←</button>
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
   <h2 id="modal-d-title">Inscription <span style="color:#F97316">Particulier</span></h2>
 
@@ -386,7 +388,7 @@
 
 <!-- ===== MODAL E — Inscription Auto-entrepreneur ===== -->
 <div class="modal" id="modal-e" role="dialog" aria-modal="true" aria-labelledby="modal-e-title">
-  <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
+  <button class="modal-back" type="button" data-back="modal-a" aria-label="Retour">←</button>
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
   <h2 id="modal-e-title">Inscription <span style="color:#F97316">Auto-entrepreneur</span></h2>
 
@@ -453,7 +455,7 @@
 
 <!-- ===== MODAL F — Inscription Entreprise ===== -->
 <div class="modal" id="modal-f" role="dialog" aria-modal="true" aria-labelledby="modal-f-title">
-  <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
+  <button class="modal-back" type="button" data-back="modal-a" aria-label="Retour">←</button>
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
   <h2 id="modal-f-title">Inscription <span style="color:#F97316">Entreprise</span></h2>
 
