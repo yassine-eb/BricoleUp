@@ -16,6 +16,12 @@ export class FeedComponent implements AfterViewInit {
   private http   = inject(HttpClient);
   private auth   = inject(AuthService);
   private router = inject(Router);
+  private pageOffres = 1;
+  private pageDemandes = 1;
+  private allOffresLoaded = false;
+  private allDemandesLoaded = false;
+
+  // Legacy kept for compat with puSubmit reset
   private page = 1;
   private allLoaded = false;
 
@@ -177,53 +183,197 @@ export class FeedComponent implements AfterViewInit {
       if (e.key === 'Escape') (window as any).contactClose?.();
     });
 
-    // Délégation "J'aime" → API backend + localStorage
+    // ===== J'AIME — JS pur + fetch (instantané) =====
     document.addEventListener('click', (e: Event) => {
-      const btn = (e.target as HTMLElement).closest<HTMLElement>('.btn-like[data-card]');
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.btn-like, .fp-like-btn');
       if (!btn) return;
+
+      // Toggle UI immédiat
+      const isLiked = btn.classList.toggle('liked');
+      const svgs = btn.querySelectorAll('svg');
+      const countEl = btn.querySelector('.fp-like-count') as HTMLElement;
+
+      svgs.forEach(svg => {
+        svg.setAttribute('fill', isLiked ? '#F97316' : 'none');
+        svg.setAttribute('stroke', isLiked ? '#F97316' : 'currentColor');
+      });
+      if (countEl) {
+        const cur = parseInt(countEl.textContent || '0') || 0;
+        countEl.textContent = String(isLiked ? cur + 1 : Math.max(0, cur - 1));
+      }
+
+      // LocalStorage pour les cards annonces
       const raw = btn.dataset['card'];
+      if (raw) {
+        try {
+          const card = JSON.parse(decodeURIComponent(raw));
+          const stored: any[] = JSON.parse(localStorage.getItem('bu_liked_cards') || '[]');
+          const idx = stored.findIndex((c: any) => c.id === card.id);
+          if (isLiked && idx === -1) stored.push(card);
+          else if (!isLiked && idx !== -1) stored.splice(idx, 1);
+          localStorage.setItem('bu_liked_cards', JSON.stringify(stored));
+          window.dispatchEvent(new CustomEvent('bu:favcount', { detail: stored.length }));
+        } catch {}
+      }
+
+      // Appel API en arrière-plan via fetch (sans bloquer l'UI)
       const slug = btn.dataset['slug'];
-      if (!raw) return;
-
-      try {
-        const card = JSON.parse(decodeURIComponent(raw));
-        const stored: any[] = JSON.parse(localStorage.getItem('bu_liked_cards') || '[]');
-        const idx = stored.findIndex(c => c.id === card.id);
-        const nowLiked = idx === -1;
-
-        // Mise à jour UI immédiate
-        const svg = btn.querySelector('svg');
-        if (nowLiked) {
-          stored.push(card);
-          btn.classList.add('liked');
-          btn.title = 'Retirer le j\'aime';
-          if (svg) { svg.setAttribute('fill', '#F97316'); svg.setAttribute('stroke', '#F97316'); }
-        } else {
-          stored.splice(idx, 1);
-          btn.classList.remove('liked');
-          btn.title = 'J\'aimer';
-          if (svg) { svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); }
-        }
-        localStorage.setItem('bu_liked_cards', JSON.stringify(stored));
-        window.dispatchEvent(new CustomEvent('bu:favcount', { detail: stored.length }));
-
-        // Appel API si connecté et slug disponible
-        const token = this.auth.getAccessToken();
-        if (token && slug) {
-          const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-          this.http.post<any>(
-            `${environment.apiUrl}/v1/favorites/${slug}/favorite/`,
-            {},
-            { headers }
-          ).subscribe({ error: () => {} });
-        }
-      } catch { /* */ }
+      const token = this.auth.getAccessToken();
+      if (token && slug) {
+        fetch(`${environment.apiUrl}/v1/favorites/${slug}/favorite/`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: '{}',
+        }).catch(() => {});
+      }
     });
 
-    this.loadAnnonces();
+    this.loadOffres();
+    this.loadDemandes();
     this.loadVille();
     this.loadProfil();
     this.loadSkills();
+
+    // ===== LIGHTBOX IMAGE =====
+    (window as any).closeImgLightbox = () => {
+      const lb = document.getElementById('img-lightbox');
+      if (lb) { lb.style.display = 'none'; document.body.style.overflow = ''; }
+    };
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') (window as any).closeImgLightbox?.();
+    });
+    document.addEventListener('click', (e: Event) => {
+      const img = (e.target as HTMLElement).closest<HTMLImageElement>(
+        '.fc-img-grid img, .fc-img-main img, .fc-img-small img, .fp-img-wrap img, .fc-avatar-img'
+      );
+      if (!img || !img.src) return;
+      const lb = document.getElementById('img-lightbox');
+      const lbImg = document.getElementById('img-lightbox-img') as HTMLImageElement;
+      if (lb && lbImg) {
+        lbImg.src = img.src;
+        lb.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    // ===== MODAL PORTFOLIO =====
+    (window as any).openPortfolioModal = () => {
+      if (!this.auth.getAccessToken()) { this.router.navigate(['/auth/login']); return; }
+      document.getElementById('portfolio-overlay')?.classList.add('pu-open');
+      document.getElementById('portfolio-modal')?.classList.add('pu-open');
+      document.body.style.overflow = 'hidden';
+    };
+    (window as any).closePortfolioModal = () => {
+      document.getElementById('portfolio-overlay')?.classList.remove('pu-open');
+      document.getElementById('portfolio-modal')?.classList.remove('pu-open');
+      document.body.style.overflow = '';
+    };
+    (window as any).previewPortfolioImg = (input: HTMLInputElement) => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const zone = document.getElementById('portfolio-zone') as HTMLElement;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        zone.innerHTML = `<img src="${e.target?.result}" style="width:100%;height:100%;object-fit:cover;border-radius:10px">`;
+      };
+      reader.readAsDataURL(file);
+    };
+    (window as any).submitPortfolio = () => {
+      const token = this.auth.getAccessToken();
+      if (!token) return;
+      const desc = (document.getElementById('portfolio-desc') as HTMLTextAreaElement)?.value?.trim();
+      const file = (document.getElementById('portfolio-file') as HTMLInputElement)?.files?.[0];
+      const errEl = document.getElementById('portfolio-error') as HTMLElement;
+      const btn = document.getElementById('portfolio-submit-btn') as HTMLButtonElement;
+
+      if (!desc) { errEl.style.display = 'block'; errEl.textContent = 'La description est obligatoire.'; return; }
+      errEl.style.display = 'none';
+      btn.textContent = 'Publication…'; btn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('description', desc);
+      if (file) formData.append('image1', file);
+
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      this.http.post<any>(`${environment.apiUrl}/v1/my-projects/`, formData, { headers }).subscribe({
+        next: (project) => {
+          btn.textContent = 'Publier mon portfolio'; btn.disabled = false;
+          (window as any).closePortfolioModal();
+          (document.getElementById('portfolio-desc') as HTMLTextAreaElement).value = '';
+          // Recharger le portfolio
+          const container = document.getElementById('feed-container-portfolio');
+          if (container) { container.innerHTML = ''; this.loadPortfolio(); }
+        },
+        error: (err) => {
+          btn.textContent = 'Publier mon portfolio'; btn.disabled = false;
+          errEl.style.display = 'block';
+          errEl.textContent = err?.error?.error || 'Erreur lors de la publication.';
+        }
+      });
+    };
+
+    // Contacter portfolio
+    document.addEventListener('click', (e: Event) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.fp-btn-contacter');
+      if (!btn) return;
+      const slug = btn.dataset['slug'];
+      if (!slug) return;
+      if (!this.auth.getAccessToken()) { this.router.navigate(['/auth/login']); return; }
+      this.router.navigate(['/messages'], { queryParams: { slug } });
+    });
+
+    // Envoyer commentaire portfolio
+    document.addEventListener('click', (e: Event) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.fp-comment-send');
+      if (!btn) return;
+      const projectId = Number(btn.dataset['project']);
+      if (projectId) this.sendProjectComment(projectId);
+    });
+
+    // Voir plus de commentaires
+    document.addEventListener('click', (e: Event) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.fp-show-more');
+      if (!btn) return;
+      const projectId = Number(btn.dataset['project']);
+      const comments = JSON.parse(btn.dataset['comments'] || '[]');
+      this.renderComments(projectId, comments, true);
+    });
+
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      const input = e.target as HTMLElement;
+      if (e.key === 'Enter' && input.classList.contains('fp-comment-input')) {
+        const projectId = Number(input.id.replace('fp-input-', ''));
+        if (projectId) this.sendProjectComment(projectId);
+      }
+    });
+
+
+    // Délégation favoris portfolio — JS pur instantané
+    document.addEventListener('click', (e: Event) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.fp-fav-btn');
+      if (!btn) return;
+      const slug = btn.dataset['slug'];
+      const token = this.auth.getAccessToken();
+      if (!token) { this.router.navigate(['/auth/login']); return; }
+
+      // UI instantanée
+      const isActive = btn.classList.toggle('active');
+      const svg = btn.querySelector('svg');
+      if (svg) {
+        svg.setAttribute('fill', isActive ? '#F97316' : 'none');
+        svg.setAttribute('stroke', isActive ? '#F97316' : 'currentColor');
+      }
+
+      // fetch arrière-plan
+      if (slug) {
+        fetch(`${environment.apiUrl}/v1/favorites/${slug}/favorite/`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: '{}',
+        }).catch(() => {});
+      }
+    });
 
     // ===== FILTRE VUE FEED =====
     (window as any).setFeedView = (view: string) => {
@@ -234,14 +384,21 @@ export class FeedComponent implements AfterViewInit {
       });
     };
 
-    // ===== TOGGLE SECTIONS OFFRES / DEMANDES =====
+    // ===== TOGGLE SECTIONS OFFRES / DEMANDES / PORTFOLIO =====
+    let portfolioLoaded = false;
     (window as any).setFeedSection = (section: string) => {
-      const pills = document.querySelectorAll('.feed-toggle-pill');
-      const sections = document.querySelectorAll('.feed-section');
-      pills.forEach(p => p.classList.remove('active'));
-      sections.forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.feed-toggle-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.feed-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.feed-tabs-wrap').forEach((el: any) => {
+        el.style.display = section === 'portfolio' ? 'none' : '';
+      });
       document.getElementById(`pill-${section}`)?.classList.add('active');
       document.getElementById(`feed-section-${section}`)?.classList.add('active');
+
+      if (section === 'portfolio' && !portfolioLoaded) {
+        portfolioLoaded = true;
+        this.loadPortfolio();
+      }
     };
 
     // ===== PU MODALS =====
@@ -422,14 +579,18 @@ export class FeedComponent implements AfterViewInit {
                   </button>
                 </div>`;
             }
-            // Recharger le feed en arrière-plan
             setTimeout(() => {
-              this.page = 1; this.allLoaded = false;
-              const fo = document.getElementById('feed-container-offres');
-              const fd = document.getElementById('feed-container-demandes');
-              if (fo) fo.innerHTML = '';
-              if (fd) fd.innerHTML = '';
-              this.loadAnnonces();
+              this.pageOffres = 1; this.allOffresLoaded = false;
+              this.pageDemandes = 1; this.allDemandesLoaded = false;
+              ['feed-container-offres','feed-container-demandes'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.innerHTML = '';
+              });
+              ['btn-load-more-offres','btn-load-more-demandes'].forEach(id => {
+                const b = document.getElementById(id) as HTMLButtonElement;
+                if (b) { b.style.opacity = '1'; b.style.cursor = 'pointer'; b.disabled = false; }
+              });
+              this.loadOffres();
+              this.loadDemandes();
             }, 500);
           } else {
             puToast(res.error || 'Erreur lors de la publication.');
@@ -467,37 +628,50 @@ export class FeedComponent implements AfterViewInit {
       }
     };
 
-    // ===== FILTRES TABS =====
+    // ===== FILTRES TABS (sélection multiple) =====
+    const activeFilters = new Set<string>();
+
+    const applyFilters = () => {
+      ['feed-container-offres', 'feed-container-demandes'].forEach(id => {
+        document.querySelectorAll(`#${id} [data-categorie]`).forEach((card: any) => {
+          if (activeFilters.size === 0) {
+            card.style.display = '';
+          } else {
+            card.style.display = activeFilters.has(card.dataset.categorie) ? '' : 'none';
+          }
+        });
+      });
+    };
+
     document.getElementById('chips-container')?.addEventListener('click', (e: Event) => {
       const btn = (e.target as HTMLElement).closest<HTMLElement>('.feed-tab');
       if (!btn) return;
-      document.querySelectorAll('.feed-tab').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
       const filter = btn.dataset['filter'] || 'tous';
-      ['feed-container-offres', 'feed-container-demandes'].forEach(id => {
-        document.querySelectorAll(`#${id} [data-categorie]`).forEach((card: any) => {
-          card.style.display = (filter === 'tous' || card.dataset.categorie === filter) ? '' : 'none';
-        });
-      });
+
+      if (filter === 'tous') {
+        // Réinitialiser tout
+        activeFilters.clear();
+        document.querySelectorAll('.feed-tab').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+      } else {
+        // Désactiver "Tout"
+        document.querySelector('.feed-tab[data-filter="tous"]')?.classList.remove('active');
+
+        if (activeFilters.has(filter)) {
+          activeFilters.delete(filter);
+          btn.classList.remove('active');
+          // Si plus rien de sélectionné, réactiver "Tout"
+          if (activeFilters.size === 0) {
+            document.querySelector('.feed-tab[data-filter="tous"]')?.classList.add('active');
+          }
+        } else {
+          activeFilters.add(filter);
+          btn.classList.add('active');
+        }
+      }
+      applyFilters();
     });
 
-    // ===== TOGGLE J'AIME =====
-    (window as any).toggleLike = (btn: HTMLElement) => {
-      const isLiked = btn.classList.toggle('liked');
-      const countEl = btn.querySelector('.like-count') as HTMLElement;
-      const svg = btn.querySelector('svg') as SVGElement;
-      if (isLiked) {
-        svg.style.fill = 'var(--orange)';
-        svg.style.stroke = 'var(--orange)';
-        if (countEl) countEl.textContent = "J'aimé ♥";
-        btn.style.color = 'var(--orange)';
-      } else {
-        svg.style.fill = 'none';
-        svg.style.stroke = 'currentColor';
-        if (countEl) countEl.textContent = "J'aime";
-        btn.style.color = '';
-      }
-    };
 
     // ===== TOGGLE FAVORIS =====
     (window as any).toggleFavoris = (btn: HTMLElement) => {
@@ -505,7 +679,9 @@ export class FeedComponent implements AfterViewInit {
       btn.textContent = btn.classList.contains('active') ? '♥ Favoris' : '♡ Favoris';
     };
 
-    (window as any).loadMore = () => this.loadAnnonces();
+    (window as any).loadMore = () => this.loadOffres();
+    (window as any).loadMoreOffres   = () => this.loadOffres();
+    (window as any).loadMoreDemandes = () => this.loadDemandes();
 
     // ===== UPLOAD PHOTOS =====
     (window as any).triggerUpload = (n: number) => {
@@ -580,15 +756,7 @@ export class FeedComponent implements AfterViewInit {
           btn.className = 'feed-tab';
           btn.dataset['filter'] = slug;
           btn.textContent = s.name_fr;
-          btn.addEventListener('click', () => {
-            container.querySelectorAll('.feed-tab').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            ['feed-container-offres', 'feed-container-demandes'].forEach(id => {
-              document.querySelectorAll(`#${id} [data-categorie]`).forEach((card: any) => {
-                card.style.display = (slug === 'tous' || card.dataset.categorie === slug) ? '' : 'none';
-              });
-            });
-          });
+          // le listener chips-container gère déjà les boutons dynamiques
           container.appendChild(btn);
         });
       },
@@ -648,47 +816,79 @@ export class FeedComponent implements AfterViewInit {
     });
   }
 
-  private loadAnnonces(): void {
-    if (this.allLoaded) return;
-    const btn = document.getElementById('btn-load-more') as HTMLButtonElement;
+  private loadOffres(): void {
+    if (this.allOffresLoaded) return;
+    const btn = document.getElementById('btn-load-more-offres') as HTMLButtonElement;
     if (btn) { btn.textContent = 'Chargement…'; btn.disabled = true; }
 
-    this.http.get<any>(`${environment.apiUrl}/v1/annonces/?page=${this.page}&limit=10`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/v1/annonces/?page=${this.pageOffres}&categories=offre_service`).subscribe({
       next: (res) => {
-        const items: any[] = Array.isArray(res) ? res : (res.results ?? res.annonces ?? []);
-        const feedOffres   = document.getElementById('feed-container-offres');
-        const feedDemandes = document.getElementById('feed-container-demandes');
-        if (!feedOffres || !feedDemandes) return;
+        const items: any[] = res?.results ?? (Array.isArray(res) ? res : []);
+        const hasNext: boolean = res?.has_next === true || (Array.isArray(res) && res.length >= 5);
 
-        items.forEach((a: any) => {
-          const card = this.buildCard(a);
-          const isOffre = a.category?.id === 2 || a.category?.name_fr?.toLowerCase().includes('offre');
-          if (isOffre) feedOffres.appendChild(card);
-          else feedDemandes.appendChild(card);
-        });
-
-        this.page++;
-        if (items.length < 10) {
-          this.allLoaded = true;
-          if (btn) { btn.textContent = 'Plus aucune annonce'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
-        } else {
-          if (btn) { btn.textContent = 'Charger plus d\'annonces ↓'; btn.disabled = false; }
+        const feed = document.getElementById('feed-container-offres');
+        if (feed) {
+          items.forEach((a: any) => feed.appendChild(this.buildCard(a)));
         }
-
-        // Réappliquer le filtre actif
-        const activeTab = (document.querySelector('.feed-tab.active') as HTMLElement)?.dataset['filter'] || 'tous';
-        if (activeTab !== 'tous') {
-          [feedOffres, feedDemandes].forEach(feed => {
-            feed.querySelectorAll('[data-categorie]').forEach((c: any) => {
-              c.style.display = c.dataset.categorie === activeTab ? '' : 'none';
-            });
-          });
-        }
+        this.pageOffres++;
+        this.setLoadBtn(btn, hasNext && items.length > 0, 'Charger plus d\'offres ↓', () => { this.allOffresLoaded = true; });
+        this.reapplyFilters();
       },
-      error: () => {
-        if (btn) { btn.textContent = 'Charger plus d\'annonces ↓'; btn.disabled = false; }
-      }
+      error: () => { if (btn) { btn.textContent = 'Charger plus d\'offres ↓'; btn.disabled = false; } },
     });
+  }
+
+  private loadDemandes(): void {
+    if (this.allDemandesLoaded) return;
+    const btn = document.getElementById('btn-load-more-demandes') as HTMLButtonElement;
+    if (btn) { btn.textContent = 'Chargement…'; btn.disabled = true; }
+
+    this.http.get<any>(`${environment.apiUrl}/v1/annonces/?page=${this.pageDemandes}&categories=demande_prestation`).subscribe({
+      next: (res) => {
+        const items: any[] = res?.results ?? (Array.isArray(res) ? res : []);
+        const hasNext: boolean = res?.has_next === true || (Array.isArray(res) && res.length >= 5);
+
+        const feed = document.getElementById('feed-container-demandes');
+        if (feed) {
+          items.forEach((a: any) => feed.appendChild(this.buildCard(a)));
+        }
+        this.pageDemandes++;
+        this.setLoadBtn(btn, hasNext && items.length > 0, 'Charger plus de demandes ↓', () => { this.allDemandesLoaded = true; });
+        this.reapplyFilters();
+      },
+      error: () => { if (btn) { btn.textContent = 'Charger plus de demandes ↓'; btn.disabled = false; } },
+    });
+  }
+
+  private setLoadBtn(btn: HTMLButtonElement | null, hasMore: boolean, label: string, onDone: () => void): void {
+    if (!btn) return;
+    if (hasMore) {
+      btn.textContent = label;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    } else {
+      onDone();
+      btn.textContent = 'Tout est chargé ✓';
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'default';
+      btn.disabled = true;
+    }
+  }
+
+  private reapplyFilters(): void {
+    const activeTab = (document.querySelector('.feed-tab.active') as HTMLElement)?.dataset['filter'] || 'tous';
+    if (activeTab === 'tous') return;
+    ['feed-container-offres','feed-container-demandes'].forEach(id => {
+      document.querySelectorAll(`#${id} [data-categorie]`).forEach((c: any) => {
+        c.style.display = c.dataset.categorie === activeTab ? '' : 'none';
+      });
+    });
+  }
+
+  private loadAnnonces(): void {
+    this.loadOffres();
+    this.loadDemandes();
   }
 
   private buildCard(a: any): HTMLElement {
@@ -701,7 +901,10 @@ export class FeedComponent implements AfterViewInit {
     const city = a.city?.name_fr || '';
     const skill = a.skills?.[0]?.name_fr || '';
     const isOffre = a.category?.id === 2 || a.category?.name_fr?.toLowerCase().includes('offre');
-    const desc = (a.description || '').replace(/\r\n|\r|\n/g, ' ').trim().slice(0, 200);
+    const descFull = (a.description || '').replace(/\r\n|\r|\n/g, ' ').trim();
+    const descShort = descFull.slice(0, 120);
+    const hasMore = descFull.length > 120;
+    const desc = descShort;
     const msgs = a.messages_sent || 0;
     const budget = a.a_convenir ? 'À convenir' : (a.budget_min && a.budget_max ? `${a.budget_min} – ${a.budget_max} €` : (a.budget_min ? `${a.budget_min} €` : 'À convenir'));
     const timeAgo = this.timeAgo(a.created_at);
@@ -732,6 +935,23 @@ export class FeedComponent implements AfterViewInit {
 
     const wrapper = document.createElement('div');
 
+    const locationHtml = city ? `
+      <div class="fc-location-pill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${city}
+      </div>` : '';
+
+    const descHtml = `
+      <div class="fc-desc-block">
+        <p class="fc-desc">${desc}${hasMore ? '<span class="fc-desc-dots"> …</span>' : ''}</p>
+        ${hasMore ? `<button class="fc-read-more" onclick="
+          var p=this.previousElementSibling;
+          p.classList.add('expanded');
+          p.innerHTML='${descFull.replace(/'/g,"&#39;").replace(/"/g,"&quot;")}';
+          this.remove()
+        ">Lire la suite →</button>` : ''}
+      </div>`;
+
     if (isOffre) {
       wrapper.innerHTML = `
         <div class="fc-card fc-card-offre" data-categorie="${categorie}">
@@ -745,65 +965,206 @@ export class FeedComponent implements AfterViewInit {
           <div class="fc-user-row">
             <div class="fc-avatar-wrap">
               ${avatarHtml}
-              <span class="fc-verif-dot ${isVerif ? 'verified' : 'part'}" title="${isVerif ? 'Vérifié' : 'Particulier'}"></span>
+              <span class="fc-verif-dot ${isVerif ? 'verified' : 'part'}"></span>
             </div>
             <div class="fc-user-info">
               <div class="fc-username">${username}</div>
-              ${skill ? `<div class="fc-metier">${skill}</div>` : ''}
-              ${city ? `<div class="fc-city"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${city}</div>` : ''}
+              <div class="fc-user-meta">
+                ${skill ? `<span class="fc-metier-tag">${skill}</span>` : ''}
+                ${locationHtml}
+              </div>
             </div>
             ${isVerif ? `<span class="fc-pro-badge">Pro ✓</span>` : ''}
           </div>
           ${imgGrid}
-          <p class="fc-desc">${desc}</p>
+          ${descHtml}
           <div class="fc-footer-offre">
             <button class="fc-btn-primary btn-contacter" data-name="${username}" data-sub="${skill ? skill + ' · ' + city : city}" data-color="${color}" data-init="${initials}" data-slug="${profileSlug}">💬 Contacter</button>
-            <button class="${likeClass}" data-card="${cardData}" data-slug="${profileSlug}" title="${isLiked ? 'Retirer le j\'aime' : 'J\'aimer'}">
+            <button class="${likeClass}" data-card="${cardData}" data-slug="${profileSlug}">
               ${likeIcon} J'aime
             </button>
             <button class="fc-btn-ghost btn-voir-profil" data-slug="${profileSlug}">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              Voir profil
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Profil
             </button>
           </div>
         </div>`;
     } else {
       const repliesHtml = msgs > 0
         ? `<span class="fc-replies-badge has-replies">💬 ${msgs} réponse${msgs > 1 ? 's' : ''}</span>`
-        : `<span class="fc-replies-badge no-replies">Aucune réponse</span>`;
+        : `<span class="fc-replies-badge no-replies">0 réponse</span>`;
       wrapper.innerHTML = `
         <div class="fc-card fc-card-demande" data-categorie="${categorie}">
           <div class="fc-card-top">
             <div class="fc-badges">
-              <span class="fc-badge-demande">🌐 Demande</span>
+              <span class="fc-badge-demande">📋 Demande</span>
               ${skill ? `<span class="fc-badge-skill">${skill}</span>` : ''}
             </div>
             <span class="fc-time">${timeAgo}</span>
           </div>
           <div class="fc-user-row">
-            <div class="fc-avatar-wrap">
-              ${avatarHtml}
-            </div>
+            <div class="fc-avatar-wrap">${avatarHtml}</div>
             <div class="fc-user-info">
               <div class="fc-username">${username}</div>
-              ${city ? `<div class="fc-city"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${city}</div>` : ''}
+              <div class="fc-user-meta">
+                ${locationHtml}
+              </div>
             </div>
             <div class="fc-budget-pill">${budget}</div>
           </div>
           ${imgGrid}
-          <p class="fc-desc">${desc}</p>
+          ${descHtml}
           <div class="fc-footer-demande">
             ${repliesHtml}
             <div class="fc-actions">
-              <button class="${likeClass}" data-card="${cardData}" data-slug="${profileSlug}" title="${isLiked ? 'Retirer le j\'aime' : 'J\'aimer'}">
+              <button class="${likeClass}" data-card="${cardData}" data-slug="${profileSlug}">
                 ${likeIcon} J'aime
               </button>
-              <button class="fc-btn-primary-sm btn-repondre" data-name="${username}" data-color="${color}" data-init="${initials}" data-slug="${profileSlug}" data-summary="${skill ? skill + ' · ' : ''}${city}${budget !== 'À convenir' ? ' · Budget: ' + budget : ''}">Répondre →</button>
+              <button class="fc-btn-primary-sm btn-repondre" data-name="${username}" data-color="${color}" data-init="${initials}" data-slug="${profileSlug}" data-summary="${skill ? skill + ' · ' : ''}${city}${budget !== 'À convenir' ? ' · ' + budget : ''}">Répondre →</button>
             </div>
           </div>
         </div>`;
     }
     return wrapper.firstElementChild as HTMLElement;
+  }
+
+  private renderComments(projectId: number, comments: any[], showAll = false): void {
+    const list = document.getElementById(`fp-comments-list-${projectId}`);
+    const countEl = document.getElementById(`fp-count-${projectId}`);
+    const showMoreBtn = document.getElementById(`fp-show-more-${projectId}`);
+    if (!list) return;
+
+    const total = comments.length;
+    const toShow = showAll ? comments : comments.slice(0, 2);
+
+    list.innerHTML = toShow.map(c => `
+      <div class="fp-comment">
+        <span class="fp-comment-user">${c.user?.username || 'Utilisateur'}</span>
+        <span class="fp-comment-text">${c.content}</span>
+      </div>`).join('');
+
+    if (countEl) countEl.textContent = `${total} commentaire${total > 1 ? 's' : ''}`;
+    if (showMoreBtn) {
+      if (!showAll && total > 2) {
+        showMoreBtn.style.display = 'block';
+        showMoreBtn.textContent = `Voir les ${total - 2} autres commentaires`;
+        showMoreBtn.dataset['comments'] = JSON.stringify(comments);
+      } else {
+        showMoreBtn.style.display = 'none';
+      }
+    }
+  }
+
+  private loadProjectComments(projectId: number): void {
+    this.http.get<any[]>(`${environment.apiUrl}/v1/projects/${projectId}/comments/`).subscribe({
+      next: (comments) => this.renderComments(projectId, comments)
+    });
+  }
+
+  private sendProjectComment(projectId: number): void {
+    const input = document.getElementById(`fp-input-${projectId}`) as HTMLInputElement;
+    const content = input?.value?.trim();
+    if (!content) return;
+    const token = this.auth.getAccessToken();
+    if (!token) { this.router.navigate(['/auth/login']); return; }
+
+    // Affichage immédiat
+    const list = document.getElementById(`fp-comments-list-${projectId}`);
+    const countEl = document.getElementById(`fp-count-${projectId}`);
+    const div = document.createElement('div');
+    div.className = 'fp-comment fp-comment-new';
+    const greetingEl = document.getElementById('greeting-text');
+    const username = (greetingEl?.childNodes[0]?.textContent || '').replace(/Bon(jour|soir|après-midi)\s*/i, '').replace('👋', '').trim() || 'Moi';
+    div.innerHTML = `<span class="fp-comment-user">${username || 'Moi'}</span><span class="fp-comment-text">${content}</span>`;
+    if (list) { list.appendChild(div); list.scrollTop = list.scrollHeight; }
+    if (countEl) {
+      const cur = parseInt(countEl.textContent || '0') || 0;
+      const next = cur + 1;
+      countEl.textContent = `${next} commentaire${next > 1 ? 's' : ''}`;
+    }
+    input.value = '';
+
+    // Envoi en arrière-plan
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.post<any>(`${environment.apiUrl}/v1/projects/${projectId}/comments/`, { content }, { headers }).subscribe();
+  }
+
+
+  private loadPortfolio(): void {
+    const container = document.getElementById('feed-container-portfolio');
+    if (!container) return;
+    container.innerHTML = '<div class="feed-portfolio-empty">Chargement…</div>';
+
+    this.http.get<any[]>(`${environment.apiUrl}/v1/projects/`).subscribe({
+      next: (projects) => {
+        if (!projects.length) {
+          container.innerHTML = '<div class="feed-portfolio-empty">Aucun portfolio disponible pour le moment.</div>';
+          return;
+        }
+        container.innerHTML = '';
+        projects.forEach((p: any) => {
+          const img = p.image1 || p.image2 || p.image3 || p.image4;
+          const username = p.created_by?.username || 'Utilisateur';
+          const skill = p.skills?.[0]?.name_fr || '';
+          const color = this.colorFor(username);
+          const initials = username.slice(0, 2).toUpperCase();
+          const slug = p.created_by?.profile?.slug || username;
+
+          const card = document.createElement('div');
+          card.className = 'feed-portfolio-card';
+          card.dataset['projectId'] = p.id;
+          card.innerHTML = `
+            <div class="fp-img-wrap">
+              ${img
+                ? `<img src="${img}" alt="${username}" loading="lazy">`
+                : `<div class="fp-img-placeholder" style="background:${color}">${initials}</div>`
+              }
+              <div class="fp-overlay">
+                <button class="fp-btn btn-voir-profil" data-slug="${slug}">Voir profil →</button>
+              </div>
+            </div>
+            <div class="fp-info">
+              <div class="fp-avatar" style="background:${color}">${initials}</div>
+              <div class="fp-info-text">
+                <div class="fp-username">${username}</div>
+                ${skill ? `<div class="fp-skill">${skill}</div>` : ''}
+              </div>
+              <div class="fp-top-actions">
+                <button class="fp-like-btn" data-project="${p.id}" title="J'aime">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  <span class="fp-like-count" id="fp-likes-${p.id}">0</span>
+                </button>
+              </div>
+            </div>
+            ${p.description ? `<p class="fp-desc">${p.description.slice(0, 80)}…</p>` : ''}
+            <div class="fp-actions-row">
+              <button class="fp-contact-btn fp-btn-contacter" data-slug="${slug}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Contacter
+              </button>
+            </div>
+            <div class="fp-comments-section">
+              <div class="fp-comments-header">
+                <span class="fp-comments-count" id="fp-count-${p.id}">0 commentaire</span>
+              </div>
+              <div class="fp-comments-list" id="fp-comments-list-${p.id}" data-loaded="0" data-total="0" data-showing="2"></div>
+              <button class="fp-show-more" id="fp-show-more-${p.id}" style="display:none" data-project="${p.id}">Voir plus</button>
+              <div class="fp-comment-form">
+                <input class="fp-comment-input" id="fp-input-${p.id}" placeholder="Commenter…" />
+                <button class="fp-comment-send" data-project="${p.id}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+          this.loadProjectComments(p.id);
+        });
+      },
+      error: () => {
+        if (container) container.innerHTML = '<div class="feed-portfolio-empty">Erreur de chargement.</div>';
+      }
+    });
   }
 
   private timeAgo(dateStr: string): string {

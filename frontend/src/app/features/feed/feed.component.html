@@ -22,6 +22,10 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="12" y1="11" x2="12" y2="17"/></svg>
         Demandes
       </button>
+      <button class="feed-toggle-pill" id="pill-portfolio" onclick="setFeedSection('portfolio')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Portfolio
+      </button>
     </div>
   </div>
 
@@ -38,24 +42,75 @@
       <span class="feed-section-dot offre-dot"></span>Offres de service
     </div>
     <div class="feed-cards" id="feed-container-offres"></div>
+    <div class="feed-load-wrap">
+      <button class="feed-load-btn" id="btn-load-more-offres" onclick="loadMoreOffres()">
+        Charger plus d'offres
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
   </div>
   <div class="feed-section" id="feed-section-demandes">
     <div class="feed-section-label">
       <span class="feed-section-dot demande-dot"></span>Demandes de prestation
     </div>
     <div class="feed-cards" id="feed-container-demandes"></div>
+    <div class="feed-load-wrap">
+      <button class="feed-load-btn" id="btn-load-more-demandes" onclick="loadMoreDemandes()">
+        Charger plus de demandes
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="feed-section" id="feed-section-portfolio">
+    <div class="feed-section-label" style="justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="feed-section-dot portfolio-dot"></span>Portfolios
+      </div>
+      <button class="portfolio-add-btn" onclick="openPortfolioModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter
+      </button>
+    </div>
+    <div class="feed-portfolio-grid" id="feed-container-portfolio">
+      <div class="feed-portfolio-empty">Aucun portfolio disponible pour le moment.</div>
+    </div>
   </div>
   <!-- Conteneur legacy pour compatibilité -->
   <div id="feed-container" style="display:none"></div>
 
-  <!-- LOAD MORE -->
-  <div class="feed-load-wrap">
-    <button class="feed-load-btn" id="btn-load-more" onclick="loadMore()">
-      Charger plus d'annonces
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-  </div>
 
+</div>
+
+<!-- ===== LIGHTBOX IMAGE ===== -->
+<div class="img-lightbox-overlay" id="img-lightbox" onclick="closeImgLightbox()" style="display:none">
+  <button class="img-lightbox-close" onclick="closeImgLightbox()">✕</button>
+  <img class="img-lightbox-img" id="img-lightbox-img" src="" alt="">
+</div>
+
+<!-- ===== MODAL PORTFOLIO ===== -->
+<div class="pu-overlay" id="portfolio-overlay" onclick="closePortfolioModal()"></div>
+<div class="pu-modal" id="portfolio-modal">
+  <div class="pu-modal-handle"></div>
+  <div class="pu-header">
+    <span class="pu-title">Ajouter un portfolio</span>
+    <button class="pu-close" onclick="closePortfolioModal()">✕</button>
+  </div>
+  <div class="pu-body">
+    <div class="pu-field">
+      <label class="pu-label">Description</label>
+      <textarea class="pu-textarea" id="portfolio-desc" placeholder="Décrivez votre réalisation…" rows="4"></textarea>
+    </div>
+    <div class="pu-field">
+      <label class="pu-label">Photo principale</label>
+      <div class="pu-upload-zone" onclick="document.getElementById('portfolio-file').click()" id="portfolio-zone">
+        <input type="file" id="portfolio-file" accept="image/*" style="display:none" onchange="previewPortfolioImg(this)">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span style="font-size:.78rem;color:#94A3B8;margin-top:6px">Cliquez pour ajouter une photo</span>
+      </div>
+    </div>
+    <div id="portfolio-error" style="color:#EF4444;font-size:.8rem;margin-bottom:8px;display:none"></div>
+    <button class="pu-btn-primary pu-btn-orange" id="portfolio-submit-btn" onclick="submitPortfolio()">Publier mon portfolio</button>
+  </div>
 </div>
 
 <!-- ===== OVERLAY ===== -->
