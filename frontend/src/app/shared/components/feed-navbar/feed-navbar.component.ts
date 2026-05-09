@@ -83,6 +83,9 @@ import { filter } from 'rxjs/operators';
     }
     .notif-show-more:hover { filter:brightness(1.08); }
 
+    /* Cloche mobile : cachée par défaut (desktop) */
+    .mobile-notif-wrap { display: none; }
+
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
     @media (max-width: 900px) {
       .navbar { height: 52px; border-bottom: 1px solid var(--border); }
@@ -100,6 +103,29 @@ import { filter } from 'rxjs/operators';
         display: flex; align-items: center; gap: 3px;
       }
       .navbar-inner { justify-content: space-between; padding: 0 16px; align-items: center; }
+      /* Cloche notif visible sur mobile */
+      .mobile-notif-wrap { display: flex; align-items: center; margin-left: auto; }
+      .mobile-notif-btn {
+        display: flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border-radius: 10px;
+        border: 1.5px solid var(--border); background: #fff;
+        color: var(--gris); cursor: pointer; position: relative;
+        flex-shrink: 0;
+      }
+      .mobile-notif-btn svg { width: 18px; height: 18px; }
+      .mobile-notif-badge {
+        position: absolute; top: 4px; right: 4px;
+        min-width: 15px; height: 15px;
+        background: var(--orange); color: #fff;
+        border-radius: 50px; font-size: .55rem; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        padding: 0 3px; border: 2px solid #fff;
+      }
+      /* Notif panel mobile pleine largeur */
+      .mobile-notif-wrap { position: relative; }
+      .mobile-notif-wrap .notif-panel {
+        position: fixed; top: 58px; left: 8px; right: 8px; width: auto;
+      }
 
       /* Barre du bas */
       .mobile-nav {
@@ -202,6 +228,47 @@ import { filter } from 'rxjs/operators';
             {{ ville() || 'Ma position' }}
           </span>
         </button>
+
+        <!-- Cloche notif mobile (cachée sur desktop) -->
+        <div class="mobile-notif-wrap">
+          <button class="mobile-notif-btn" (click)="toggleNotif()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            @if (notifCount() > 0) { <span class="mobile-notif-badge">{{ notifCount() }}</span> }
+          </button>
+          @if (notifOpen()) {
+            <div class="notif-panel">
+              <div class="notif-panel-head">
+                <span class="notif-panel-title">Notifications</span>
+                @if (notifCount() > 0) {
+                  <button class="notif-read-all" (click)="markAllRead()">Tout marquer lu</button>
+                }
+              </div>
+              @if (notifications().length === 0) {
+                <div class="notif-empty">🔔 Aucune notification</div>
+              }
+              <div class="notif-list">
+                @for (n of notifications().slice(0, notifShowAll() ? 999 : 3); track n.id) {
+                  <div class="notif-item" [class.unread]="!n.is_read">
+                    <div class="notif-icon-wrap" [class]="'notif-icon-' + n.type">
+                      <span>{{ notifIcon(n.type) }}</span>
+                    </div>
+                    <div class="notif-body">
+                      <div class="notif-title">{{ n.title }}</div>
+                      <div class="notif-desc">{{ n.description }}</div>
+                      <div class="notif-time">{{ timeAgoNotif(n.created_at) }}</div>
+                    </div>
+                  </div>
+                }
+              </div>
+              @if (notifications().length > 3 && !notifShowAll()) {
+                <button class="notif-show-more" (click)="notifShowAll.set(true)">
+                  Voir {{ notifications().length - 3 }} autres →
+                </button>
+              }
+            </div>
+            <div class="notif-backdrop" (click)="notifOpen.set(false)"></div>
+          }
+        </div>
 
         <!-- Tabs desktop -->
         <div class="nav-tabs">
