@@ -91,12 +91,17 @@ section { padding: 76px 48px; overflow: hidden; }
 
 @media (max-width: 600px) {
   .navbar {
-    padding: 0 14px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 0 16px;
     height: 56px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 0;
+    z-index: 9999;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
   .navbar .logo { flex: 0 0 auto; }
   .logo-bricole, .logo-up { font-size: 1.2rem; }
@@ -104,6 +109,8 @@ section { padding: 76px 48px; overflow: hidden; }
   .nav-actions { gap: 6px; margin-left: auto; }
   .nav-btn-login { padding: 5px 11px; font-size: .72rem; }
   .nav-btn-register { padding: 5px 11px; font-size: .72rem; }
+  /* Espace pour que le contenu ne soit pas caché sous la navbar fixe */
+  body { padding-top: 56px; }
 }
 @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 
