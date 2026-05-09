@@ -498,8 +498,22 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     return `${base}${url}`;
   }
 
+  private msgCache = new Map<string, Msg[]>();
+
   private loadConversations(): void {
     this.loadingConvs.set(true);
+
+    // Affichage immédiat depuis cache localStorage
+    const cached = localStorage.getItem('bu_convs');
+    if (cached) {
+      try {
+        const mapped = JSON.parse(cached) as Conv[];
+        this.convs.set(mapped);
+        this.filteredConvs.set(mapped);
+        this.loadingConvs.set(false);
+      } catch {}
+    }
+
     this.http.get<any[]>(`${environment.apiUrl}/conversations/`, { headers: this.headers }).subscribe({
       next: (data) => {
         const list = Array.isArray(data) ? data : [];
@@ -519,12 +533,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.convs.set(mapped);
         this.filteredConvs.set(mapped);
         this.loadingConvs.set(false);
-        if (mapped.length > 0) this.openConv(mapped[0]);
+        localStorage.setItem('bu_convs', JSON.stringify(mapped));
+        if (mapped.length > 0 && !this.activeConv()) this.openConv(mapped[0]);
       },
-      error: (err) => {
-        this.loadingConvs.set(false);
-        this.msgError.set('Impossible de charger les conversations.');
-      },
+      error: () => { this.loadingConvs.set(false); },
     });
   }
 
@@ -534,9 +546,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     c.unread = 0;
     this.convs.update(l => [...l]);
     this.filteredConvs.update(l => [...l]);
-    this.loadingMsgs.set(true);
     this.msgError.set('');
-    this.activeMessages.set([]);
+
+    // Affichage immédiat depuis cache mémoire
+    if (this.msgCache.has(c.slug)) {
+      this.activeMessages.set(this.msgCache.get(c.slug)!);
+      this.needsScroll = true;
+      this.loadingMsgs.set(false);
+    } else {
+      this.loadingMsgs.set(true);
+      this.activeMessages.set([]);
+    }
 
     const myId = this.getMyId();
 
@@ -549,23 +569,19 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           time: this.toTime(m.timestamp),
           timestamp: m.timestamp,
         }));
+        this.msgCache.set(c.slug, msgs);
         this.activeMessages.set(msgs);
         this.loadingMsgs.set(false);
         this.needsScroll = true;
-        // Mettre à jour nom/avatar depuis recipient
         if (res.recipient) {
           c.name   = res.recipient.username || c.name;
           c.init   = c.name.slice(0, 2).toUpperCase();
           c.avatar = this.resolveAvatar(res.recipient.avatar);
           this.activeConv.set({ ...c });
         }
-        // WebSocket
         try { this.ws.disconnect(); this.ws.connect(c.id); } catch {}
       },
-      error: (err) => {
-        this.loadingMsgs.set(false);
-        this.msgError.set('Impossible de charger les messages.');
-      },
+      error: () => { this.loadingMsgs.set(false); },
     });
   }
 
@@ -600,6 +616,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     const now = new Date().toISOString();
     const newMsg: Msg = { id: tempId, body, mine: true, time: this.toTime(now), timestamp: now };
     this.activeMessages.update(l => [...l, newMsg]);
+    this.msgCache.set(conv.slug, this.activeMessages());
     this.inputText = '';
     this.needsScroll = true;
     conv.lastMsg = body;

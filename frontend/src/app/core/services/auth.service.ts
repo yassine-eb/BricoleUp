@@ -59,6 +59,12 @@ export class AuthService {
     return localStorage.getItem(this.REFRESH_KEY);
   }
 
+  setTokens(access: string, refresh: string, user?: User): void {
+    localStorage.setItem(this.ACCESS_KEY, access);
+    if (refresh) localStorage.setItem(this.REFRESH_KEY, refresh);
+    if (user) { localStorage.setItem('bricoleup_user', JSON.stringify(user)); this._currentUser.set(user); }
+  }
+
   updateCurrentUser(user: User): void {
     this._currentUser.set(user);
     localStorage.setItem('bricoleup_user', JSON.stringify(user));

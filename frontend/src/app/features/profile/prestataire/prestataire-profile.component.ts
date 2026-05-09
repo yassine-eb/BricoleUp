@@ -172,6 +172,63 @@ import { environment } from '../../../../environments/environment';
     .pp-loading { text-align: center; padding: 80px 24px; color: var(--gris); font-size: 1rem; }
     .pp-error { text-align: center; padding: 80px 24px; color: var(--rouge); }
 
+    /* LIGHTBOX AVATAR */
+    .avatar-lightbox-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.85);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn .2s ease;
+    }
+    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+    .avatar-lightbox-content {
+      position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .avatar-lightbox-close {
+      position: absolute; top: -44px; right: -10px;
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      width: 36px; height: 36px; border-radius: 50%; font-size: 16px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .avatar-lightbox-close:hover { background: rgba(255,255,255,.3); }
+    .avatar-lightbox-img {
+      width: min(85vw, 420px); height: min(85vw, 420px);
+      border-radius: 50%; object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 0 8px 48px rgba(0,0,0,.5);
+      animation: scaleIn .25s ease;
+    }
+    @keyframes scaleIn { from { transform: scale(.85); opacity:0 } to { transform: scale(1); opacity:1 } }
+    .avatar-lightbox-name {
+      color: #fff; font-family: 'Poppins', sans-serif;
+      font-weight: 700; font-size: 1.1rem; text-align: center;
+    }
+
+    /* Lightbox images portfolio */
+    .portfolio-item img { cursor: zoom-in; }
+    .img-lb-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.92);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; cursor: zoom-out;
+      animation: ppFadeIn .2s ease;
+    }
+    @keyframes ppFadeIn { from { opacity:0 } to { opacity:1 } }
+    .img-lb-img {
+      max-width: 95vw; max-height: 90vh; object-fit: contain;
+      border-radius: 12px; box-shadow: 0 8px 48px rgba(0,0,0,.6);
+      animation: ppScale .25s ease; cursor: default;
+    }
+    @keyframes ppScale { from { transform:scale(.9);opacity:0 } to { transform:scale(1);opacity:1 } }
+    .img-lb-close {
+      position: fixed; top: 16px; right: 16px;
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      width: 40px; height: 40px; border-radius: 50%; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      z-index: 1; transition: background .2s;
+    }
+    .img-lb-close:hover { background: rgba(255,255,255,.3); }
+
     @media(max-width:768px) {
       .stats-grid { grid-template-columns: repeat(2,1fr); gap:8px; }
       .profile-header { flex-direction: column; align-items:center; text-align:center; }
@@ -209,17 +266,28 @@ import { environment } from '../../../../environments/environment';
             <div class="banner-circle c4"></div>
           </div>
           <div class="pp-section">
-            <div class="profile-avatar-wrap">
+            <div class="profile-avatar-wrap" (click)="avatarUrl() && openAvatarLightbox()">
               <div class="profile-avatar" [style.background]="avatarBg()">
                 @if (avatarUrl()) {
                   <img [src]="avatarUrl()" alt="avatar">
                 } @else {
                   {{ initials() }}
                 }
-                <div class="avatar-overlay">📷</div>
+                <div class="avatar-overlay">🔍</div>
               </div>
               <div class="online-dot"></div>
             </div>
+
+            <!-- LIGHTBOX AVATAR -->
+            @if (avatarLightboxOpen()) {
+              <div class="avatar-lightbox-overlay" (click)="avatarLightboxOpen.set(false)">
+                <div class="avatar-lightbox-content" (click)="$event.stopPropagation()">
+                  <button class="avatar-lightbox-close" (click)="avatarLightboxOpen.set(false)">✕</button>
+                  <img [src]="avatarUrl()" alt="Photo de profil" class="avatar-lightbox-img">
+                  <div class="avatar-lightbox-name">{{ prenom() }} {{ nom() }}</div>
+                </div>
+              </div>
+            }
           </div>
         </div>
 
@@ -261,8 +329,8 @@ import { environment } from '../../../../environments/environment';
             </div>
             <div class="profile-right">
               <button class="pp-btn pp-btn-contact" (click)="contact()">💬 Contacter</button>
-              <button class="pp-btn pp-btn-fav" [class.active]="isFav()" (click)="toggleFav()">
-                {{ isFav() ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' }}
+              <button class="pp-btn pp-btn-fav" id="pp-fav-btn" (click)="toggleFav($event)">
+                <span id="pp-fav-text">{{ isFav() ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' }}</span>
               </button>
             </div>
           </div>
@@ -523,6 +591,15 @@ import { environment } from '../../../../environments/environment';
         </div>
 
       }
+
+      <!-- LIGHTBOX IMAGE PORTFOLIO -->
+      @if (imgLightboxOpen()) {
+        <div class="img-lb-overlay" (click)="closeImgLightbox()">
+          <button class="img-lb-close" (click)="closeImgLightbox()">✕</button>
+          <img [src]="imgLightboxSrc()" class="img-lb-img" (click)="$event.stopPropagation()">
+        </div>
+      }
+
     </div>
   `,
 })
@@ -556,8 +633,15 @@ export class PrestataireProfileComponent implements OnInit, AfterViewInit {
   isFav       = signal(false);
   profileSlug = signal('');
 
-  lightboxOpen  = signal(false);
-  lightboxIndex = signal(0);
+  lightboxOpen      = signal(false);
+  lightboxIndex     = signal(0);
+  avatarLightboxOpen  = signal(false);
+  imgLightboxOpen     = signal(false);
+  imgLightboxSrc      = signal('');
+
+  openAvatarLightbox(): void { this.avatarLightboxOpen.set(true); }
+  openImgLightbox(src: string): void { this.imgLightboxSrc.set(src); this.imgLightboxOpen.set(true); }
+  closeImgLightbox(): void { this.imgLightboxOpen.set(false); }
 
   initials = signal('?');
 
@@ -583,6 +667,13 @@ export class PrestataireProfileComponent implements OnInit, AfterViewInit {
   ];
 
   ngOnInit(): void {
+    // Lightbox images portfolio
+    document.addEventListener('click', (e: Event) => {
+      const img = (e.target as HTMLElement).closest<HTMLImageElement>('.portfolio-item img, .avis-card img');
+      if (!img?.src) return;
+      this.openImgLightbox(img.src);
+    });
+
     const id = this.route.snapshot.paramMap.get('id') || '';
     this.profileSlug.set(id);
     const token = this.auth.getAccessToken();
@@ -669,11 +760,29 @@ export class PrestataireProfileComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/messages'], { queryParams: { slug: this.profileSlug() } });
   }
 
-  toggleFav(): void {
+  toggleFav(e: Event): void {
     if (!this.auth.getAccessToken()) { this.router.navigate(['/auth/login']); return; }
-    const headers = new HttpHeaders({ Authorization: `Bearer ${this.auth.getAccessToken()}` });
-    this.http.post(`${environment.apiUrl}/v1/favorites/${this.profileSlug()}/favorite/`, {}, { headers }).subscribe({
-      next: () => this.isFav.update(v => !v),
+
+    // UI instantanée via JS pur — pas d'attente Angular
+    const btn = e.currentTarget as HTMLElement;
+    const textEl = btn.querySelector('#pp-fav-text') as HTMLElement;
+    const nowFav = !this.isFav();
+    this.isFav.set(nowFav);
+    if (textEl) textEl.textContent = nowFav ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris';
+    btn.classList.toggle('active', nowFav);
+
+    // fetch en arrière-plan
+    const token = this.auth.getAccessToken();
+    fetch(`${environment.apiUrl}/v1/favorites/${this.profileSlug()}/favorite/`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: '{}',
+    }).then(r => r.json()).then((res: any) => {
+      if (typeof res.favorited === 'boolean') this.isFav.set(res.favorited);
+    }).catch(() => {
+      // Annuler si erreur
+      this.isFav.set(!nowFav);
+      if (textEl) textEl.textContent = !nowFav ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris';
     });
   }
 

@@ -52,19 +52,54 @@ import { filter } from 'rxjs/operators';
     .nav-icon-btn { width:38px; height:38px; border-radius:10px; border:1.5px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--gris); transition:all .15s; position:relative; }
     .nav-icon-btn:hover,.nav-icon-btn.active { border-color:var(--bleu); color:var(--bleu); background:var(--bleu-light); }
     .nav-notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--orange); border-radius:50%; border:2px solid #fff; }
+    .nav-notif-badge { position:absolute; top:4px; right:4px; min-width:16px; height:16px; background:var(--orange); color:#fff; border-radius:50px; font-size:.58rem; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid #fff; }
+    .notif-wrap { position:relative; }
+    .notif-backdrop { position:fixed; inset:0; z-index:998; }
+    .notif-panel { position:absolute; top:calc(100% + 10px); right:0; width:320px; background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(15,23,42,.15); border:1px solid var(--border); z-index:999; overflow:hidden; max-height:420px; display:flex; flex-direction:column; }
+    .notif-panel-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 10px; border-bottom:1px solid var(--border); flex-shrink:0; }
+    .notif-panel-title { font-family:'Poppins',sans-serif; font-weight:700; font-size:.95rem; color:var(--texte); }
+    .notif-read-all { background:none; border:none; color:var(--orange); font-size:.78rem; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; }
+    .notif-read-all:hover { text-decoration:underline; }
+    .notif-empty { padding:36px 16px; text-align:center; color:var(--gris); font-size:.86rem; }
+    .notif-list { overflow-y:auto; max-height:320px; }
+    .notif-item { display:flex; gap:12px; padding:12px 16px; border-bottom:1px solid #F1F5F9; transition:background .15s; cursor:default; align-items:flex-start; }
+    .notif-item.unread { background:linear-gradient(90deg,#FFF7ED 0%,#fff 100%); border-left:3px solid var(--orange); }
+    .notif-item:hover { background:#F8FAFC; }
+    .notif-icon-wrap { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .notif-icon-message { background:#EFF6FF; }
+    .notif-icon-comment { background:#F0FDF4; }
+    .notif-icon-like    { background:#FFF1F2; }
+    .notif-icon-review  { background:#FFFBEB; }
+    .notif-icon-welcome { background:#F5F3FF; }
+    .notif-body { flex:1; min-width:0; }
+    .notif-title { font-weight:700; font-size:.82rem; color:var(--texte); }
+    .notif-desc { font-size:.75rem; color:var(--gris); margin-top:2px; line-height:1.4; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+    .notif-time { font-size:.67rem; color:#94A3B8; margin-top:4px; }
+    .notif-show-more {
+      width:100%; padding:12px 16px; border:none; background:linear-gradient(135deg,var(--orange),#e0650f);
+      color:#fff; font-size:.82rem; font-weight:700; cursor:pointer;
+      font-family:'DM Sans',sans-serif; transition:filter .2s;
+      border-radius:0 0 14px 14px;
+    }
+    .notif-show-more:hover { filter:brightness(1.08); }
 
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
-    @media (max-width: 768px) {
-      .navbar { height: 58px; }
+    @media (max-width: 900px) {
+      .navbar { height: 52px; border-bottom: 1px solid var(--border); }
       .nav-tabs { display: none; }
       .nav-right { display: none; }
       .nav-logo {
-        margin: 0 auto;
-        display: flex; flex-direction: column; align-items: center;
+        margin: 0;
+        display: flex; flex-direction: row; align-items: center; gap: 0;
       }
-      .nav-logo-title { font-size: 1.45rem; letter-spacing: -.03em; }
-      .nav-logo-location { font-size: .7rem; font-weight: 600; color: var(--gris); margin-top: 1px; }
-      .navbar-inner { justify-content: center; padding: 0 16px; position: relative; }
+      .nav-logo-title { font-size: 1.2rem; letter-spacing: -.03em; }
+      .nav-logo-location {
+        font-size: .71rem; font-weight: 600; color: var(--gris);
+        background: var(--gris-light); border: 1px solid var(--border);
+        border-radius: 50px; padding: 3px 9px; margin-top: 0;
+        display: flex; align-items: center; gap: 3px;
+      }
+      .navbar-inner { justify-content: space-between; padding: 0 16px; align-items: center; }
 
       /* Barre du bas */
       .mobile-nav {
@@ -149,7 +184,7 @@ import { filter } from 'rxjs/operators';
       :host { display: block; margin-bottom: 0; }
     }
 
-    @media (min-width: 769px) {
+    @media (min-width: 901px) {
       .mobile-nav { display: none !important; }
     }
   `],
@@ -200,10 +235,46 @@ import { filter } from 'rxjs/operators';
         </div>
 
         <div class="nav-right">
-          <button class="nav-icon-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span class="nav-notif-dot"></span>
-          </button>
+          <!-- Cloche notifications -->
+          <div class="notif-wrap">
+            <button class="nav-icon-btn" (click)="toggleNotif()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              @if (notifCount() > 0) { <span class="nav-notif-badge">{{ notifCount() }}</span> }
+            </button>
+            @if (notifOpen()) {
+              <div class="notif-panel">
+                <div class="notif-panel-head">
+                  <span class="notif-panel-title">Notifications</span>
+                  @if (notifCount() > 0) {
+                    <button class="notif-read-all" (click)="markAllRead()">Tout marquer lu</button>
+                  }
+                </div>
+                @if (notifications().length === 0) {
+                  <div class="notif-empty">🔔 Aucune notification</div>
+                }
+                <div class="notif-list">
+                  @for (n of notifications().slice(0, notifShowAll() ? 999 : 3); track n.id) {
+                    <div class="notif-item" [class.unread]="!n.is_read">
+                      <div class="notif-icon-wrap" [class]="'notif-icon-' + n.type">
+                        <span>{{ notifIcon(n.type) }}</span>
+                      </div>
+                      <div class="notif-body">
+                        <div class="notif-title">{{ n.title }}</div>
+                        <div class="notif-desc">{{ n.description }}</div>
+                        <div class="notif-time">{{ timeAgoNotif(n.created_at) }}</div>
+                      </div>
+                    </div>
+                  }
+                </div>
+                @if (notifications().length > 3 && !notifShowAll()) {
+                  <button class="notif-show-more" (click)="notifShowAll.set(true)">
+                    Voir {{ notifications().length - 3 }} autres notifications →
+                  </button>
+                }
+              </div>
+              <div class="notif-backdrop" (click)="notifOpen.set(false)"></div>
+            }
+          </div>
           <button class="nav-icon-btn" [class.active]="activeTab()==='messages'" (click)="navigate('/messages', 'messages')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             @if (unreadCount() > 0) { <span class="nav-notif-dot"></span> }
@@ -253,9 +324,15 @@ export class FeedNavbarComponent implements OnInit {
   scrolled        = signal(false);
   ville           = signal('');
   avatarInitials  = signal('?');
-  activeTab       = signal('accueil');
-  favCount        = signal(0);
-  unreadCount     = signal(0);
+  activeTab        = signal('accueil');
+  favCount         = signal(0);
+  unreadCount      = signal(0);
+  notifCount       = signal(0);
+  notifications    = signal<any[]>([]);
+  notifOpen        = signal(false);
+  notifShowAll     = signal(false);
+
+  private notifInterval: any = null;
 
   ngOnInit(): void {
     window.addEventListener('scroll', () => this.scrolled.set(window.scrollY > 10));
@@ -278,6 +355,8 @@ export class FeedNavbarComponent implements OnInit {
     this.loadUser();
     this.loadFavCount();
     this.loadUnreadCount();
+    this.loadNotifications();
+    this.notifInterval = setInterval(() => this.loadNotifications(), 30000);
 
     window.addEventListener('bu:favcount', (e: any) => this.favCount.set(e.detail ?? 0));
   }
@@ -313,6 +392,50 @@ export class FeedNavbarComponent implements OnInit {
         if (prenom) this.avatarInitials.set(prenom.slice(0, 2).toUpperCase());
       },
     });
+  }
+
+  private loadNotifications(): void {
+    const token = this.auth.getAccessToken();
+    if (!token) return;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get<any>(`${environment.apiUrl}/v1/notifications/`, { headers }).subscribe({
+      next: (res) => {
+        this.notifications.set(res.results || []);
+        this.notifCount.set(res.unread_count || 0);
+      },
+      error: () => {},
+    });
+  }
+
+  toggleNotif(): void {
+    const opening = !this.notifOpen();
+    this.notifOpen.set(opening);
+    if (opening) { this.notifShowAll.set(false); this.loadNotifications(); }
+  }
+
+  markAllRead(): void {
+    const token = this.auth.getAccessToken();
+    if (!token) return;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.post<any>(`${environment.apiUrl}/v1/notifications/read-all/`, {}, { headers }).subscribe({
+      next: () => {
+        this.notifCount.set(0);
+        this.notifications.update(list => list.map(n => ({ ...n, is_read: true })));
+      }
+    });
+  }
+
+  notifIcon(type: string): string {
+    const icons: any = { message: '💬', comment: '🗨️', like: '❤️', review: '⭐', welcome: '👋' };
+    return icons[type] || '🔔';
+  }
+
+  timeAgoNotif(dateStr: string): string {
+    const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+    if (diff < 60) return 'à l\'instant';
+    if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
+    return `il y a ${Math.floor(diff / 86400)}j`;
   }
 
   private loadUnreadCount(): void {
