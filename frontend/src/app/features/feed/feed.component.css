@@ -2154,6 +2154,23 @@ body {
   .nav-tab { padding: 6px 8px; min-width: 42px; }
   .nav-right { gap: 6px; }
   .form-row-2col { flex-direction: column; }
+
+  /* Portfolio mobile : 1 colonne pleine largeur */
+  .feed-portfolio-grid {
+    grid-template-columns: 1fr;
+    padding: 0 4px;
+    gap: 12px;
+  }
+  .feed-portfolio-card { border-radius: 12px; }
+  .fp-img-wrap { aspect-ratio: 16/9; }
+  .fp-info { padding: 10px 12px 6px; gap: 10px; }
+  .fp-avatar { width: 32px; height: 32px; font-size: .72rem; }
+  .fp-username { font-size: .88rem; }
+  .fp-skill { font-size: .75rem; }
+  .fp-desc { font-size: .82rem; padding: 0 12px 10px; }
+  .fp-contact-btn { padding: 10px 14px; font-size: .85rem; }
+  .fp-comment-input { font-size: .82rem; }
+  .fp-like-btn, .fp-fav-btn { height: 30px; padding: 0 10px; font-size: .74rem; }
 }
 
 /* ===== UTILITY ===== */
