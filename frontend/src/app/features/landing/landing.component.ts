@@ -185,19 +185,55 @@ export class LandingComponent implements OnInit, AfterViewInit {
       modalActif = null;
     };
 
+    // Toast notification instantané
+    const showToast = (msg: string, type: 'success'|'error' = 'success') => {
+      const t = document.createElement('div');
+      t.style.cssText = `
+        position:fixed;top:20px;left:50%;transform:translateX(-50%);
+        background:${type==='success'?'#22C55E':'#EF4444'};color:#fff;
+        padding:12px 24px;border-radius:50px;font-weight:700;font-size:.88rem;
+        font-family:"DM Sans",sans-serif;z-index:99999;
+        box-shadow:0 4px 20px rgba(0,0,0,.2);
+        animation:toastIn .25s ease;
+      `;
+      t.textContent = (type==='success'?'✓ ':'✕ ') + msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    };
+
     const showError = (id: string, msg: string) => {
       let el = document.getElementById(id);
       if (!el) {
-        el = document.createElement('p');
+        el = document.createElement('div');
         el.id = id;
-        el.style.cssText = 'color:#EF4444;font-size:0.85rem;margin-top:8px;text-align:center;';
+        el.style.cssText = 'background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:10px 14px;color:#B91C1C;font-size:.84rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;';
       }
-      el.textContent = msg;
+      el.innerHTML = '⚠️ ' + msg;
       const modal = document.querySelector('.modal.actif');
-      modal?.querySelector('.modal-submit')?.before(el);
+      const form = modal?.querySelector('form');
+      if (form && !document.getElementById(id)) form.prepend(el);
     };
 
     const clearError = (id: string) => document.getElementById(id)?.remove();
+
+    // Bouton avec état de chargement instantané
+    const setBtnLoading = (btn: HTMLButtonElement, loading: boolean, text: string) => {
+      btn.disabled = loading;
+      btn.style.opacity = loading ? '0.7' : '1';
+      btn.textContent = loading ? '⏳ ' + text + '…' : text;
+    };
+
+    // Helper fetch AJAX pur
+    const ajaxPost = async (url: string, data: any): Promise<any> => {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) throw json;
+      return json;
+    };
 
     document.querySelectorAll('.js-open-register').forEach((t) =>
       t.addEventListener('click', (e) => { e.preventDefault(); ouvrirModal('modal-a'); })
@@ -230,36 +266,33 @@ export class LandingComponent implements OnInit, AfterViewInit {
     // ===== CONNEXION (modal-b) =====
     const formLogin = document.querySelector('#modal-b .auth-form') as HTMLFormElement;
     if (formLogin) {
-      formLogin.addEventListener('submit', (e) => {
+      formLogin.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearError('login-error');
-        const email = (formLogin.querySelector('input[type="email"]') as HTMLInputElement)?.value.trim();
+        const email    = (formLogin.querySelector('input[type="email"]') as HTMLInputElement)?.value.trim();
         const password = (formLogin.querySelector('input[type="password"]') as HTMLInputElement)?.value;
-        const btn = formLogin.querySelector('.modal-submit') as HTMLButtonElement;
-        btn.textContent = 'Connexion…';
-        btn.disabled = true;
-
-        this.auth.login({ email, password }).subscribe({
-          next: (res: any) => {
-            btn.textContent = 'Connexion';
-            btn.disabled = false;
-            fermerModal();
+        const btn      = formLogin.querySelector('.modal-submit') as HTMLButtonElement;
+        setBtnLoading(btn, true, 'Connexion');
+        try {
+          const res = await ajaxPost(`${environment.apiUrl}/v1/auth/login/`, { email, password });
+          this.auth.setTokens(res.access, res.refresh);
+          setBtnLoading(btn, false, 'Connexion');
+          showToast('Bienvenue ! Connexion réussie 👋');
+          fermerModal();
+          setTimeout(() => {
             if (res.admin) { this.router.navigate(['/admin']); return; }
-            const redirect = res.redirect === 'dashboard' ? '/dashboard' : '/annonces';
-            this.router.navigate([redirect]);
-          },
-          error: (err: any) => {
-            btn.textContent = 'Connexion';
-            btn.disabled = false;
-            const code = err?.error?.code;
-            if (code === 'not_found') {
-              showError('login-error', 'Aucun compte trouvé.');
-              setTimeout(() => { fermerModal(); ouvrirModal('modal-a'); }, 1500);
-            } else {
-              showError('login-error', err?.error?.error || 'Mot de passe incorrect.');
-            }
-          },
-        });
+            this.router.navigate([res.redirect === 'dashboard' ? '/dashboard' : '/annonces']);
+          }, 600);
+        } catch (err: any) {
+          setBtnLoading(btn, false, 'Connexion');
+          const code = err?.code;
+          if (code === 'not_found') {
+            showError('login-error', 'Aucun compte trouvé avec cet email.');
+            setTimeout(() => { fermerModal(); ouvrirModal('modal-a'); }, 1800);
+          } else {
+            showError('login-error', err?.error || 'Email ou mot de passe incorrect.');
+          }
+        }
       });
     }
 
@@ -279,112 +312,156 @@ export class LandingComponent implements OnInit, AfterViewInit {
       ).subscribe();
     };
 
+    // ===== STEPPER MODAL-D PARTICULIER =====
+    (window as any).dNextStep = () => {
+      const prenom = (document.getElementById('d-prenom') as HTMLInputElement)?.value?.trim();
+      const email  = (document.getElementById('d-email') as HTMLInputElement)?.value?.trim();
+      const pwd    = (document.getElementById('d-password') as HTMLInputElement)?.value;
+      if (!prenom || !email || !pwd) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return;
+      }
+      document.getElementById('d-step-1')!.style.display = 'none';
+      document.getElementById('d-step-2')!.style.display = 'block';
+      document.getElementById('d-step-text')!.textContent = 'Étape 2/2 — Informations';
+      document.getElementById('d-rsm-1')!.classList.remove('active');
+      document.getElementById('d-rsm-1')!.classList.add('done');
+      document.getElementById('d-rsm-1')!.textContent = '✓';
+      document.getElementById('d-rsm-2')!.classList.add('active');
+    };
+    (window as any).dPrevStep = () => {
+      document.getElementById('d-step-2')!.style.display = 'none';
+      document.getElementById('d-step-1')!.style.display = 'block';
+      document.getElementById('d-step-text')!.textContent = 'Étape 1/2 — Identité';
+      document.getElementById('d-rsm-2')!.classList.remove('active');
+      document.getElementById('d-rsm-1')!.classList.add('active');
+      document.getElementById('d-rsm-1')!.classList.remove('done');
+      document.getElementById('d-rsm-1')!.textContent = '1';
+    };
+
+    // ===== STEPPER MODAL-E AUTO-ENTREPRENEUR =====
+    (window as any).eNextStep = () => {
+      const prenom = (document.getElementById('e-prenom') as HTMLInputElement)?.value?.trim();
+      const email  = (document.getElementById('e-email') as HTMLInputElement)?.value?.trim();
+      const pwd    = (document.getElementById('e-password') as HTMLInputElement)?.value;
+      if (!prenom || !email || !pwd) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return;
+      }
+      document.getElementById('e-step-1')!.style.display = 'none';
+      document.getElementById('e-step-2')!.style.display = 'block';
+      document.getElementById('e-step-text')!.textContent = 'Étape 2/2 — Activité';
+      document.getElementById('e-rsm-1')!.classList.remove('active');
+      document.getElementById('e-rsm-1')!.classList.add('done');
+      document.getElementById('e-rsm-1')!.textContent = '✓';
+      document.getElementById('e-rsm-2')!.classList.add('active');
+    };
+    (window as any).ePrevStep = () => {
+      document.getElementById('e-step-2')!.style.display = 'none';
+      document.getElementById('e-step-1')!.style.display = 'block';
+      document.getElementById('e-step-text')!.textContent = 'Étape 1/2 — Identité';
+      document.getElementById('e-rsm-2')!.classList.remove('active');
+      document.getElementById('e-rsm-1')!.classList.add('active');
+      document.getElementById('e-rsm-1')!.classList.remove('done');
+      document.getElementById('e-rsm-1')!.textContent = '1';
+    };
+
+    // ===== STEPPER MODAL-F ENTREPRISE =====
+    (window as any).fNextStep = () => {
+      const prenom = (document.getElementById('f-prenom') as HTMLInputElement)?.value?.trim();
+      const email  = (document.getElementById('f-email') as HTMLInputElement)?.value?.trim();
+      const pwd    = (document.getElementById('f-password') as HTMLInputElement)?.value;
+      if (!prenom || !email || !pwd) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return;
+      }
+      document.getElementById('f-step-1')!.style.display = 'none';
+      document.getElementById('f-step-2')!.style.display = 'block';
+      document.getElementById('f-step-text')!.textContent = 'Étape 2/2 — Entreprise';
+      document.getElementById('f-rsm-1')!.classList.remove('active');
+      document.getElementById('f-rsm-1')!.classList.add('done');
+      document.getElementById('f-rsm-1')!.textContent = '✓';
+      document.getElementById('f-rsm-2')!.classList.add('active');
+    };
+    (window as any).fPrevStep = () => {
+      document.getElementById('f-step-2')!.style.display = 'none';
+      document.getElementById('f-step-1')!.style.display = 'block';
+      document.getElementById('f-step-text')!.textContent = 'Étape 1/2 — Identité';
+      document.getElementById('f-rsm-2')!.classList.remove('active');
+      document.getElementById('f-rsm-1')!.classList.add('active');
+      document.getElementById('f-rsm-1')!.classList.remove('done');
+      document.getElementById('f-rsm-1')!.textContent = '1';
+    };
+
+    // Helper inscription générique avec fetch
+    const registerForm = async (
+      form: HTMLFormElement, errorId: string, role: string,
+      cityInputId: string, redirect: string, extraFields: string[] = []
+    ) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearError(errorId);
+        const btn = form.querySelector('.modal-submit') as HTMLButtonElement;
+        setBtnLoading(btn, true, 'M\'inscrire');
+
+        const prenom   = val(form, 'prenom');
+        const nom      = val(form, 'nom');
+        // Username auto-généré depuis prénom.nom + 4 chiffres aléatoires
+        const autoUsername = val(form, 'username') ||
+          (prenom + '.' + nom).toLowerCase()
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-z0-9.]/g, '') + Math.floor(1000 + Math.random() * 9000);
+        const payload: any = {
+          prenom,
+          nom,
+          email:    val(form, 'email'),
+          username: autoUsername,
+          password: val(form, 'password'),
+          password2: val(form, 'password'),
+          role,
+        };
+
+        try {
+          const res = await ajaxPost(`${environment.apiUrl}/v1/auth/register/`, payload);
+          this.auth.setTokens(res.access, res.refresh);
+
+          // Infos profil complémentaires en arrière-plan (non bloquant)
+          const profileData: any = {};
+          const phone = val(form, 'phone_number');
+          if (phone) profileData.phone_number = phone;
+          const cityId = resolveCityId(cityInputId);
+          if (cityId) profileData.city = cityId;
+          extraFields.forEach(f => { const v = val(form, f); if (v) profileData[f] = v; });
+          if (Object.keys(profileData).length) {
+            fetch(`${environment.apiUrl}/profil/edit/`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${res.access}` },
+              body: JSON.stringify(profileData),
+            }).catch(() => {});
+          }
+
+          setBtnLoading(btn, false, 'M\'inscrire');
+          showToast('Compte créé avec succès ! Bienvenue 🎉');
+          fermerModal();
+          setTimeout(() => this.router.navigate([redirect]), 700);
+        } catch (err: any) {
+          setBtnLoading(btn, false, 'M\'inscrire');
+          const msg = err?.email?.[0] || err?.password?.[0] || err?.username?.[0] || err?.error || 'Erreur lors de l\'inscription.';
+          showError(errorId, msg);
+        }
+      });
+    };
+
     // ===== INSCRIPTION PARTICULIER (modal-d) =====
     const formParticulier = document.querySelector('#form-particulier') as HTMLFormElement;
-    if (formParticulier) {
-      formParticulier.addEventListener('submit', (e) => {
-        e.preventDefault();
-        clearError('reg-part-error');
-        const prenom   = val(formParticulier, 'prenom');
-        const nom      = val(formParticulier, 'nom');
-        const email    = val(formParticulier, 'email');
-        const username = val(formParticulier, 'username');
-        const password = val(formParticulier, 'password');
-        const phone    = val(formParticulier, 'phone_number');
-        const city     = resolveCityId('d-city');
-        const gender   = val(formParticulier, 'gender');
-        const btn = formParticulier.querySelector('.modal-submit') as HTMLButtonElement;
-        btn.textContent = 'Inscription…';
-        btn.disabled = true;
-
-        this.auth.register({ email, password, password2: password, nom, prenom, username, role: 'client' }).subscribe({
-          next: (res: any) => {
-            updateProfile(res.access, { phone_number: phone, city: city || undefined, gender });
-            btn.textContent = 'M\'inscrire';
-            btn.disabled = false;
-            fermerModal();
-            this.router.navigate(['/annonces']);
-          },
-          error: (err: any) => {
-            btn.textContent = 'M\'inscrire';
-            btn.disabled = false;
-            const msg = err?.error?.email?.[0] || err?.error?.password?.[0] || err?.error?.error || 'Erreur lors de l\'inscription.';
-            showError('reg-part-error', msg);
-          },
-        });
-      });
-    }
+    if (formParticulier) registerForm(formParticulier, 'reg-part-error', 'client', 'd-city', '/annonces', ['gender']);
 
     // ===== INSCRIPTION AUTO-ENTREPRENEUR (modal-e) =====
     const formAE = document.querySelector('#form-autoentrepreneur') as HTMLFormElement;
-    if (formAE) {
-      formAE.addEventListener('submit', (e) => {
-        e.preventDefault();
-        clearError('reg-ae-error');
-        const prenom   = val(formAE, 'prenom');
-        const nom      = val(formAE, 'nom');
-        const email    = val(formAE, 'email');
-        const username = val(formAE, 'username');
-        const password = val(formAE, 'password');
-        const phone    = val(formAE, 'phone_number');
-        const city     = resolveCityId('e-city');
-        const bio      = val(formAE, 'bio');
-        const btn = formAE.querySelector('.modal-submit') as HTMLButtonElement;
-        btn.textContent = 'Inscription…';
-        btn.disabled = true;
-
-        this.auth.register({ email, password, password2: password, nom, prenom, username, role: 'prestataire' }).subscribe({
-          next: (res: any) => {
-            updateProfile(res.access, { phone_number: phone, city: city || undefined, bio });
-            btn.textContent = 'M\'inscrire';
-            btn.disabled = false;
-            fermerModal();
-            this.router.navigate(['/dashboard']);
-          },
-          error: (err: any) => {
-            btn.textContent = 'M\'inscrire';
-            btn.disabled = false;
-            const msg = err?.error?.email?.[0] || err?.error?.password?.[0] || err?.error?.error || 'Erreur lors de l\'inscription.';
-            showError('reg-ae-error', msg);
-          },
-        });
-      });
-    }
+    if (formAE) registerForm(formAE, 'reg-ae-error', 'prestataire', 'e-city', '/dashboard', ['bio']);
 
     // ===== INSCRIPTION ENTREPRISE (modal-f) =====
     const formEntreprise = document.querySelector('#form-entreprise') as HTMLFormElement;
-    if (formEntreprise) {
-      formEntreprise.addEventListener('submit', (e) => {
-        e.preventDefault();
-        clearError('reg-ent-error');
-        const prenom   = val(formEntreprise, 'prenom');
-        const nom      = val(formEntreprise, 'nom');
-        const email    = val(formEntreprise, 'email');
-        const username = val(formEntreprise, 'username');
-        const password = val(formEntreprise, 'password');
-        const phone    = val(formEntreprise, 'phone_number');
-        const city     = resolveCityId('f-city');
-        const bio      = val(formEntreprise, 'bio');
-        const btn = formEntreprise.querySelector('.modal-submit') as HTMLButtonElement;
-        btn.textContent = 'Inscription…';
-        btn.disabled = true;
-
-        this.auth.register({ email, password, password2: password, nom, prenom, username, role: 'prestataire' }).subscribe({
-          next: (res: any) => {
-            updateProfile(res.access, { phone_number: phone, city: city || undefined, bio });
-            btn.textContent = 'M\'inscrire';
-            btn.disabled = false;
-            fermerModal();
-            this.router.navigate(['/dashboard']);
-          },
-          error: (err: any) => {
-            btn.textContent = 'M\'inscrire';
-            btn.disabled = false;
-            const msg = err?.error?.email?.[0] || err?.error?.password?.[0] || err?.error?.error || 'Erreur lors de l\'inscription.';
-            showError('reg-ent-error', msg);
-          },
-        });
-      });
-    }
+    if (formEntreprise) registerForm(formEntreprise, 'reg-ent-error', 'prestataire', 'f-city', '/dashboard', ['bio', 'siret']);
   }
 }

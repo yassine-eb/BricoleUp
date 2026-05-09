@@ -5,42 +5,8 @@
     <span class="logo-dot"></span>
   </a>
   <nav class="nav-actions" aria-label="Acces rapides">
-    <button class="nav-action js-open-login" type="button">
-      <span class="nav-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
-        <span class="notif-dot"></span>
-      </span>
-      <span>Mes recherches</span>
-    </button>
-    <button class="nav-action js-open-login" type="button">
-      <span class="nav-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      </span>
-      <span>Favoris</span>
-    </button>
-    <button class="nav-action js-open-login" type="button">
-      <span class="nav-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span class="notif-dot"></span>
-      </span>
-      <span>Messages</span>
-    </button>
-    <button class="nav-action js-open-login" type="button">
-      <span class="nav-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="2" aria-hidden="true">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </span>
-      <span>Se connecter</span>
-    </button>
+    <a class="nav-btn-login js-open-login" href="#" onclick="return false">Se connecter</a>
+    <a class="nav-btn-register js-open-register" href="#" onclick="return false">S'inscrire</a>
   </nav>
 </header>
 
@@ -383,174 +349,204 @@
 <div class="modal" id="modal-d" role="dialog" aria-modal="true" aria-labelledby="modal-d-title">
   <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
-  <h2 id="modal-d-title">Inscription Particulier</h2>
+  <h2 id="modal-d-title">Inscription <span style="color:#F97316">Particulier</span></h2>
+
+  <!-- Stepper visuel -->
+  <div class="reg-stepper-mini" id="d-stepper-wrap">
+    <span class="rsm-step active" id="d-rsm-1">1</span>
+    <span class="rsm-line"></span>
+    <span class="rsm-step" id="d-rsm-2">2</span>
+  </div>
+
   <form class="auth-form" id="form-particulier">
-    <!-- User : prenom + nom -->
-    <div class="input-row">
-      <div class="field">
-        <input type="text" id="d-prenom" name="prenom" placeholder=" " required autofocus>
-        <label for="d-prenom">Prénom</label>
+
+    <!-- ÉTAPE 1 : Identité + Compte -->
+    <div id="d-step-1">
+      <div class="input-row">
+        <div class="field">
+          <input type="text" id="d-prenom" name="prenom" placeholder=" " required autofocus>
+          <label for="d-prenom">Prénom</label>
+        </div>
+        <div class="field">
+          <input type="text" id="d-nom" name="nom" placeholder=" " required>
+          <label for="d-nom">Nom</label>
+        </div>
       </div>
       <div class="field">
-        <input type="text" id="d-nom" name="nom" placeholder=" " required>
-        <label for="d-nom">Nom</label>
+        <input type="email" id="d-email" name="email" placeholder=" " required>
+        <label for="d-email">E-mail</label>
+      </div>
+      <div class="field password-field">
+        <input type="password" id="d-password" name="password" placeholder=" " required>
+        <label for="d-password">Mot de passe</label>
+        <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="dNextStep()">Suivant →</button>
+    </div>
+
+    <!-- ÉTAPE 2 : Infos complémentaires -->
+    <div id="d-step-2" style="display:none">
+      <div class="field">
+        <input type="tel" id="d-phone" name="phone_number" placeholder=" ">
+        <label for="d-phone">Téléphone (optionnel)</label>
+      </div>
+      <div class="field">
+        <input type="text" id="d-city" name="city" placeholder=" " autocomplete="off" list="d-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
+        <label for="d-city">Ville</label>
+        <datalist id="d-city-list"></datalist>
+      </div>
+      <div class="field">
+        <select id="d-gender" name="gender" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;appearance:none;background:#fff;color:#64748B;">
+          <option value="">Genre (optionnel)</option>
+          <option value="M">Homme</option>
+          <option value="F">Femme</option>
+          <option value="other">Autre</option>
+        </select>
+      </div>
+      <div class="checkboxes">
+        <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
+        <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
+      </div>
+      <div class="modal-link" style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn" type="button" onclick="dPrevStep()" style="flex:1;background:#F1F5F9;color:#64748B;border-radius:50px;padding:13px;">← Retour</button>
+        <button class="btn btn-primary modal-submit" type="submit" style="flex:2">M'inscrire ✓</button>
       </div>
     </div>
-    <!-- User : email -->
-    <div class="field">
-      <input type="email" id="d-email" name="email" placeholder=" " required>
-      <label for="d-email">E-mail</label>
-    </div>
-    <!-- User : username -->
-    <div class="field">
-      <input type="text" id="d-username" name="username" placeholder=" " required>
-      <label for="d-username">Nom d'utilisateur</label>
-    </div>
-    <!-- UserProfile : phone_number -->
-    <div class="field">
-      <input type="tel" id="d-phone" name="phone_number" placeholder=" ">
-      <label for="d-phone">Téléphone</label>
-    </div>
-    <!-- UserProfile : city (FK) -->
-    <div class="field">
-      <input type="text" id="d-city" name="city" placeholder=" " autocomplete="off" list="d-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
-      <label for="d-city">Ville</label>
-      <datalist id="d-city-list"></datalist>
-    </div>
-    <!-- UserProfile : gender -->
-    <div class="field">
-      <select id="d-gender" name="gender" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;appearance:none;background:#fff;color:#64748B;">
-        <option value="">Genre (optionnel)</option>
-        <option value="M">Homme</option>
-        <option value="F">Femme</option>
-        <option value="other">Autre</option>
-      </select>
-    </div>
-    <!-- User : password -->
-    <div class="field password-field">
-      <input type="password" id="d-password" name="password" placeholder=" " required>
-      <label for="d-password">Mot de passe</label>
-      <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
-    </div>
-    <div class="checkboxes">
-      <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
-      <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
-    </div>
-    <button class="btn btn-primary modal-submit" type="submit">M'inscrire</button>
+
   </form>
-  <p class="step-text">Étape 2/2 — Particulier</p>
+  <p class="step-text" id="d-step-text">Étape 1/2 — Identité</p>
 </div>
 
 <!-- ===== MODAL E — Inscription Auto-entrepreneur ===== -->
 <div class="modal" id="modal-e" role="dialog" aria-modal="true" aria-labelledby="modal-e-title">
   <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
-  <h2 id="modal-e-title">Inscription Prestataire</h2>
+  <h2 id="modal-e-title">Inscription <span style="color:#F97316">Auto-entrepreneur</span></h2>
+
+  <!-- Stepper visuel -->
+  <div class="reg-stepper-mini" id="e-stepper-wrap">
+    <span class="rsm-step active" id="e-rsm-1">1</span>
+    <span class="rsm-line"></span>
+    <span class="rsm-step" id="e-rsm-2">2</span>
+  </div>
+
   <form class="auth-form" id="form-autoentrepreneur">
-    <!-- User : prenom + nom -->
-    <div class="input-row">
-      <div class="field">
-        <input type="text" id="e-prenom" name="prenom" placeholder=" " required>
-        <label for="e-prenom">Prénom</label>
+
+    <!-- ÉTAPE 1 : Identité + Compte -->
+    <div id="e-step-1">
+      <div class="input-row">
+        <div class="field">
+          <input type="text" id="e-prenom" name="prenom" placeholder=" " required autofocus>
+          <label for="e-prenom">Prénom</label>
+        </div>
+        <div class="field">
+          <input type="text" id="e-nom" name="nom" placeholder=" " required>
+          <label for="e-nom">Nom</label>
+        </div>
       </div>
       <div class="field">
-        <input type="text" id="e-nom" name="nom" placeholder=" " required>
-        <label for="e-nom">Nom</label>
+        <input type="email" id="e-email" name="email" placeholder=" " required>
+        <label for="e-email">E-mail</label>
+      </div>
+      <div class="field password-field">
+        <input type="password" id="e-password" name="password" placeholder=" " required>
+        <label for="e-password">Mot de passe</label>
+        <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="eNextStep()">Suivant →</button>
+    </div>
+
+    <!-- ÉTAPE 2 : Activité -->
+    <div id="e-step-2" style="display:none">
+      <div class="field">
+        <input type="tel" id="e-phone" name="phone_number" placeholder=" ">
+        <label for="e-phone">Téléphone (optionnel)</label>
+      </div>
+      <div class="field">
+        <input type="text" id="e-city" name="city" placeholder=" " autocomplete="off" list="e-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
+        <label for="e-city">Ville</label>
+        <datalist id="e-city-list"></datalist>
+      </div>
+      <div class="field">
+        <textarea id="e-bio" name="bio" placeholder="Décrivez votre activité..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 16px;font:0.95rem 'DM Sans',sans-serif;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea>
+      </div>
+      <div class="checkboxes">
+        <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
+        <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
+      </div>
+      <div class="modal-link" style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn" type="button" onclick="ePrevStep()" style="flex:1;background:#F1F5F9;color:#64748B;border-radius:50px;padding:13px;">← Retour</button>
+        <button class="btn btn-primary modal-submit" type="submit" style="flex:2">M'inscrire ✓</button>
       </div>
     </div>
-    <!-- User : email -->
-    <div class="field">
-      <input type="email" id="e-email" name="email" placeholder=" " required>
-      <label for="e-email">E-mail</label>
-    </div>
-    <!-- User : username -->
-    <div class="field">
-      <input type="text" id="e-username" name="username" placeholder=" " required>
-      <label for="e-username">Nom d'utilisateur</label>
-    </div>
-    <!-- UserProfile : phone_number -->
-    <div class="field">
-      <input type="tel" id="e-phone" name="phone_number" placeholder=" ">
-      <label for="e-phone">Téléphone</label>
-    </div>
-    <!-- UserProfile : city (FK) -->
-    <div class="field">
-      <input type="text" id="e-city" name="city" placeholder=" " autocomplete="off" list="e-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
-      <label for="e-city">Ville</label>
-      <datalist id="e-city-list"></datalist>
-    </div>
-    <!-- UserProfile : bio (présentation métier) -->
-    <div class="field">
-      <textarea id="e-bio" name="bio" placeholder="Décrivez votre activité..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 16px;font:0.95rem 'DM Sans',sans-serif;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea>
-    </div>
-    <!-- User : password -->
-    <div class="field password-field">
-      <input type="password" id="e-password" name="password" placeholder=" " required>
-      <label for="e-password">Mot de passe</label>
-      <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
-    </div>
-    <div class="checkboxes">
-      <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
-      <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
-    </div>
-    <button class="btn btn-primary modal-submit" type="submit">M'inscrire comme prestataire</button>
+
   </form>
-  <p class="step-text">Étape 2/2 — Auto-entrepreneur</p>
+  <p class="step-text" id="e-step-text">Étape 1/2 — Identité</p>
 </div>
 
 <!-- ===== MODAL F — Inscription Entreprise ===== -->
 <div class="modal" id="modal-f" role="dialog" aria-modal="true" aria-labelledby="modal-f-title">
   <button class="modal-back" type="button" data-back="modal-c" aria-label="Retour">←</button>
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
-  <h2 id="modal-f-title">Inscription Entreprise</h2>
+  <h2 id="modal-f-title">Inscription <span style="color:#F97316">Entreprise</span></h2>
+
+  <!-- Stepper visuel -->
+  <div class="reg-stepper-mini" id="f-stepper-wrap">
+    <span class="rsm-step active" id="f-rsm-1">1</span>
+    <span class="rsm-line"></span>
+    <span class="rsm-step" id="f-rsm-2">2</span>
+  </div>
+
   <form class="auth-form" id="form-entreprise">
-    <!-- User : prenom + nom du dirigeant -->
-    <div class="input-row">
-      <div class="field">
-        <input type="text" id="f-prenom" name="prenom" placeholder=" " required>
-        <label for="f-prenom">Prénom du dirigeant</label>
+
+    <!-- ÉTAPE 1 : Identité + Compte -->
+    <div id="f-step-1">
+      <div class="input-row">
+        <div class="field">
+          <input type="text" id="f-prenom" name="prenom" placeholder=" " required autofocus>
+          <label for="f-prenom">Prénom du dirigeant</label>
+        </div>
+        <div class="field">
+          <input type="text" id="f-nom" name="nom" placeholder=" " required>
+          <label for="f-nom">Nom du dirigeant</label>
+        </div>
       </div>
       <div class="field">
-        <input type="text" id="f-nom" name="nom" placeholder=" " required>
-        <label for="f-nom">Nom du dirigeant</label>
+        <input type="email" id="f-email" name="email" placeholder=" " required>
+        <label for="f-email">E-mail professionnel</label>
+      </div>
+      <div class="field password-field">
+        <input type="password" id="f-password" name="password" placeholder=" " required>
+        <label for="f-password">Mot de passe</label>
+        <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="fNextStep()">Suivant →</button>
+    </div>
+
+    <!-- ÉTAPE 2 : Infos entreprise -->
+    <div id="f-step-2" style="display:none">
+      <div class="field">
+        <input type="tel" id="f-phone" name="phone_number" placeholder=" ">
+        <label for="f-phone">Téléphone professionnel (optionnel)</label>
+      </div>
+      <div class="field">
+        <input type="text" id="f-city" name="city" placeholder=" " autocomplete="off" list="f-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
+        <label for="f-city">Ville</label>
+        <datalist id="f-city-list"></datalist>
+      </div>
+      <div class="field">
+        <textarea id="f-bio" name="bio" placeholder="Décrivez votre entreprise..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 16px;font:0.95rem 'DM Sans',sans-serif;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea>
+      </div>
+      <div class="checkboxes">
+        <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
+        <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
+      </div>
+      <div class="modal-link" style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn" type="button" onclick="fPrevStep()" style="flex:1;background:#F1F5F9;color:#64748B;border-radius:50px;padding:13px;">← Retour</button>
+        <button class="btn btn-primary modal-submit" type="submit" style="flex:2">M'inscrire ✓</button>
       </div>
     </div>
-    <!-- User : email -->
-    <div class="field">
-      <input type="email" id="f-email" name="email" placeholder=" " required>
-      <label for="f-email">E-mail professionnel</label>
-    </div>
-    <!-- User : username -->
-    <div class="field">
-      <input type="text" id="f-username" name="username" placeholder=" " required>
-      <label for="f-username">Nom d'utilisateur</label>
-    </div>
-    <!-- UserProfile : phone_number -->
-    <div class="field">
-      <input type="tel" id="f-phone" name="phone_number" placeholder=" ">
-      <label for="f-phone">Téléphone professionnel</label>
-    </div>
-    <!-- UserProfile : city (FK) -->
-    <div class="field">
-      <input type="text" id="f-city" name="city" placeholder=" " autocomplete="off" list="f-city-list" style="width:100%;border:1.5px solid #E2E8F0;border-radius:50px;padding:14px 20px;font:0.95rem 'DM Sans',sans-serif;box-sizing:border-box;">
-      <label for="f-city">Ville</label>
-      <datalist id="f-city-list"></datalist>
-    </div>
-    <!-- UserProfile : bio (description entreprise) -->
-    <div class="field">
-      <textarea id="f-bio" name="bio" placeholder="Décrivez votre entreprise..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 16px;font:0.95rem 'DM Sans',sans-serif;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea>
-    </div>
-    <!-- User : password -->
-    <div class="field password-field">
-      <input type="password" id="f-password" name="password" placeholder=" " required>
-      <label for="f-password">Mot de passe</label>
-      <button class="toggle-password" type="button" aria-label="Afficher">👁</button>
-    </div>
-    <div class="checkboxes">
-      <label><input type="checkbox"> Recevoir les offres de nos partenaires</label>
-      <label><input type="checkbox" required> J'accepte les <a href="#cgu">conditions générales</a></label>
-    </div>
-    <button class="btn btn-primary modal-submit" type="submit">M'inscrire comme entreprise</button>
+
   </form>
-  <p class="step-text">Étape 2/2 — Entreprise</p>
+  <p class="step-text" id="f-step-text">Étape 1/2 — Identité</p>
 </div>
