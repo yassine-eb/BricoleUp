@@ -91,17 +91,19 @@ section { padding: 76px 48px; overflow: hidden; }
 
 @media (max-width: 600px) {
   .navbar {
-    padding: 10px 14px 8px;
-    height: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    padding: 0 14px;
+    height: 56px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
   }
   .navbar .logo { flex: 0 0 auto; }
-  .logo-bricole, .logo-up { font-size: 1.25rem; }
-  .nav-actions { gap: 6px; padding-bottom: 2px; }
-  .nav-btn-login { padding: 5px 12px; font-size: .73rem; }
-  .nav-btn-register { padding: 5px 12px; font-size: .73rem; }
+  .logo-bricole, .logo-up { font-size: 1.2rem; }
+  .logo-dot { width: 6px; height: 6px; margin-bottom: 10px; }
+  .nav-actions { gap: 6px; margin-left: auto; }
+  .nav-btn-login { padding: 5px 11px; font-size: .72rem; }
+  .nav-btn-register { padding: 5px 11px; font-size: .72rem; }
 }
 @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 
