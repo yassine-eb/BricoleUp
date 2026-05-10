@@ -376,10 +376,36 @@ blockquote { margin: 0 0 18px; color: var(--bleu); font-size: 1.25rem; font-styl
   .nav-action { min-width: auto; padding: 8px; }
   .nav-action:nth-child(1), .nav-action:nth-child(2) { display: none; }
   .nav-action span:last-child { display: none; }
-  .hero, .app-layout { flex-direction: column; gap: 30px; }
-  .hero { padding-top: 48px; }
+  .hero, .app-layout { flex-direction: column; gap: 0; }
+  .hero {
+    padding: 24px 20px 40px;
+    text-align: center;
+    min-height: auto;
+  }
+  .hero-media { order: -1; }
   .hero-media, .hero-content { width: 100%; }
-  .hero-media img, .hero-tool-image { height: 280px; }
+  .hero-media img, .hero-tool-image {
+    height: 220px;
+    border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(27,60,107,.18);
+  }
+  .hero h1 {
+    font-size: clamp(1.7rem, 7vw, 2.2rem);
+    margin: 20px auto 12px;
+    max-width: 100%;
+  }
+  .hero p {
+    font-size: .95rem;
+    margin: 0 auto 24px;
+    max-width: 100%;
+    color: #64748B;
+  }
+  .hero .btn {
+    display: inline-flex;
+    width: auto;
+    padding: 14px 32px;
+    font-size: 1rem;
+  }
   .store-content, .pro-actions { flex-direction: column; align-items: center; gap: 20px; }
   .cards-grid, .steps-grid, .pro-columns, .split-layout, .project-cards, .footer-grid { grid-template-columns: 1fr; }
   .pro-col { border-right: 0; border-bottom: 1px solid var(--gris-moyen); }
