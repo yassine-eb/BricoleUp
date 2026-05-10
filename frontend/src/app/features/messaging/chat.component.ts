@@ -323,7 +323,7 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
         @if (activeConv(); as conv) {
 
           <div class="chat-head">
-            <button class="chat-back-btn" (click)="activeConv.set(null)">
+            <button class="chat-back-btn" (click)="activeConv.set(null); dispatchConvClose()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <div class="chat-av" [style.background]="conv.color">
@@ -558,6 +558,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   openConv(c: Conv): void {
     if (!c.slug) return;
     this.activeConv.set(c);
+    window.dispatchEvent(new CustomEvent('bu:conv-open', { detail: true }));
     c.unread = 0;
     this.convs.update(l => [...l]);
     this.filteredConvs.update(l => [...l]);
@@ -671,6 +672,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
     if (diff < 172800) return 'hier';
     return `il y a ${Math.floor(diff / 86400)}j`;
+  }
+
+  dispatchConvClose(): void {
+    window.dispatchEvent(new CustomEvent('bu:conv-open', { detail: false }));
   }
 
   goToProfile(c: Conv, e: Event): void {

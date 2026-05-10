@@ -262,7 +262,7 @@ import { filter } from 'rxjs/operators';
   `],
   template: `
     <!-- NAVBAR MOBILE TOP -->
-    <div class="mobile-top-nav" *ngIf="!isMessages()">
+    <div class="mobile-top-nav" *ngIf="!isConvOpen()">
       <button class="mtn-logo" (click)="goHome()" style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:none;border:none;cursor:pointer;padding:0">
         <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
         <span class="mtn-location">
@@ -304,7 +304,7 @@ import { filter } from 'rxjs/operators';
     </div>
 
     <!-- NAVBAR DESKTOP (haut) — cachée sur mobile via JS -->
-    <nav class="navbar desktop-only" [class.scrolled]="scrolled()" id="navbar" *ngIf="!isMessages()">
+    <nav class="navbar desktop-only" [class.scrolled]="scrolled()" id="navbar" *ngIf="!isConvOpen()">
       <div class="navbar-inner">
 
         <button class="nav-logo" (click)="goHome()">
@@ -426,7 +426,7 @@ import { filter } from 'rxjs/operators';
     </nav>
 
     <!-- BARRE MOBILE (bas) — Accueil, Prestataires, +Publier, Favoris, Messages -->
-    <div class="mobile-nav" *ngIf="!isMessages()">
+    <div class="mobile-nav" *ngIf="!isConvOpen()">
       <button class="mobile-nav-tab" [class.active]="activeTab()==='accueil'" (click)="navigate('/annonces','accueil')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Accueil
@@ -473,6 +473,7 @@ export class FeedNavbarComponent implements OnInit {
   notifOpen        = signal(false);
   notifShowAll     = signal(false);
   isMessages       = signal(false);
+  isConvOpen       = signal(false);
 
   private notifInterval: any = null;
 
@@ -502,6 +503,7 @@ export class FeedNavbarComponent implements OnInit {
     this.notifInterval = setInterval(() => this.loadNotifications(), 30000);
 
     window.addEventListener('bu:favcount', (e: any) => this.favCount.set(e.detail ?? 0));
+    window.addEventListener('bu:conv-open', (e: any) => this.isConvOpen.set(e.detail === true));
   }
 
   goHome(): void { this.router.navigate(['/annonces']); }
