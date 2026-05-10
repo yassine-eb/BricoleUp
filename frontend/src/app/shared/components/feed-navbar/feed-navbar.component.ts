@@ -88,7 +88,7 @@ import { filter } from 'rxjs/operators';
 
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
     @media (max-width: 900px) {
-      .navbar { height: 52px; border-bottom: 1px solid var(--border); }
+      .navbar { height: 52px; border-bottom: 1px solid var(--border); display: none; }
       .nav-tabs { display: none; }
       .nav-right { display: none; }
       .nav-logo {
