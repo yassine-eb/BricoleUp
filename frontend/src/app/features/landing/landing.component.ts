@@ -318,7 +318,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       const email  = (document.getElementById('d-email') as HTMLInputElement)?.value?.trim();
       const pwd    = (document.getElementById('d-password') as HTMLInputElement)?.value;
       if (!prenom || !email || !pwd) {
-        alert('Veuillez remplir tous les champs obligatoires.');
+        showToast('Veuillez remplir tous les champs obligatoires.', 'error');
         return;
       }
       document.getElementById('d-step-1')!.style.display = 'none';
@@ -345,7 +345,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       const email  = (document.getElementById('e-email') as HTMLInputElement)?.value?.trim();
       const pwd    = (document.getElementById('e-password') as HTMLInputElement)?.value;
       if (!prenom || !email || !pwd) {
-        alert('Veuillez remplir tous les champs obligatoires.');
+        showToast('Veuillez remplir tous les champs obligatoires.', 'error');
         return;
       }
       document.getElementById('e-step-1')!.style.display = 'none';
@@ -372,7 +372,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       const email  = (document.getElementById('f-email') as HTMLInputElement)?.value?.trim();
       const pwd    = (document.getElementById('f-password') as HTMLInputElement)?.value;
       if (!prenom || !email || !pwd) {
-        alert('Veuillez remplir tous les champs obligatoires.');
+        showToast('Veuillez remplir tous les champs obligatoires.', 'error');
         return;
       }
       document.getElementById('f-step-1')!.style.display = 'none';
