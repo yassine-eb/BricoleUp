@@ -137,6 +137,8 @@
 #pill-demandes.active svg  { stroke: #7C3AED; }
 #pill-portfolio.active    { color: var(--vert); }
 #pill-portfolio.active svg { stroke: var(--vert); }
+#pill-prestataires.active    { color: #7C3AED; }
+#pill-prestataires.active svg { stroke: #7C3AED; }
 
 /* ── Sections feed ──────────────────── */
 .feed-section { display: none; }

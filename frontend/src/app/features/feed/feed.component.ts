@@ -18,8 +18,10 @@ export class FeedComponent implements AfterViewInit {
   private router = inject(Router);
   private pageOffres = 1;
   private pageDemandes = 1;
+  private pagePrestataires = 1;
   private allOffresLoaded = false;
   private allDemandesLoaded = false;
+  private allPrestatairesLoaded = false;
 
   // Legacy kept for compat with puSubmit reset
   private page = 1;
@@ -416,6 +418,9 @@ export class FeedComponent implements AfterViewInit {
         portfolioLoaded = true;
         this.loadPortfolio();
       }
+      if (section === 'prestataires' && !this.allPrestatairesLoaded && this.pagePrestataires === 1) {
+        this.loadPrestataires();
+      }
     };
 
     // ===== PU MODALS =====
@@ -711,8 +716,9 @@ export class FeedComponent implements AfterViewInit {
     };
 
     (window as any).loadMore = () => this.loadOffres();
-    (window as any).loadMoreOffres   = () => this.loadOffres();
-    (window as any).loadMoreDemandes = () => this.loadDemandes();
+    (window as any).loadMoreOffres        = () => this.loadOffres();
+    (window as any).loadMoreDemandes      = () => this.loadDemandes();
+    (window as any).loadMorePrestataires  = () => this.loadPrestataires();
 
     // ===== UPLOAD PHOTOS =====
     (window as any).triggerUpload = (n: number) => {
@@ -1140,6 +1146,60 @@ export class FeedComponent implements AfterViewInit {
     this.http.post<any>(`${environment.apiUrl}/v1/projects/${projectId}/comments/`, { content }, { headers }).subscribe();
   }
 
+
+  private loadPrestataires(): void {
+    if (this.allPrestatairesLoaded) return;
+    const btn = document.getElementById('btn-load-more-prestataires') as HTMLButtonElement;
+    if (btn) { btn.textContent = 'Chargement…'; btn.disabled = true; }
+
+    this.http.get<any>(`${environment.apiUrl}/v1/prestataires/?page=${this.pagePrestataires}`).subscribe({
+      next: (res) => {
+        const items: any[] = res.results ?? (Array.isArray(res) ? res : []);
+        const hasNext: boolean = res.has_next === true;
+        const container = document.getElementById('feed-container-prestataires');
+        if (container) {
+          if (this.pagePrestataires === 1) container.innerHTML = '';
+          const colors = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC2626'];
+          items.forEach((p: any) => {
+            const username = p.user?.username || 'Prestataire';
+            const color = colors[username.charCodeAt(0) % colors.length];
+            const initials = username.slice(0, 2).toUpperCase();
+            const pic = p.profile_picture && !p.profile_picture.includes('defaultprofile') ? p.profile_picture : null;
+            const skill = p.skills?.[0]?.name_fr || '';
+            const city = typeof p.city === 'string' ? p.city : (p.city?.name_fr || '');
+            const bio = (p.bio || '').slice(0, 80);
+            const slug = p.slug || '';
+            const card = document.createElement('div');
+            card.className = 'feed-portfolio-card';
+            card.innerHTML = `
+              <div class="fp-img-wrap" style="background:${color}">
+                ${pic ? `<img src="${pic}" alt="${username}" loading="lazy">` : `<div class="fp-img-placeholder" style="background:${color}">${initials}</div>`}
+              </div>
+              <div class="fp-info">
+                <div class="fp-avatar" style="background:${color}">${initials}</div>
+                <div class="fp-info-text">
+                  <div class="fp-username">${username}</div>
+                  ${skill ? `<div class="fp-skill">${skill}</div>` : ''}
+                  ${city ? `<div class="fp-skill" style="color:#64748B">${city}</div>` : ''}
+                </div>
+                ${p.is_verified ? `<span style="background:#EFF6FF;color:#1B3C6B;border-radius:50px;padding:2px 8px;font-size:.7rem;font-weight:800">Pro ✓</span>` : ''}
+              </div>
+              ${bio ? `<p class="fp-desc">${bio}…</p>` : ''}
+              <div class="fp-actions-row">
+                <button class="fp-contact-btn fp-btn-contacter" data-slug="${slug}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;background:#1B3C6B;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:.82rem;font-weight:700;cursor:pointer;">
+                  💬 Contacter
+                </button>
+              </div>
+            `;
+            container.appendChild(card);
+          });
+        }
+        this.pagePrestataires++;
+        this.setLoadBtn(btn, hasNext && items.length > 0, 'Charger plus de prestataires ↓', () => { this.allPrestatairesLoaded = true; });
+      },
+      error: () => { if (btn) { btn.textContent = 'Charger plus de prestataires ↓'; btn.disabled = false; } }
+    });
+  }
 
   private loadPortfolio(): void {
     const container = document.getElementById('feed-container-portfolio');

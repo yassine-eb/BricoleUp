@@ -26,6 +26,10 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         Portfolio
       </button>
+      <button class="feed-toggle-pill" id="pill-prestataires" onclick="setFeedSection('prestataires')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Prestataires
+      </button>
     </div>
   </div>
 
@@ -75,6 +79,22 @@
       <div class="feed-portfolio-empty">Aucun portfolio disponible pour le moment.</div>
     </div>
   </div>
+  <!-- Section Prestataires -->
+  <div class="feed-section" id="feed-section-prestataires">
+    <div class="feed-section-label">
+      <span class="feed-section-dot" style="background:#7C3AED"></span>Prestataires
+    </div>
+    <div class="feed-portfolio-grid" id="feed-container-prestataires">
+      <div class="feed-portfolio-empty">Chargement…</div>
+    </div>
+    <div class="feed-load-wrap">
+      <button class="feed-load-btn" id="btn-load-more-prestataires" onclick="loadMorePrestataires()">
+        Charger plus de prestataires
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+
   <!-- Conteneur legacy pour compatibilité -->
   <div id="feed-container" style="display:none"></div>
 
