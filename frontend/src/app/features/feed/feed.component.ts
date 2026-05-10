@@ -375,6 +375,13 @@ export class FeedComponent implements AfterViewInit {
         svg.setAttribute('stroke', isActive ? '#F97316' : 'currentColor');
       }
 
+      // Met à jour le badge favoris dans la navbar
+      const stored: any[] = (() => { try { return JSON.parse(localStorage.getItem('bu_liked_cards') || '[]'); } catch { return []; } })();
+      if (isActive) { stored.push({ id: slug, type: 'portfolio' }); }
+      else { const idx = stored.findIndex((c: any) => c.id === slug); if (idx !== -1) stored.splice(idx, 1); }
+      localStorage.setItem('bu_liked_cards', JSON.stringify(stored));
+      window.dispatchEvent(new CustomEvent('bu:favcount', { detail: stored.length }));
+
       // fetch arrière-plan
       if (slug) {
         fetch(`${environment.apiUrl}/v1/favorites/${slug}/favorite/`, {
