@@ -581,14 +581,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.activeMessages.set([]);
     }
 
-    const myId = this.getMyId();
+    const currentUser = this.auth.currentUser$();
+    const myId = currentUser?.id ?? this.getMyId();
+    console.log('myId:', myId, 'currentUser:', currentUser?.id);
 
     this.http.get<any>(`${environment.apiUrl}/conversations/${c.slug}/`, { headers: this.headers }).subscribe({
       next: (res) => {
         const msgs: Msg[] = (res.messages || []).map((m: any) => ({
           id: m.id,
           body: m.body,
-          mine: Number(m.sender) === myId,
+          mine: (m.is_mine === true) || (Number(m.sender) === myId),
           time: this.toTime(m.timestamp),
           timestamp: m.timestamp,
         }));

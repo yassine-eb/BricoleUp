@@ -34,6 +34,8 @@ from app.models import Profile
 
 from django.db.models import Avg, Count
 
+
+
 @api_view(['POST'])
 def jwt_login(request):
     email = request.data.get('email')
@@ -1160,6 +1162,7 @@ def conversation_detail_api(request, slug):
         {
             "id": m.id,
             "sender": m.sender.id,
+            "is_mine": m.sender_id == user.id,
             "body": strip_html(m.body),
             "file": m.file.url if m.file else None,
             "timestamp": str(m.timestamp),
