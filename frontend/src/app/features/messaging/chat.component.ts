@@ -444,6 +444,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    document.body.classList.add('page-messages');
     this.loadConversations();
     this.ws.messages.pipe(takeUntil(this.destroy$)).subscribe((msg: any) => {
       if (msg.type === 'message.new' || msg.type === 'chat_message') {
@@ -676,6 +677,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
+    document.body.classList.remove('page-messages');
     this.destroy$.next(); this.destroy$.complete();
     try { this.ws.disconnect(); } catch {}
   }

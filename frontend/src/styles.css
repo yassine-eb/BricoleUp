@@ -35,8 +35,8 @@ body {
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* Padding corps pour barre mobile basse */
-  body { padding-bottom: 70px; }
+  /* Padding corps pour barre mobile basse (pas sur messages) */
+  body:not(.page-messages) { padding-bottom: 70px; }
 
   /* ── Feed principal ── */
   .main-container { padding: 0 !important; }
@@ -95,7 +95,7 @@ body {
   }
 
   /* ── Page Messages ── */
-  .msg-page { height: calc(100vh - 52px) !important; }
+  .msg-page { height: 100dvh !important; }
   .msg-left { width: 100% !important; border-right: none !important; }
   .msg-left.conv-open { display: none !important; }
   .msg-right { display: none !important; }
