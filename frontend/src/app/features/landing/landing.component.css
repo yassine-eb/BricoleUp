@@ -282,20 +282,20 @@ blockquote { margin: 0 0 18px; color: var(--bleu); font-size: 1.25rem; font-styl
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #E2E8F0; }
 .modal-link { margin-top: 18px; text-align: center; color: var(--texte-gris); font-size: 0.95rem; }
 .modal-link button, .forgot-link { border: 0; background: transparent; color: var(--bleu); font: inherit; text-decoration: underline; cursor: pointer; }
-.auth-form { display: grid; gap: 20px; }
+.auth-form { display: grid; gap: 16px; max-width: 340px; margin: 0 auto; }
 .input-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .field { position: relative; }
 .field input {
   width: 100%;
   border: 2px solid #E2E8F0;
-  border-radius: 14px;
-  padding: 24px 18px 8px;
+  border-radius: 12px;
+  padding: 20px 16px 7px;
   color: #0F172A;
   font: 600 0.97rem "DM Sans", system-ui, sans-serif;
   background: #fff;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   box-shadow: 0 2px 8px rgba(15,23,42,.05);
-  min-height: 64px;
+  min-height: 56px;
   appearance: none;
 }
 .field input::placeholder { color: transparent; }
