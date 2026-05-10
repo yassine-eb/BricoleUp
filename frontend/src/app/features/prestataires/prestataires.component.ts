@@ -159,7 +159,7 @@ export class PrestatairesComponent implements AfterViewInit {
         this.buildSkillList();
         this.applyFilters();
         this.page++;
-        const hasNext = Array.isArray(res) ? all.length >= 10 : (res.has_next === true);
+        const hasNext = Array.isArray(res) ? all.length >= 50 : (res.has_next === true);
         if (!hasNext || all.length === 0) this.allLoaded = true;
         this.loading = false;
       },

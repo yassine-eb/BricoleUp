@@ -456,22 +456,25 @@ class PrestatairesListAPI(APIView):
             else:
                 profiles = sorted(filtered_profiles, key=lambda p: p.distance)
         else:
-            profiles = list(queryset.order_by('-id'))
-            profiles = list(queryset)
-            if sort_by == 'rating':
-                
-                profiles = sorted(profiles,key=lambda p: p.average_rating() or 0, reverse=True)
-            
+            # Vérifiés en premier, puis non vérifiés, triés par -id
+            profiles = list(queryset.order_by('-is_verified', '-id'))
 
+        # Pagination 50 par page
+        try:
+            page = max(1, int(request.GET.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
+        limit = 50
+        offset = (page - 1) * limit
+        profiles_page = profiles[offset:offset + limit]
 
-
-
-        serializer = PrestataireListSerializer(profiles, many=True)
+        serializer = PrestataireListSerializer(profiles_page, many=True)
         return Response({
             'results': serializer.data,
             'total': total,
             'verifies': verifies_count,
-            'has_next': False,
+            'page': page,
+            'has_next': offset + limit < len(profiles),
         }, status=status.HTTP_200_OK)
 
 class SkillsAPI(APIView):
