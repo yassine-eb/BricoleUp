@@ -9,7 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Subject, takeUntil } from 'rxjs';
 import { WebSocketService } from '../../core/services/websocket.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface Conv {
   id: number;
@@ -303,7 +303,7 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
           } @else {
             @for (c of filteredConvs(); track c.id) {
               <div class="conv-item" [class.active]="activeConv()?.id === c.id" (click)="openConv(c)">
-                <div class="conv-av-wrap">
+                <div class="conv-av-wrap" (click)="goToProfile(c, $event)" style="cursor:pointer" title="Voir le profil">
                   <div class="conv-av" [style.background]="c.color">
                     @if (c.avatar) { <img [src]="c.avatar" [alt]="c.name"> }
                     @else { {{ c.init }} }
@@ -432,6 +432,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private auth    = inject(AuthService);
   private ws      = inject(WebSocketService);
   private route   = inject(ActivatedRoute);
+  private router  = inject(Router);
   private destroy$ = new Subject<void>();
 
   loadingConvs  = signal(true);
@@ -676,6 +677,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
     if (diff < 172800) return 'hier';
     return `il y a ${Math.floor(diff / 86400)}j`;
+  }
+
+  goToProfile(c: Conv, e: Event): void {
+    e.stopPropagation();
+    if (c.slug) this.router.navigate(['/profil', c.slug]);
   }
 
   ngOnDestroy(): void {
