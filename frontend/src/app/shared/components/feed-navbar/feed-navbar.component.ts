@@ -255,7 +255,7 @@ import { filter } from 'rxjs/operators';
     }
 
     @media (min-width: 901px) {
-      .mobile-nav { display: none !important; }
+      .mobile-nav { display: flex !important; }
     }
   `],
   template: `
