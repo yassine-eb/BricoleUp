@@ -315,7 +315,13 @@ export class LandingComponent implements OnInit, AfterViewInit {
     // ===== ORIGINE (particulier ou entreprise) =====
     let origine = 'particulier';
     (window as any).setOrigin = (o: string) => { origine = o; };
-    (window as any).choixClient = () => ouvrirModal('modal-d');
+    (window as any).choixClient = () => {
+      const titre = document.getElementById('modal-d-title');
+      if (titre) titre.innerHTML = origine === 'entreprise'
+        ? 'Inscription <span style="color:#F97316">Entreprise</span>'
+        : 'Inscription <span style="color:#F97316">Particulier</span>';
+      ouvrirModal('modal-d');
+    };
     (window as any).choixPrestataire = () => ouvrirModal(origine === 'entreprise' ? 'modal-f' : 'modal-e');
 
     // ===== STEPPER MODAL-D PARTICULIER =====
@@ -458,9 +464,51 @@ export class LandingComponent implements OnInit, AfterViewInit {
       });
     };
 
-    // ===== INSCRIPTION PARTICULIER (modal-d) =====
+    // ===== INSCRIPTION PARTICULIER/ENTREPRISE CLIENT (modal-d) =====
     const formParticulier = document.querySelector('#form-particulier') as HTMLFormElement;
-    if (formParticulier) registerForm(formParticulier, 'reg-part-error', 'client', 'd-city', '/annonces', ['gender']);
+    if (formParticulier) formParticulier.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError('reg-part-error');
+      const btn = formParticulier.querySelector('.modal-submit') as HTMLButtonElement;
+      setBtnLoading(btn, true, 'M\'inscrire');
+      const prenom = val(formParticulier, 'prenom');
+      const nom    = val(formParticulier, 'nom');
+      const autoUsername = (prenom + '.' + nom).toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9.]/g, '')
+        + Math.floor(1000 + Math.random() * 9000);
+      const payload: any = {
+        prenom, nom,
+        email:    val(formParticulier, 'email'),
+        username: autoUsername,
+        password: val(formParticulier, 'password'),
+        password2: val(formParticulier, 'password'),
+        role: 'client',
+      };
+      try {
+        const res = await ajaxPost(`${environment.apiUrl}/v1/auth/register/`, payload);
+        this.auth.setTokens(res.access, res.refresh);
+        const profileData: any = {};
+        const phone = val(formParticulier, 'phone_number');
+        if (phone) profileData.phone_number = phone;
+        const cityId = resolveCityId('d-city');
+        if (cityId) profileData.city = cityId;
+        if (Object.keys(profileData).length) {
+          fetch(`${environment.apiUrl}/profil/edit/`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${res.access}` },
+            body: JSON.stringify(profileData),
+          }).catch(() => {});
+        }
+        setBtnLoading(btn, false, 'M\'inscrire');
+        showToast('Compte créé avec succès ! Bienvenue 🎉');
+        fermerModal();
+        setTimeout(() => this.router.navigate(['/annonces']), 700);
+      } catch (err: any) {
+        setBtnLoading(btn, false, 'M\'inscrire');
+        const msg = err?.email?.[0] || err?.password?.[0] || err?.username?.[0] || err?.error || 'Erreur lors de l\'inscription.';
+        showError('reg-part-error', msg);
+      }
+    });
 
     // ===== INSCRIPTION AUTO-ENTREPRENEUR (modal-e) =====
     const formAE = document.querySelector('#form-autoentrepreneur') as HTMLFormElement;
