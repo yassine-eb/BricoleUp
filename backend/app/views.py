@@ -2302,9 +2302,15 @@ def plan_du_site(request):
 
 import firebase_admin
 from firebase_admin import credentials, auth
+import os
 
-cred = credentials.Certificate("app/phone-bricoleup-firebase-adminsdk-fbsvc-28f7359a0a.json")
-firebase_admin.initialize_app(cred)
+try:
+    _firebase_cert = os.environ.get('FIREBASE_CERT_PATH', 'app/phone-bricoleup-firebase-adminsdk-fbsvc-28f7359a0a.json')
+    if os.path.exists(_firebase_cert):
+        cred = credentials.Certificate(_firebase_cert)
+        firebase_admin.initialize_app(cred)
+except Exception:
+    pass
 
 # views.py
 import json
