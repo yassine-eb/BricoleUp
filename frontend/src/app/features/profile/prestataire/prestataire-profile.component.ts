@@ -505,7 +505,7 @@ import { environment } from '../../../../environments/environment';
             <div class="no-portfolio">Aucune réalisation publiée.</div>
           }
           <div class="portfolio-grid">
-            @for (p of projects(); track p.id; let i = $index) {
+            @for (p of projectsVisible(); track p.id; let i = $index) {
               <div class="portfolio-item" (click)="openLightbox(i)">
                 @if (p.image1) {
                   <img [src]="p.image1" alt="" style="width:100%;height:100%;object-fit:cover">
@@ -522,6 +522,13 @@ import { environment } from '../../../../environments/environment';
               </div>
             }
           </div>
+          @if (hasMoreProjects) {
+            <div style="text-align:center;padding:16px 0">
+              <button (click)="loadMoreProjects()" style="padding:11px 28px;border:1.5px solid #E2E8F0;border-radius:12px;background:#fff;color:#1B3C6B;font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;transition:all .15s">
+                Charger plus ↓
+              </button>
+            </div>
+          }
         </div>
 
         <!-- TAB: À PROPOS -->
@@ -630,6 +637,9 @@ export class PrestataireProfileComponent implements OnInit, AfterViewInit {
   reviews     = signal<any[]>([]);
   annonces    = signal<any[]>([]);
   projects    = signal<any[]>([]);
+  projectsVisible = signal<any[]>([]);
+  projectsPage = 1;
+  readonly projectsPerPage = 9;
   isFav       = signal(false);
   profileSlug = signal('');
 
@@ -703,7 +713,10 @@ export class PrestataireProfileComponent implements OnInit, AfterViewInit {
         this.ratingData.set(res.rating_data || []);
         this.reviews.set(res.reviews || []);
         this.annonces.set(res.annonces || []);
-        this.projects.set(res.projects || []);
+        const allProjects = res.projects || [];
+        this.projects.set(allProjects);
+        this.projectsPage = 1;
+        this.projectsVisible.set(allProjects.slice(0, this.projectsPerPage));
         this.isFav.set(res.is_favorite || false);
         const pic = res.profile_picture_url;
         if (pic && !pic.includes('defaultprofile')) this.avatarUrl.set(pic);
@@ -798,6 +811,15 @@ export class PrestataireProfileComponent implements OnInit, AfterViewInit {
   }
 
   portfolioGradient(i: number): string { return this.gradients[i % this.gradients.length]; }
+
+  loadMoreProjects(): void {
+    this.projectsPage++;
+    this.projectsVisible.set(this.projects().slice(0, this.projectsPage * this.projectsPerPage));
+  }
+
+  get hasMoreProjects(): boolean {
+    return this.projectsVisible().length < this.projects().length;
+  }
 
   isOffre(a: any): boolean {
     return a.category?.id === 2 || a.category?.name_fr?.toLowerCase().includes('offre');
