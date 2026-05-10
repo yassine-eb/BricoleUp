@@ -22,16 +22,19 @@ export const routes: Routes = [
   {
     path: 'annonces',
     component: FeedComponent,
+    canActivate: [AuthGuard],
     pathMatch: 'full',
   },
   {
     path: 'demandes',
     component: DemandesComponent,
+    canActivate: [AuthGuard],
     pathMatch: 'full',
   },
   {
     path: 'prestataires',
     component: PrestatairesComponent,
+    canActivate: [AuthGuard],
     pathMatch: 'full',
   },
   {
