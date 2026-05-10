@@ -1158,7 +1158,8 @@ export class FeedComponent implements AfterViewInit {
               const full = p.description;
               const short = full.slice(0, 80);
               const hasMore = full.length > 80;
-              return `<p class="fp-desc">${short}${hasMore ? `… <button class="fc-read-more" onclick="var p=this.closest('p');p.innerHTML='${full.replace(/'/g,"&#39;").replace(/"/g,"&quot;")}'" style="font-size:.78rem">Lire la suite →</button>` : ''}</p>`;
+              const fullEsc = full.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+              return `<p class="fp-desc" id="fp-pdesc-${p.id}">${short}${hasMore ? `… <button class="fc-read-more" onclick="var el=document.getElementById('fp-pdesc-${p.id}');el.innerHTML='${fullEsc}';el.style.overflow='visible'" style="font-size:.78rem">Lire la suite →</button>` : ''}</p>`;
             })() : ''}
             <div class="fp-actions-row">
               <button class="fp-contact-btn fp-btn-contacter" data-slug="${slug}">
