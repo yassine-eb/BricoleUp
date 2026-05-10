@@ -283,9 +283,8 @@ blockquote { margin: 0 0 18px; color: var(--bleu); font-size: 1.25rem; font-styl
 .modal-link { margin-top: 18px; text-align: center; color: var(--texte-gris); font-size: 0.95rem; }
 .modal-link button, .forgot-link { border: 0; background: transparent; color: var(--bleu); font: inherit; text-decoration: underline; cursor: pointer; }
 .auth-form { display: grid; gap: 16px; max-width: 340px; margin: 0 auto; }
-#d-step-1, #d-step-2,
-#e-step-1, #e-step-2,
-#f-step-1, #f-step-2 { display: grid; gap: 14px; }
+#d-step-1, #e-step-1, #f-step-1 { display: grid; gap: 14px; }
+#d-step-2, #e-step-2, #f-step-2 { display: grid; gap: 14px; }
 .input-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .field { position: relative; }
 .field input {

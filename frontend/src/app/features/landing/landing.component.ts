@@ -322,7 +322,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
         return;
       }
       document.getElementById('d-step-1')!.style.display = 'none';
-      document.getElementById('d-step-2')!.style.display = 'block';
+      document.getElementById('d-step-2')!.style.display = 'grid';
       document.getElementById('d-step-text')!.textContent = 'Étape 2/2 — Informations';
       document.getElementById('d-rsm-1')!.classList.remove('active');
       document.getElementById('d-rsm-1')!.classList.add('done');
@@ -349,7 +349,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
         return;
       }
       document.getElementById('e-step-1')!.style.display = 'none';
-      document.getElementById('e-step-2')!.style.display = 'block';
+      document.getElementById('e-step-2')!.style.display = 'grid';
       document.getElementById('e-step-text')!.textContent = 'Étape 2/2 — Activité';
       document.getElementById('e-rsm-1')!.classList.remove('active');
       document.getElementById('e-rsm-1')!.classList.add('done');
@@ -376,7 +376,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
         return;
       }
       document.getElementById('f-step-1')!.style.display = 'none';
-      document.getElementById('f-step-2')!.style.display = 'block';
+      document.getElementById('f-step-2')!.style.display = 'grid';
       document.getElementById('f-step-text')!.textContent = 'Étape 2/2 — Entreprise';
       document.getElementById('f-rsm-1')!.classList.remove('active');
       document.getElementById('f-rsm-1')!.classList.add('done');
