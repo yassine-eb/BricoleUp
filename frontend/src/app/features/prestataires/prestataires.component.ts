@@ -3,14 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { FeedNavbarComponent } from '../../shared/components/feed-navbar/feed-navbar.component';
 
 @Component({
   selector: 'app-prestataires',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FeedNavbarComponent],
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./prestataires.component.css'],
   template: `
+    <app-feed-navbar></app-feed-navbar>
 
     <!-- HERO -->
     <div class="ps-hero">
