@@ -95,11 +95,11 @@ body {
   }
 
   /* ── Page Messages ── */
-  .msg-page { height: 100dvh !important; }
+  .msg-page { height: 100dvh !important; overflow: hidden !important; }
   .msg-left { width: 100% !important; border-right: none !important; }
-  .msg-left.conv-open { display: none !important; }
+  .msg-left.conv-open { display: none !important; visibility: hidden !important; }
   .msg-right { display: none !important; }
-  .msg-right.conv-open { display: flex !important; width: 100% !important; }
+  .msg-right.conv-open { display: flex !important; flex-direction: column !important; width: 100% !important; height: 100dvh !important; }
 
   /* ── Page Favoris ── */
   .fav-page { padding: 20px 14px 20px !important; }

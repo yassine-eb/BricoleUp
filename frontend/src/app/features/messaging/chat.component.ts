@@ -254,14 +254,14 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
     }
 
     @media(max-width:768px) {
-      .msg-page { max-width:100%; height:100dvh; }
-      .msg-left { width:100%; }
-      .msg-left.conv-open { display:none; }
-      .msg-right { display:none; }
-      .msg-right.conv-open { display:flex; }
+      .msg-page { max-width:100%; height:100dvh; overflow:hidden; }
+      .msg-left { width:100%; position:absolute; inset:0; z-index:1; background:#fff; }
+      .msg-left.conv-open { display:none !important; }
+      .msg-right { display:none !important; position:absolute; inset:0; z-index:2; flex-direction:column; }
+      .msg-right.conv-open { display:flex !important; }
       .chat-input-area {
         padding-bottom: max(12px, env(safe-area-inset-bottom));
-        position:sticky; bottom:0;
+        flex-shrink:0;
       }
     }
   `],
