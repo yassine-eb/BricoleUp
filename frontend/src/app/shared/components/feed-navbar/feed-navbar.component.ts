@@ -94,7 +94,7 @@ import { filter } from 'rxjs/operators';
       .mobile-top-nav {
         display: flex !important;
         position: sticky; top: 0; z-index: 999;
-        height: 60px; padding: 0 16px;
+        height: 68px; padding: 0 16px;
         background: #fff;
         border-bottom: 1px solid var(--border);
         box-shadow: 0 1px 4px rgba(15,23,42,.06);
@@ -263,15 +263,13 @@ import { filter } from 'rxjs/operators';
   template: `
     <!-- NAVBAR MOBILE TOP -->
     <div class="mobile-top-nav">
-      <div style="display:flex;align-items:center;gap:8px">
-        <button class="mtn-logo" (click)="goHome()">
-          <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
-        </button>
+      <button class="mtn-logo" (click)="goHome()" style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:none;border:none;cursor:pointer;padding:0">
+        <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
         <span class="mtn-location">
           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           {{ ville() || 'Ma position' }}
         </span>
-      </div>
+      </button>
       <div class="mtn-right">
         <div class="notif-wrap">
           <button class="mtn-notif-btn" (click)="toggleNotif()">
