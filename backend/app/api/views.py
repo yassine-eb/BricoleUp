@@ -466,6 +466,7 @@ class PrestatairesListAPI(APIView):
             page = 1
         limit = 50
         offset = (page - 1) * limit
+        total_profiles = len(profiles)
         profiles_page = profiles[offset:offset + limit]
 
         serializer = PrestataireListSerializer(profiles_page, many=True)
@@ -474,7 +475,7 @@ class PrestatairesListAPI(APIView):
             'total': total,
             'verifies': verifies_count,
             'page': page,
-            'has_next': offset + limit < len(profiles),
+            'has_next': offset + limit < total_profiles,
         }, status=status.HTTP_200_OK)
 
 class SkillsAPI(APIView):

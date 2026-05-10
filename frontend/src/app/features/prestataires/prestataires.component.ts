@@ -121,7 +121,7 @@ import { FeedNavbarComponent } from '../../shared/components/feed-navbar/feed-na
         <p>Chargement…</p>
       </div>
 
-      <div class="ps-load-more" *ngIf="!allLoaded && !loading && filtered.length > 0">
+      <div class="ps-load-more" *ngIf="!allLoaded && !loading">
         <button class="ps-btn-load" (click)="loadMore()">Charger plus ↓</button>
       </div>
     </div>
