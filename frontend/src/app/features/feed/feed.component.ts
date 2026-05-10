@@ -1154,7 +1154,12 @@ export class FeedComponent implements AfterViewInit {
                 </button>
               </div>
             </div>
-            ${p.description ? `<p class="fp-desc">${p.description.slice(0, 80)}…</p>` : ''}
+            ${p.description ? (() => {
+              const full = p.description;
+              const short = full.slice(0, 80);
+              const hasMore = full.length > 80;
+              return `<p class="fp-desc">${short}${hasMore ? `… <button class="fc-read-more" onclick="var p=this.closest('p');p.innerHTML='${full.replace(/'/g,"&#39;").replace(/"/g,"&quot;")}'" style="font-size:.78rem">Lire la suite →</button>` : ''}</p>`;
+            })() : ''}
             <div class="fp-actions-row">
               <button class="fp-contact-btn fp-btn-contacter" data-slug="${slug}">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
