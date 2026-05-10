@@ -906,9 +906,22 @@ def my_project_delete_api(request, project_id):
 @api_view(['GET'])
 def projects_list_api(request):
     from app.models import Project
-    projects = Project.objects.select_related('user', 'user__profile').prefetch_related('skills').order_by('-id')
+    qs = Project.objects.select_related('user', 'user__profile').prefetch_related('skills').order_by('-id')
+    total = qs.count()
+    try:
+        page = max(1, int(request.GET.get('page', 1)))
+    except (ValueError, TypeError):
+        page = 1
+    limit = 20
+    offset = (page - 1) * limit
+    projects = qs[offset:offset + limit]
     serializer = ProjectSerializer(projects, many=True, context={'request': request})
-    return Response(serializer.data)
+    return Response({
+        'results': serializer.data,
+        'total': total,
+        'page': page,
+        'has_next': offset + limit < total,
+    })
 
 
 # ===== reviews/user/:id/ — avis reçus par un user =====

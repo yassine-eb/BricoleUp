@@ -19,9 +19,11 @@ export class FeedComponent implements AfterViewInit {
   private pageOffres = 1;
   private pageDemandes = 1;
   private pagePrestataires = 1;
+  private pagePortfolio = 1;
   private allOffresLoaded = false;
   private allDemandesLoaded = false;
   private allPrestatairesLoaded = false;
+  private allPortfolioLoaded = false;
 
   // Legacy kept for compat with puSubmit reset
   private page = 1;
@@ -314,7 +316,12 @@ export class FeedComponent implements AfterViewInit {
           (document.getElementById('portfolio-desc') as HTMLTextAreaElement).value = '';
           // Recharger le portfolio
           const container = document.getElementById('feed-container-portfolio');
-          if (container) { container.innerHTML = ''; this.loadPortfolio(); }
+          if (container) {
+            container.innerHTML = '';
+            this.pagePortfolio = 1;
+            this.allPortfolioLoaded = false;
+            this.loadPortfolio();
+          }
         },
         error: (err) => {
           btn.textContent = 'Publier mon portfolio'; btn.disabled = false;
@@ -416,6 +423,8 @@ export class FeedComponent implements AfterViewInit {
 
       if (section === 'portfolio' && !portfolioLoaded) {
         portfolioLoaded = true;
+        this.pagePortfolio = 1;
+        this.allPortfolioLoaded = false;
         this.loadPortfolio();
       }
       if (section === 'prestataires' && !this.allPrestatairesLoaded && this.pagePrestataires === 1) {
@@ -719,6 +728,7 @@ export class FeedComponent implements AfterViewInit {
     (window as any).loadMoreOffres        = () => this.loadOffres();
     (window as any).loadMoreDemandes      = () => this.loadDemandes();
     (window as any).loadMorePrestataires  = () => this.loadPrestataires();
+    (window as any).loadMorePortfolio     = () => this.loadPortfolio();
 
     // ===== UPLOAD PHOTOS =====
     (window as any).triggerUpload = (n: number) => {
@@ -1202,17 +1212,31 @@ export class FeedComponent implements AfterViewInit {
   }
 
   private loadPortfolio(): void {
+    if (this.allPortfolioLoaded) return;
     const container = document.getElementById('feed-container-portfolio');
     if (!container) return;
-    container.innerHTML = '<div class="feed-portfolio-empty">Chargement…</div>';
 
-    this.http.get<any[]>(`${environment.apiUrl}/v1/projects/`).subscribe({
-      next: (projects) => {
-        if (!projects.length) {
-          container.innerHTML = '<div class="feed-portfolio-empty">Aucun portfolio disponible pour le moment.</div>';
-          return;
+    const btn = document.getElementById('btn-load-more-portfolio') as HTMLButtonElement;
+    if (this.pagePortfolio === 1) {
+      container.innerHTML = '<div class="feed-portfolio-empty">Chargement…</div>';
+    } else {
+      if (btn) { btn.textContent = 'Chargement…'; btn.disabled = true; }
+    }
+
+    this.http.get<any>(`${environment.apiUrl}/v1/projects/?page=${this.pagePortfolio}`).subscribe({
+      next: (res) => {
+        const projects: any[] = res?.results ?? (Array.isArray(res) ? res : []);
+        const hasNext: boolean = res?.has_next === true || (Array.isArray(res) && res.length >= 20);
+
+        if (this.pagePortfolio === 1) {
+          container.innerHTML = '';
+          if (!projects.length) {
+            container.innerHTML = '<div class="feed-portfolio-empty">Aucun portfolio disponible pour le moment.</div>';
+            this.setLoadBtn(btn, false, '', () => { this.allPortfolioLoaded = true; });
+            return;
+          }
         }
-        container.innerHTML = '';
+
         projects.forEach((p: any) => {
           const img = p.image1 || p.image2 || p.image3 || p.image4;
           const username = p.created_by?.username || 'Utilisateur';
@@ -1277,9 +1301,13 @@ export class FeedComponent implements AfterViewInit {
           container.appendChild(card);
           this.loadProjectComments(p.id);
         });
+
+        this.pagePortfolio++;
+        this.setLoadBtn(btn, hasNext && projects.length > 0, 'Charger plus de portfolios ↓', () => { this.allPortfolioLoaded = true; });
       },
       error: () => {
-        if (container) container.innerHTML = '<div class="feed-portfolio-empty">Erreur de chargement.</div>';
+        if (this.pagePortfolio === 1 && container) container.innerHTML = '<div class="feed-portfolio-empty">Erreur de chargement.</div>';
+        if (btn) { btn.textContent = 'Charger plus de portfolios ↓'; btn.disabled = false; }
       }
     });
   }
