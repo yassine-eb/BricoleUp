@@ -129,7 +129,7 @@ import { filter } from 'rxjs/operators';
 
       /* Barre du bas */
       .mobile-nav {
-        display: flex !important;
+        display: none !important;
         position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
         background: #fff;
         border-top: 1.5px solid var(--border);
