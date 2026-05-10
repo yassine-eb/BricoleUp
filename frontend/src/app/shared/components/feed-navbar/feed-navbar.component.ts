@@ -92,7 +92,7 @@ import { filter } from 'rxjs/operators';
     }
     @media (max-width: 900px) {
       .mobile-top-nav {
-        display: flex !important;
+        display: flex;
         position: sticky; top: 0; z-index: 999;
         height: 68px; padding: 0 16px;
         background: #fff;
@@ -174,7 +174,7 @@ import { filter } from 'rxjs/operators';
 
       /* Barre du bas */
       .mobile-nav {
-        display: flex !important;
+        display: flex;
         position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
         background: #fff;
         border-top: 1.5px solid var(--border);
