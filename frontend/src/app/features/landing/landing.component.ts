@@ -324,14 +324,17 @@ export class LandingComponent implements OnInit, AfterViewInit {
       // Champs prénom/nom → nom commercial si entreprise
       const prenomLabel = document.querySelector('label[for="d-prenom"]');
       const nomField    = document.getElementById('d-nom')?.closest('.field') as HTMLElement;
+      const inputRow    = document.getElementById('d-prenom')?.closest('.input-row') as HTMLElement;
       const prenomInput = document.getElementById('d-prenom') as HTMLInputElement;
       if (origine === 'entreprise') {
         if (prenomLabel) prenomLabel.textContent = 'Nom commercial';
         if (prenomInput) prenomInput.placeholder = ' ';
         if (nomField) nomField.style.display = 'none';
+        if (inputRow) inputRow.style.gridTemplateColumns = '1fr';
       } else {
         if (prenomLabel) prenomLabel.textContent = 'Prénom';
         if (nomField) nomField.style.display = '';
+        if (inputRow) inputRow.style.gridTemplateColumns = '';
       }
       ouvrirModal('modal-d');
     };
