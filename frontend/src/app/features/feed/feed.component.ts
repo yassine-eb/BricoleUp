@@ -548,9 +548,11 @@ export class FeedComponent implements AfterViewInit {
           return;
         }
         body.description = description;
-        const budget = val('d-budget-min') || null;
+        const aConvenir = (document.getElementById('d-a-convenir') as HTMLInputElement)?.checked;
+        const budget = aConvenir ? null : (val('d-budget-min') || null);
         body.budget_min  = budget;
         body.budget_max  = budget;
+        body.a_convenir  = aConvenir;
       } else {
         const titre = val('o-titre');
         const desc  = val('o-desc');

@@ -188,7 +188,13 @@
     </div>
     <div class="pu-field">
       <label class="pu-label">Budget (€)</label>
-      <input class="pu-input" type="number" id="d-budget-min" placeholder="Ex: 150">
+      <div style="display:flex;align-items:center;gap:10px">
+        <input class="pu-input" type="number" id="d-budget-min" placeholder="Ex: 150" style="flex:1">
+        <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;color:#64748B;font-weight:600;white-space:nowrap;cursor:pointer">
+          <input type="checkbox" id="d-a-convenir" onchange="document.getElementById('d-budget-min').disabled=this.checked;document.getElementById('d-budget-min').value='';" style="accent-color:#F97316">
+          À convenir
+        </label>
+      </div>
       <input type="hidden" id="d-budget-max">
     </div>
     <button class="pu-btn-primary pu-btn-bleu" onclick="puNextStep('d',1)">Suivant →</button>
