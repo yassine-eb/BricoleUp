@@ -26,8 +26,11 @@ import { FeedNavbarComponent } from '../../shared/components/feed-navbar/feed-na
           </div>
         </div>
         <div class="ps-chips">
-          <button class="ps-chip" [class.active]="activeSkill === ''" (click)="filterBySkill('')">Tous</button>
-          <button class="ps-chip" *ngFor="let s of skillList" [class.active]="activeSkill === s" (click)="filterBySkill(s)">{{ s }}</button>
+          <button class="ps-chip" [class.active]="activeSkill === '' && !onlyVerified" (click)="filterBySkill('')">Tous</button>
+          <button class="ps-chip ps-chip-verified" [class.active]="onlyVerified" (click)="toggleVerified()">
+            ✓ Vérifiés Pro
+          </button>
+          <button class="ps-chip" *ngFor="let s of skillList" [class.active]="activeSkill === s && !onlyVerified" (click)="filterBySkill(s)">{{ s }}</button>
         </div>
       </div>
     </div>
@@ -134,6 +137,7 @@ export class PrestatairesComponent implements AfterViewInit {
   skillList: string[] = [];
   activeSkill = '';
   searchQuery = '';
+  onlyVerified = false;
   total = 0;
   verifies = 0;
   loading = false;
@@ -175,6 +179,13 @@ export class PrestatairesComponent implements AfterViewInit {
 
   filterBySkill(skill: string): void {
     this.activeSkill = skill;
+    this.onlyVerified = false;
+    this.applyFilters();
+  }
+
+  toggleVerified(): void {
+    this.onlyVerified = !this.onlyVerified;
+    if (this.onlyVerified) this.activeSkill = '';
     this.applyFilters();
   }
 
@@ -186,11 +197,12 @@ export class PrestatairesComponent implements AfterViewInit {
   private applyFilters(): void {
     this.filtered = this.offres.filter(a => {
       const matchSkill = !this.activeSkill || (a.skills ?? []).some((s: any) => s.name_fr === this.activeSkill);
+      const matchVerified = !this.onlyVerified || a.is_verified;
       const matchSearch = !this.searchQuery ||
         (a.bio || '').toLowerCase().includes(this.searchQuery) ||
         (a.user?.username || '').toLowerCase().includes(this.searchQuery) ||
         (typeof a.city === 'string' ? a.city : (a.city?.name_fr || '')).toLowerCase().includes(this.searchQuery);
-      return matchSkill && matchSearch;
+      return matchSkill && matchVerified && matchSearch;
     });
   }
 
