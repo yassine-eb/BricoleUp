@@ -963,11 +963,13 @@ export class FeedComponent implements AfterViewInit {
 
     const descHtml = `
       <div class="fc-desc-block">
-        <p class="fc-desc">${desc}${hasMore ? `<span class="fc-desc-dots"> … </span><button class="fc-read-more" onclick="
-          var p=this.closest('p');
+        <p class="fc-desc" id="fc-desc-${a.id}">${desc}${hasMore ? '<span class="fc-desc-dots"> …</span>' : ''}</p>
+        ${hasMore ? `<button class="fc-read-more" onclick="
+          var p=document.getElementById('fc-desc-${a.id}');
           p.classList.add('expanded');
           p.innerHTML='${descFull.replace(/'/g,"&#39;").replace(/"/g,"&quot;")}';
-        ">Lire la suite →</button>` : ''}</p>
+          this.remove();
+        ">Lire la suite →</button>` : ''}
       </div>`;
 
     if (isOffre) {
