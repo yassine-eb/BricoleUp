@@ -86,6 +86,49 @@ import { filter } from 'rxjs/operators';
     /* Cloche mobile : cachée par défaut (desktop) */
     .mobile-notif-wrap { display: none; }
 
+    /* Navbar mobile top */
+    .mobile-top-nav {
+      display: none;
+    }
+    @media (max-width: 900px) {
+      .mobile-top-nav {
+        display: flex !important;
+        position: sticky; top: 0; z-index: 999;
+        height: 60px; padding: 0 16px;
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 1px 4px rgba(15,23,42,.06);
+        align-items: center;
+        justify-content: space-between;
+      }
+      .mtn-logo { display: flex; flex-direction: column; gap: 2px; cursor: pointer; background: none; border: none; padding: 0; }
+      .mtn-logo-title { font-family:'Poppins',sans-serif; font-size:1.2rem; font-weight:900; letter-spacing:-.03em; line-height:1; }
+      .mtn-logo-title .bricole { color: var(--bleu); }
+      .mtn-logo-title .up { color: var(--orange); }
+      .mtn-location {
+        font-size:.65rem; font-weight:700; color: var(--orange);
+        background:#FFF7ED; border:1.5px solid #FDBA74;
+        border-radius:50px; padding:2px 8px;
+        display:flex; align-items:center; gap:3px;
+      }
+      .mtn-right { display:flex; align-items:center; gap:8px; }
+      .mtn-notif-btn {
+        width:36px; height:36px; border-radius:10px;
+        border:1.5px solid var(--border); background:#fff;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; color:var(--gris); position:relative;
+      }
+      .mtn-notif-btn svg { width:18px; height:18px; }
+      .mtn-badge {
+        position:absolute; top:4px; right:4px;
+        min-width:15px; height:15px;
+        background:var(--orange); color:#fff;
+        border-radius:50px; font-size:.55rem; font-weight:800;
+        display:flex; align-items:center; justify-content:center;
+        padding:0 3px; border:2px solid #fff;
+      }
+    }
+
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
     @media (max-width: 900px) {
       .navbar { display: none !important; }
@@ -216,6 +259,47 @@ import { filter } from 'rxjs/operators';
     }
   `],
   template: `
+    <!-- NAVBAR MOBILE TOP -->
+    <div class="mobile-top-nav">
+      <button class="mtn-logo" (click)="goHome()">
+        <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
+        <span class="mtn-location">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {{ ville() || 'Ma position' }}
+        </span>
+      </button>
+      <div class="mtn-right">
+        <div class="notif-wrap">
+          <button class="mtn-notif-btn" (click)="toggleNotif()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            @if (notifCount() > 0) { <span class="mtn-badge">{{ notifCount() }}</span> }
+          </button>
+          @if (notifOpen()) {
+            <div class="notif-panel">
+              <div class="notif-panel-head">
+                <span class="notif-panel-title">Notifications</span>
+                @if (notifCount() > 0) { <button class="notif-read-all" (click)="markAllRead()">Tout marquer lu</button> }
+              </div>
+              @if (notifications().length === 0) { <div class="notif-empty">🔔 Aucune notification</div> }
+              <div class="notif-list">
+                @for (n of notifications().slice(0, 5); track n.id) {
+                  <div class="notif-item" [class.unread]="!n.is_read">
+                    <div class="notif-icon-wrap" [class]="'notif-icon-' + n.type"><span>{{ notifIcon(n.type) }}</span></div>
+                    <div class="notif-body">
+                      <div class="notif-title">{{ n.title }}</div>
+                      <div class="notif-desc">{{ n.description }}</div>
+                      <div class="notif-time">{{ timeAgoNotif(n.created_at) }}</div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="notif-backdrop" (click)="notifOpen.set(false)"></div>
+          }
+        </div>
+      </div>
+    </div>
+
     <!-- NAVBAR DESKTOP (haut) — cachée sur mobile via JS -->
     <nav class="navbar desktop-only" [class.scrolled]="scrolled()" id="navbar">
       <div class="navbar-inner">
