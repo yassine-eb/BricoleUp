@@ -466,10 +466,23 @@ class PrestatairesListAPI(APIView):
 
 
 
-        profiles = profiles[:100]
+        # Pagination 10 par page
+        try:
+            page = max(1, int(request.GET.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
+        limit = 10
+        total = len(profiles)
+        offset = (page - 1) * limit
+        profiles = profiles[offset:offset + limit]
 
         serializer = PrestataireListSerializer(profiles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'results': serializer.data,
+            'total': total,
+            'page': page,
+            'has_next': page * limit < total,
+        }, status=status.HTTP_200_OK)
 
 class SkillsAPI(APIView):
     def get(self, request):

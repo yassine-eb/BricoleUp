@@ -164,16 +164,16 @@ export class PrestatairesComponent implements AfterViewInit {
   load(): void {
     if (this.loading || this.allLoaded) return;
     this.loading = true;
-    this.http.get<any>(`${environment.apiUrl}/v1/prestataires/?page=${this.page}&limit=10`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/v1/prestataires/?page=${this.page}`).subscribe({
       next: (res) => {
-        const all: any[] = Array.isArray(res) ? res : (res.results ?? res.prestataires ?? []);
+        const all: any[] = res.results ?? (Array.isArray(res) ? res : []);
         this.offres = [...this.offres, ...all];
         this.total = res.total ?? this.offres.length;
-        this.verifies = this.offres.filter(a => a.is_verified || a.profile?.is_verified).length;
+        this.verifies = this.offres.filter(a => a.is_verified).length;
         this.buildSkillList();
         this.applyFilters();
         this.page++;
-        if (all.length < 10) this.allLoaded = true;
+        if (!res.has_next || all.length === 0) this.allLoaded = true;
         this.loading = false;
       },
       error: () => { this.loading = false; }
