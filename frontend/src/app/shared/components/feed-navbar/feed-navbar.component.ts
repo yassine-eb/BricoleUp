@@ -114,12 +114,12 @@ import { filter } from 'rxjs/operators';
       .mtn-location svg { color: var(--orange); }
       .mtn-right { display:flex; align-items:center; gap:8px; }
       .mtn-notif-btn {
-        width:36px; height:36px; border-radius:10px;
+        width:42px; height:42px; border-radius:12px;
         border:1.5px solid var(--border); background:#fff;
         display:flex; align-items:center; justify-content:center;
         cursor:pointer; color:var(--gris); position:relative;
       }
-      .mtn-notif-btn svg { width:18px; height:18px; }
+      .mtn-notif-btn svg { width:22px; height:22px; }
       .mtn-badge {
         position:absolute; top:4px; right:4px;
         min-width:15px; height:15px;
@@ -299,7 +299,7 @@ import { filter } from 'rxjs/operators';
             <div class="notif-backdrop" (click)="notifOpen.set(false)"></div>
           }
         </div>
-        <button class="nav-avatar" style="border:none;cursor:pointer;width:34px;height:34px;font-size:.75rem" (click)="navigate('/profil','moi')">{{ avatarInitials() }}</button>
+        <button style="border:none;cursor:pointer;width:42px;height:42px;border-radius:12px;background:#F97316;color:#fff;font-family:'Poppins',sans-serif;font-weight:800;font-size:.82rem;display:flex;align-items:center;justify-content:center;" (click)="navigate('/profil','moi')">{{ avatarInitials() }}</button>
       </div>
     </div>
 
