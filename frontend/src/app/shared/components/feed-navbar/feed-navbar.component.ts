@@ -48,7 +48,7 @@ import { filter } from 'rxjs/operators';
     .nav-tab-heart.active svg { fill:var(--orange); stroke:var(--orange); }
     .fav-badge { position:absolute; top:4px; right:10px; min-width:16px; height:16px; background:var(--orange); color:#fff; border-radius:50px; font-size:.6rem; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid #fff; }
     .nav-avatar { width:30px; height:30px; background:var(--bleu); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.72rem; font-weight:800; font-family:'Poppins',sans-serif; }
-    .nav-right { display:none; }
+    .nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:16px; }
     .nav-icon-btn { width:38px; height:38px; border-radius:10px; border:1.5px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--gris); transition:all .15s; position:relative; }
     .nav-icon-btn:hover,.nav-icon-btn.active { border-color:var(--bleu); color:var(--bleu); background:var(--bleu-light); }
     .nav-notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--orange); border-radius:50%; border:2px solid #fff; }
@@ -359,16 +359,15 @@ import { filter } from 'rxjs/operators';
           }
         </div>
 
-        <!-- Tabs desktop -->
+        <!-- Tabs desktop centre -->
         <div class="nav-tabs">
           <button class="nav-tab" [class.active]="activeTab()==='accueil'" (click)="navigate('/annonces', 'accueil')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span class="nav-tab-label">Accueil</span>
           </button>
-          <button class="nav-tab nav-tab-heart" [class.active]="activeTab()==='favoris'" (click)="navigate('/favoris', 'favoris')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            @if (favCount() > 0) { <span class="fav-badge">{{ favCount() }}</span> }
-            <span class="nav-tab-label">Favoris</span>
+          <button class="nav-tab" [class.active]="activeTab()==='prestataires'" (click)="navigate('/prestataires', 'prestataires')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="nav-tab-label">Prestataires</span>
           </button>
           <button class="nav-tab nav-tab-plus" (click)="openCreate()">
             <div class="plus-circle">
@@ -376,14 +375,10 @@ import { filter } from 'rxjs/operators';
             </div>
             <span class="nav-tab-label">Créer</span>
           </button>
-          <button class="nav-tab" [class.active]="activeTab()==='moi'" (click)="navigate('/profil', 'moi')">
-            <div class="nav-avatar">{{ avatarInitials() }}</div>
-            <span class="nav-tab-label">Moi</span>
-          </button>
         </div>
 
-        <div class="nav-right">
-          <!-- Cloche notifications -->
+        <!-- Droite : notifs + profil -->
+        <div class="nav-right" style="display:flex">
           <div class="notif-wrap">
             <button class="nav-icon-btn" (click)="toggleNotif()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -393,19 +388,13 @@ import { filter } from 'rxjs/operators';
               <div class="notif-panel">
                 <div class="notif-panel-head">
                   <span class="notif-panel-title">Notifications</span>
-                  @if (notifCount() > 0) {
-                    <button class="notif-read-all" (click)="markAllRead()">Tout marquer lu</button>
-                  }
+                  @if (notifCount() > 0) { <button class="notif-read-all" (click)="markAllRead()">Tout marquer lu</button> }
                 </div>
-                @if (notifications().length === 0) {
-                  <div class="notif-empty">🔔 Aucune notification</div>
-                }
+                @if (notifications().length === 0) { <div class="notif-empty">🔔 Aucune notification</div> }
                 <div class="notif-list">
                   @for (n of notifications().slice(0, notifShowAll() ? 999 : 3); track n.id) {
                     <div class="notif-item" [class.unread]="!n.is_read">
-                      <div class="notif-icon-wrap" [class]="'notif-icon-' + n.type">
-                        <span>{{ notifIcon(n.type) }}</span>
-                      </div>
+                      <div class="notif-icon-wrap" [class]="'notif-icon-' + n.type"><span>{{ notifIcon(n.type) }}</span></div>
                       <div class="notif-body">
                         <div class="notif-title">{{ n.title }}</div>
                         <div class="notif-desc">{{ n.description }}</div>
@@ -415,18 +404,13 @@ import { filter } from 'rxjs/operators';
                   }
                 </div>
                 @if (notifications().length > 3 && !notifShowAll()) {
-                  <button class="notif-show-more" (click)="notifShowAll.set(true)">
-                    Voir {{ notifications().length - 3 }} autres notifications →
-                  </button>
+                  <button class="notif-show-more" (click)="notifShowAll.set(true)">Voir {{ notifications().length - 3 }} autres →</button>
                 }
               </div>
               <div class="notif-backdrop" (click)="notifOpen.set(false)"></div>
             }
           </div>
-          <button class="nav-icon-btn" [class.active]="activeTab()==='messages'" (click)="navigate('/messages', 'messages')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            @if (unreadCount() > 0) { <span class="nav-notif-dot"></span> }
-          </button>
+          <button class="nav-avatar" style="border:none;cursor:pointer" (click)="navigate('/profil','moi')">{{ avatarInitials() }}</button>
         </div>
 
       </div>
