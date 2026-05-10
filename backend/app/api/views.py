@@ -463,20 +463,24 @@ class PrestatairesListAPI(APIView):
 
 
 
+        # Stats réelles sur tout le queryset
+        total = len(profiles)
+        verifies = sum(1 for p in profiles if p.is_verified)
+
         # Pagination 10 par page
         try:
             page = max(1, int(request.GET.get('page', 1)))
         except (ValueError, TypeError):
             page = 1
         limit = 10
-        total = len(profiles)
         offset = (page - 1) * limit
-        profiles = profiles[offset:offset + limit]
+        profiles_page = profiles[offset:offset + limit]
 
-        serializer = PrestataireListSerializer(profiles, many=True)
+        serializer = PrestataireListSerializer(profiles_page, many=True)
         return Response({
             'results': serializer.data,
             'total': total,
+            'verifies': verifies,
             'page': page,
             'has_next': page * limit < total,
         }, status=status.HTTP_200_OK)

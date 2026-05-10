@@ -168,8 +168,10 @@ export class PrestatairesComponent implements AfterViewInit {
       next: (res) => {
         const all: any[] = res.results ?? (Array.isArray(res) ? res : []);
         this.offres = [...this.offres, ...all];
-        this.total = res.total ?? this.offres.length;
-        this.verifies = this.offres.filter(a => a.is_verified).length;
+        if (this.page === 1) {
+          this.total = res.total ?? this.offres.length;
+          this.verifies = res.verifies ?? 0;
+        }
         this.buildSkillList();
         this.applyFilters();
         this.page++;
