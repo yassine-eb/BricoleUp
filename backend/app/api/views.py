@@ -14,7 +14,7 @@ def geo_city(request):
     except Exception:
         return Response({'city': '', 'region': ''})
 
-from app.api.serializers import AnnouncementSerializer, ProfileSerializer, SkillSerializer, CitySerializer, PrestataireListSerializer
+from app.api.serializers import AnnouncementSerializer, ProfileSerializer, SkillSerializer, CitySerializer, PrestataireListSerializer, CommentSerializer
 from django.shortcuts import get_object_or_404
 
 
@@ -153,6 +153,14 @@ def get_client_ip(request):
 
 class HomeAPI(APIView):
     def get(self, request):
+        from django.core.cache import cache
+        country_code = request.GET.get("country", "FR")
+        cache_key = f'home_{country_code}'
+        cached = cache.get(cache_key)
+        if cached:
+            return Response(cached)
+        # La réponse sera mise en cache après calcul
+        request._home_cache_key = cache_key
 
         country_code = request.GET.get("country")
         try:
@@ -160,9 +168,22 @@ class HomeAPI(APIView):
         except Exception as e:
             country = Country.objects.get(code="FR")
 
-        latest_demandes = Announcement.objects.filter(category__name_fr="Demande de prestation", city__country = country).order_by('-created_at')[:3]
-        latest_offres = Announcement.objects.filter(category__name_fr="Offre de services", city__country = country).order_by('-created_at')[:3]
-        latest_projects = Project.objects.filter(user__profile__city__country = country).order_by('-created_at')[:4]
+        _ann_qs = lambda cat: (
+            Announcement.objects
+            .filter(category__name_fr=cat, city__country=country)
+            .select_related('created_by__profile', 'category', 'city')
+            .prefetch_related('skills')
+            .order_by('-created_at')[:3]
+        )
+        latest_demandes = _ann_qs("Demande de prestation")
+        latest_offres   = _ann_qs("Offre de services")
+        latest_projects = (
+            Project.objects
+            .filter(user__profile__city__country=country)
+            .select_related('user__profile')
+            .prefetch_related('skills')
+            .order_by('-id')[:4]
+        )
         latest_annonce = (
             Announcement.objects.filter(city__country=country)
             .select_related('created_by__profile', 'category', 'city')
@@ -181,6 +202,11 @@ class HomeAPI(APIView):
             'latest_annonce': AnnouncementSerializer(latest_annonce).data if latest_annonce else None,
         }
 
+        # Mettre en cache 2 minutes
+        if hasattr(request, '_home_cache_key'):
+            from django.core.cache import cache
+            cache.set(request._home_cache_key, data, 120)
+
         return Response(data)
 
 class ProjectDetailAPI(APIView):
@@ -193,14 +219,33 @@ class ProjectDetailAPI(APIView):
 
 class AnnouncementDetailAPI(APIView):
     def get(self, request, pk):
-        annonce = get_object_or_404(Announcement, pk=pk)
+        annonce = get_object_or_404(
+            Announcement.objects
+            .select_related('created_by__profile', 'category', 'city')
+            .prefetch_related('skills'),
+            pk=pk
+        )
         serializer = AnnouncementSerializer(annonce)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 from django.db.models import Case, When
 class AnnouncementsAPI(APIView):
     def get(self, request):
-        # Get query parameters
+        from django.core.cache import cache as _cache
+        page_num = request.GET.get('page', '1')
+        country_code = request.GET.get("country", "FR")
+        _no_filters = not any([
+            request.GET.get('skills'), request.GET.get('city'),
+            request.GET.get('verified','false') == 'true',
+            request.GET.getlist('account_type'),
+            request.GET.getlist('categories'),
+        ])
+        _cache_key = f'ann_{country_code}_p{page_num}' if _no_filters else None
+        if _cache_key:
+            _cached = _cache.get(_cache_key)
+            if _cached:
+                return Response(_cached)
+
         skills_param = request.GET.get('skills', '')
         city_param = request.GET.get('city', '')
         sort_by = request.GET.get('sort_by', 'date')
@@ -306,11 +351,27 @@ class AnnouncementsAPI(APIView):
         #    
         queryset = queryset.order_by('-created_at') 
 
-        # Limit results for initial load
-        queryset = queryset[:50]
+        # Pagination — 5 annonces par page
+        try:
+            page = max(1, int(request.GET.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
+        limit = 5
+        offset = (page - 1) * limit
+        total = queryset.count()
+        queryset = queryset[offset:offset + limit]
 
         serializer = AnnouncementSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = {
+            'results': serializer.data,
+            'total': total,
+            'page': page,
+            'pages': (total + limit - 1) // limit,
+            'has_next': page * limit < total,
+        }
+        if _cache_key:
+            _cache.set(_cache_key, response_data, 60)  # 60s de cache
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 
@@ -412,26 +473,25 @@ class PrestatairesListAPI(APIView):
 
 class SkillsAPI(APIView):
     def get(self, request):
-        skills = Skill.objects.all().order_by('name_fr')
-      
-        serializer = SkillSerializer(skills, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        from django.core.cache import cache
+        skills_data = cache.get('skills_list')
+        if skills_data is None:
+            skills = Skill.objects.all().order_by('name_fr').only('id', 'name_fr')
+            skills_data = SkillSerializer(skills, many=True).data
+            cache.set('skills_list', skills_data, 60 * 60)  # 1 heure
+        return Response(skills_data, status=status.HTTP_200_OK)
 
 
 
 class CitiesAPI(APIView):
     def get(self, request):
-        # country_code = request.GET.get("country")
-        # try:
-        #     country =  Country.objects.get(code=country_code)
-        # except Exception as e:
-        #     country = Country.objects.get(code="FR")
-
-        # cities = country.cities.all().order_by('name_fr')
-        cities = City.objects.all().order_by('name_fr')
-      
-        serializer = CitySerializer(cities, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        from django.core.cache import cache
+        cities_data = cache.get('cities_list')
+        if cities_data is None:
+            cities = City.objects.select_related('country').order_by('name_fr').only('id', 'name_fr', 'country__code')
+            cities_data = CitySerializer(cities, many=True).data
+            cache.set('cities_list', cities_data, 60 * 60)  # 1 heure
+        return Response(cities_data, status=status.HTTP_200_OK)
 
 class UserFavoritesAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -446,14 +506,23 @@ class UserFavoritesAPI(APIView):
 class ProfileAPI(APIView):
     def get(self, request, slug):
         try:
-            profile = Profile.objects.get(slug=slug)
+            profile = (
+                Profile.objects
+                .select_related('user', 'city', 'country', 'language')
+                .prefetch_related(
+                    'skills',
+                    'received_reviews__reviewer__profile',
+                    'user__announcements__category',
+                    'user__announcements__city',
+                    'user__announcements__skills',
+                    'user__projects__skills',
+                )
+                .get(slug=slug)
+            )
             serializer = ProfileSerializer(profile, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Profile.DoesNotExist:
-            return Response(
-                {"error": "Profile not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -689,8 +758,151 @@ def submit_review_api(request, slug):
         reviewed=reviewed_profile,
         defaults={'rating': rating, 'comment': comment},
     )
+
+    if created:
+        create_notification(
+            user=reviewed_profile.user,
+            notif_type='review',
+            title='Nouvel avis',
+            description=f'{reviewer.username} vous a laissé un avis {rating}★',
+            link=f'/profil/{slug}',
+        )
+
     serializer = ReviewSerializer(review)
     return Response({'success': True, 'review': serializer.data}, status=201 if created else 200)
+
+
+# ===== Utilitaire création notification =====
+def create_notification(user, notif_type, title, description, link=None, metadata=None):
+    from app.models import Notification
+    Notification.objects.create(
+        user=user, type=notif_type, title=title,
+        description=description, link=link or '',
+        metadata=metadata or {}
+    )
+
+
+# ===== notifications/ — liste + compteur =====
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def notifications_list_api(request):
+    from app.models import Notification
+    notifs = Notification.objects.filter(user=request.user).order_by('-created_at')[:50]
+    data = [{
+        'id': n.id, 'type': n.type, 'title': n.title,
+        'description': n.description, 'is_read': n.is_read,
+        'link': n.link, 'created_at': n.created_at.isoformat(),
+    } for n in notifs]
+    unread = Notification.objects.filter(user=request.user, is_read=False).count()
+    return Response({'results': data, 'unread_count': unread})
+
+
+# ===== notifications/<id>/read/ — marquer comme lue =====
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def notification_mark_read_api(request, notif_id):
+    from app.models import Notification
+    notif = get_object_or_404(Notification, id=notif_id, user=request.user)
+    notif.is_read = True
+    notif.save()
+    return Response({'success': True})
+
+
+# ===== notifications/read-all/ — tout marquer comme lu =====
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def notifications_read_all_api(request):
+    from app.models import Notification
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return Response({'success': True})
+
+
+# ===== projects/<id>/comments/ — commentaires d'un projet =====
+@api_view(['GET', 'POST'])
+def project_comments_api(request, project_id):
+    from app.models import Project, Comment
+    project = get_object_or_404(Project, id=project_id)
+
+    if request.method == 'GET':
+        comments = Comment.objects.filter(project=project).select_related('user', 'user__profile').order_by('created_at')
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+    if not request.user.is_authenticated:
+        return Response({'error': 'Authentification requise.'}, status=401)
+
+    content = request.data.get('content', '').strip()
+    if not content:
+        return Response({'error': 'Le commentaire ne peut pas être vide.'}, status=400)
+
+    comment = Comment.objects.create(user=request.user, project=project, content=content)
+
+    # Notifier le propriétaire du projet
+    if project.user != request.user:
+        create_notification(
+            user=project.user,
+            notif_type='comment',
+            title='Nouveau commentaire',
+            description=f'{request.user.username} a commenté votre portfolio : "{content[:60]}"',
+        )
+
+    serializer = CommentSerializer(comment)
+    return Response(serializer.data, status=201)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def project_comment_delete_api(request, comment_id):
+    from app.models import Comment
+    comment = get_object_or_404(Comment, id=comment_id)
+    if comment.user != request.user:
+        return Response({'error': 'Non autorisé.'}, status=403)
+    comment.delete()
+    return Response({'success': True})
+
+
+# ===== my-projects/ — CRUD projets de l'utilisateur connecté =====
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def my_projects_api(request):
+    from app.models import Project
+    if request.method == 'GET':
+        projects = Project.objects.filter(user=request.user).prefetch_related('skills').order_by('-id')
+        serializer = ProjectSerializer(projects, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    # POST — créer un projet
+    description = request.data.get('description', '').strip()
+    if not description:
+        return Response({'error': 'La description est obligatoire.'}, status=400)
+
+    project = Project.objects.create(user=request.user, description=description)
+
+    for field in ['image1', 'image2', 'image3', 'image4']:
+        if field in request.FILES:
+            setattr(project, field, request.FILES[field])
+    project.save()
+
+    serializer = ProjectSerializer(project, context={'request': request})
+    return Response(serializer.data, status=201)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def my_project_delete_api(request, project_id):
+    from app.models import Project
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+    project.delete()
+    return Response({'success': True})
+
+
+# ===== projects/ — liste de tous les projets =====
+@api_view(['GET'])
+def projects_list_api(request):
+    from app.models import Project
+    projects = Project.objects.select_related('user', 'user__profile').prefetch_related('skills').order_by('-id')
+    serializer = ProjectSerializer(projects, many=True, context={'request': request})
+    return Response(serializer.data)
 
 
 # ===== reviews/user/:id/ — avis reçus par un user =====
@@ -927,6 +1139,14 @@ def conversation_detail_api(request, slug):
         body = request.data.get("body")
         if body:
             Message.objects.create(conversation=conversation, sender=user, body=body)
+            # Notifier le destinataire
+            create_notification(
+                user=recipient,
+                notif_type='message',
+                title='Nouveau message',
+                description=f'{user.username} vous a envoyé un message : "{body[:60]}"',
+                link=f'/messages?slug={user.profile.slug if hasattr(user, "profile") else ""}',
+            )
         return Response({"status": "ok"})
 
     # GET messages

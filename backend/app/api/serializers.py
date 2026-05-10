@@ -9,6 +9,20 @@ from django.contrib.auth.password_validation import validate_password
 
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'content', 'created_at']
+
+    def get_user(self, obj):
+        return {
+            'username': obj.user.username,
+            'profile_picture_url': obj.user.profile.profile_picture_url if hasattr(obj.user, 'profile') else None,
+        }
+
+
 class AccountInfoSerializer(serializers.Serializer):
     # User
     username = serializers.CharField()

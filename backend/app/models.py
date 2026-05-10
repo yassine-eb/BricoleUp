@@ -116,7 +116,7 @@ class Profile(models.Model):
     )
 
     
-    type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='towork')
+    type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='towork', db_index=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     cover_picture = models.ImageField(upload_to='cover_pictures/', blank=True, null=True)
@@ -447,8 +447,8 @@ class Announcement(models.Model):
     views = models.IntegerField(default=0)
     messages_sent = models.IntegerField(default=0)
     skills = models.ManyToManyField('Skill', blank=True)
-    created_by = models.ForeignKey(User, related_name='announcements', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.ForeignKey(User, related_name='announcements', on_delete=models.CASCADE, db_index=True)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
     
     email_sent = models.BooleanField(default=False)
    
@@ -537,6 +537,10 @@ class Notification(models.Model):
         ("announcement_published_owner", "Annonce publiée (owner)"),
         ("announcement_published_city", "Annonce publiée (city users)"),
         ("project_published_owner", "Projet publiée (owner)"),
+        ("message", "Nouveau message"),
+        ("like", "J'aime sur portfolio"),
+        ("comment", "Commentaire sur portfolio"),
+        ("review", "Nouvel avis"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')

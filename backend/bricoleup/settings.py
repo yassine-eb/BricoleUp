@@ -12,30 +12,31 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
-
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-(yao8@ei^r8*e*atc8l4u%yimg2$sipwa3lz_pn!-1ln*kv37t'
 
 def env_bool(name, default=False):
     return os.environ.get(name, str(default)).lower() in ("1", "true", "yes", "on")
 
 
-SECRET_KEY = os.environ.get(
-    'SECRET_KEY',
-    'django-insecure-(yao8@ei^r8*e*atc8l4u%yimg2$sipwa3lz_pn!-1ln*kv37t'
-)
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env_bool("DJANGO_DEBUG", True)
 
-DEBUG = env_bool("DJANGO_DEBUG", False)
 
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
-    "*",
+    "*,bricoleup.com,api.bricoleup.fr,127.0.0.1,localhost",
 ).split(",")
-
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "https://*.railway.app,https://bricoleup.com,http://localhost:8000,http://localhost:4200",
+    "https://bricoleup.com,https://api.bricoleup.fr,http://127.0.0.1:8000,http://localhost:8000,http://localhost:4200",
 ).split(",")
 #CSRF_TRUSTED_ORIGINS = ['https://bricoleup.com','http://127.0.0.1:8000/']
 
@@ -56,21 +57,24 @@ INSTALLED_APPS = [
     'django_countries',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", True)
+CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", DEBUG)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
     "https://bricoleup.com",
     "https://api.bricoleup.fr",
-]
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.railway\.app$",
 ]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    ),
+    "DEFAULT_THROTTLE_CLASSES": [],
 }
 
 from datetime import timedelta
@@ -86,15 +90,17 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+WHITENOISE_COMPRESSION_QUALITY = 80
+WHITENOISE_MAX_AGE = 86400
+WHITENOISE_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'bricoleup.urls'
 
 TEMPLATES = [
@@ -121,13 +127,14 @@ WSGI_APPLICATION = 'bricoleup.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
+_db_url = os.environ.get('DATABASE_URL')
+if _db_url:
+    import dj_database_url as _dj
     DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
+        'default': _dj.config(
+            default=_db_url,
             conn_max_age=600,
-            ssl_require=True,
+            conn_health_checks=True,
         )
     }
 else:
@@ -139,8 +146,34 @@ else:
             'PASSWORD': 'mOBXdOvfdpsDajLkijcdJQHTNSPqRgoT',
             'HOST': 'autorack.proxy.rlwy.net',
             'PORT': '43380',
+            'CONN_MAX_AGE': 600,
         }
     }
+
+# Cache — Redis si dispo, sinon LocMem
+_redis_url = os.environ.get('REDIS_URL')
+if _redis_url:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': _redis_url,
+            'TIMEOUT': 300,
+            'OPTIONS': {'db': '0'},
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'bricoleup',
+            'TIMEOUT': 300,
+            'OPTIONS': {'MAX_ENTRIES': 2000},
+        }
+    }
+
+# Sessions en cache (plus rapide que DB)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
 # if os.environ.get("AWS_RDS_HOST"):
 #     DATABASES = {
 #         'default': {
@@ -206,12 +239,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'fr-fr'  # Set language to French (France)
-
-TIME_ZONE = 'Europe/Paris'  # Set timezone to France
-
-USE_I18N = True
-
+LANGUAGE_CODE = 'fr-fr'
+TIME_ZONE = 'Europe/Paris'
+USE_I18N = False   # désactivé — pas de traduction dynamique, gain de perf
+USE_L10N = False
 USE_TZ = True
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
@@ -262,6 +293,34 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_ROOT = BASE_DIR / 'media' """
 
 
+""" 
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_STORAGE_BUCKET_NAME = 'bricolefrance' 
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+STORAGES = {
+
+    # Media file (image) management   
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+    
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+ """
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field 
 
@@ -278,8 +337,8 @@ EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'bricoleup@gmail.com' 
 # EMAIL_HOST_PASSWORD = 'dbsx asqe uqbg ssqy'
 
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_USER = 'contact.bricoleup.com@gmail.com' 
+EMAIL_HOST_PASSWORD = 'mruw lwzt oqrt dnrt'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
@@ -295,6 +354,8 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
 
+#STRIPE_PUBLIC_KEY = 'pk_test_...'
+#STRIPE_PRIVATE_KEY = 'sk_test_...'
 
 
 STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')

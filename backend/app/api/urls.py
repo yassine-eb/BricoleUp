@@ -52,4 +52,12 @@ urlpatterns = [
     path('auth/users/<int:user_id>/', user_by_id_api, name='user-by-id'),
     path('reviews/user/<int:user_id>/', reviews_by_user_api, name='reviews-by-user'),
     path('reviews/<slug:slug>/', submit_review_api, name='submit-review'),
+    path('notifications/', notifications_list_api, name='notifications-list'),
+    path('notifications/<int:notif_id>/read/', notification_mark_read_api, name='notification-read'),
+    path('notifications/read-all/', notifications_read_all_api, name='notifications-read-all'),
+    path('projects/', projects_list_api, name='projects-list'),
+    path('my-projects/', my_projects_api, name='my-projects'),
+    path('my-projects/<int:project_id>/delete/', my_project_delete_api, name='my-project-delete'),
+    path('projects/<int:project_id>/comments/', project_comments_api, name='project-comments'),
+    path('projects/comments/<int:comment_id>/delete/', project_comment_delete_api, name='project-comment-delete'),
 ]
