@@ -320,6 +320,19 @@ export class LandingComponent implements OnInit, AfterViewInit {
       if (titre) titre.innerHTML = origine === 'entreprise'
         ? 'Inscription <span style="color:#F97316">Entreprise</span>'
         : 'Inscription <span style="color:#F97316">Particulier</span>';
+
+      // Champs prénom/nom → nom commercial si entreprise
+      const prenomLabel = document.querySelector('label[for="d-prenom"]');
+      const nomField    = document.getElementById('d-nom')?.closest('.field') as HTMLElement;
+      const prenomInput = document.getElementById('d-prenom') as HTMLInputElement;
+      if (origine === 'entreprise') {
+        if (prenomLabel) prenomLabel.textContent = 'Nom commercial';
+        if (prenomInput) prenomInput.placeholder = ' ';
+        if (nomField) nomField.style.display = 'none';
+      } else {
+        if (prenomLabel) prenomLabel.textContent = 'Prénom';
+        if (nomField) nomField.style.display = '';
+      }
       ouvrirModal('modal-d');
     };
     (window as any).choixPrestataire = () => ouvrirModal(origine === 'entreprise' ? 'modal-f' : 'modal-e');
