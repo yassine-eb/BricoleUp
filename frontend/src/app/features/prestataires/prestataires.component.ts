@@ -11,20 +11,6 @@ import { environment } from '../../../environments/environment';
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./prestataires.component.css'],
   template: `
-    <!-- NAVBAR -->
-    <nav class="ps-navbar">
-      <div class="ps-navbar-inner">
-        <a routerLink="/" class="ps-logo">
-          <span class="ps-logo-b">Bricole</span><span class="ps-logo-u">Up</span>
-        </a>
-        <div class="ps-nav-links">
-          <a routerLink="/annonces" class="ps-nav-link">Feed</a>
-          <a routerLink="/demandes" class="ps-nav-link">Demandes</a>
-          <a routerLink="/prestataires" class="ps-nav-link active">Prestataires</a>
-        </div>
-        <a routerLink="/" class="ps-back-btn">← Retour</a>
-      </div>
-    </nav>
 
     <!-- HERO -->
     <div class="ps-hero">
