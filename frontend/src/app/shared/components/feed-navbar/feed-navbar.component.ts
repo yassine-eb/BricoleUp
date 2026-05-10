@@ -369,6 +369,12 @@ import { filter } from 'rxjs/operators';
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span class="nav-tab-label">Prestataires</span>
           </button>
+          <button class="nav-tab nav-tab-plus" (click)="openCreate()">
+            <div class="plus-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <span class="nav-tab-label">Publier</span>
+          </button>
           <button class="nav-tab nav-tab-heart" [class.active]="activeTab()==='favoris'" (click)="navigate('/favoris','favoris')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             @if (favCount() > 0) { <span class="fav-badge">{{ favCount() }}</span> }
@@ -378,12 +384,6 @@ import { filter } from 'rxjs/operators';
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             @if (unreadCount() > 0) { <span class="fav-badge">{{ unreadCount() }}</span> }
             <span class="nav-tab-label">Messages</span>
-          </button>
-          <button class="nav-tab nav-tab-plus" (click)="openCreate()">
-            <div class="plus-circle">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </div>
-            <span class="nav-tab-label">Publier</span>
           </button>
         </div>
 
