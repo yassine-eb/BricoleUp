@@ -70,55 +70,48 @@ import { environment } from '../../../environments/environment';
       <div class="ps-grid" *ngIf="filtered.length > 0; else empty">
         <article class="ps-card" *ngFor="let a of filtered">
 
-          <!-- Image bannière -->
+          <!-- Avatar + bannière -->
           <div class="ps-card-banner" [style.background]="getColor(a)">
             <img *ngIf="getImg(a)" [src]="getImg(a)!" alt="photo" class="ps-card-banner-img" loading="lazy">
             <div class="ps-card-banner-overlay"></div>
             <div class="ps-card-banner-info">
-              <span class="ps-badge-offre">⚡ Offre de service</span>
-              <span class="ps-badge-skill" *ngIf="a.skills?.[0]?.name_fr">{{ a.skills[0].name_fr }}</span>
+              <span class="ps-badge-skill" *ngIf="getSkill(a)">{{ getSkill(a) }}</span>
             </div>
-            <span class="ps-time-badge">{{ timeAgo(a.created_at) }}</span>
           </div>
 
           <!-- Avatar flottant -->
           <div class="ps-avatar-float">
-            <img *ngIf="getProfilePic(a)" [src]="getProfilePic(a)!" class="ps-avatar-img" [alt]="a.created_by?.username">
-            <div *ngIf="!getProfilePic(a)" class="ps-avatar-initials" [style.background]="colorFor(a.created_by?.username || '')">
-              {{ (a.created_by?.username || 'U').slice(0,2).toUpperCase() }}
+            <img *ngIf="getProfilePic(a)" [src]="getProfilePic(a)!" class="ps-avatar-img" [alt]="getUsername(a)">
+            <div *ngIf="!getProfilePic(a)" class="ps-avatar-initials" [style.background]="getColor(a)">
+              {{ getUsername(a).slice(0,2).toUpperCase() }}
             </div>
-            <span class="ps-verif-dot" [class.verified]="a.created_by?.profile?.is_verified" title="Vérifié"></span>
+            <span class="ps-verif-dot" [class.verified]="isVerified(a)" title="Vérifié"></span>
           </div>
 
           <!-- Body -->
           <div class="ps-card-body">
             <div class="ps-name-row">
               <div>
-                <div class="ps-username">{{ a.created_by?.username || 'Prestataire' }}</div>
-                <div class="ps-metier" *ngIf="a.skills?.[0]?.name_fr">{{ a.skills[0].name_fr }}</div>
+                <div class="ps-username">{{ getUsername(a) }}</div>
+                <div class="ps-metier" *ngIf="getSkill(a)">{{ getSkill(a) }}</div>
               </div>
-              <span class="ps-pro-badge" *ngIf="a.created_by?.profile?.is_verified">Pro ✓</span>
+              <span class="ps-pro-badge" *ngIf="isVerified(a)">Pro ✓</span>
             </div>
 
-            <div class="ps-city" *ngIf="a.city?.name_fr">
+            <div class="ps-city" *ngIf="getCity(a)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              {{ a.city.name_fr }}
+              {{ getCity(a) }}
             </div>
 
-            <p class="ps-desc">{{ cleanDesc(a.description) }}</p>
-
-            <!-- Images supplémentaires -->
-            <div class="ps-photos" *ngIf="getExtraImgs(a).length > 0">
-              <img *ngFor="let img of getExtraImgs(a)" [src]="img" alt="photo" loading="lazy">
-            </div>
+            <p class="ps-desc" *ngIf="getDesc(a)">{{ getDesc(a).slice(0, 100) }}{{ getDesc(a).length > 100 ? '…' : '' }}</p>
 
             <div class="ps-card-footer">
-              <button class="ps-btn-primary">💬 Contacter</button>
-              <button class="ps-btn-ghost" (click)="toggleFav($event)">
+              <button class="ps-btn-primary" (click)="contact(a)">💬 Contacter</button>
+              <button class="ps-btn-ghost" (click)="toggleFav($event, a)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                <span class="fav-txt">Favoris</span>
+                Favoris
               </button>
-              <button class="ps-btn-ghost">
+              <button class="ps-btn-ghost" [routerLink]="['/profil', getSlug(a)]">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Profil
               </button>
@@ -270,10 +263,13 @@ export class PrestatairesComponent implements AfterViewInit {
     return colors[h];
   }
 
-  toggleFav(e: Event): void {
+  toggleFav(e: Event, a: any): void {
     const btn = e.currentTarget as HTMLElement;
     btn.classList.toggle('faved');
-    const txt = btn.querySelector('.fav-txt');
-    if (txt) txt.textContent = btn.classList.contains('faved') ? '♥ Favoris' : 'Favoris';
+  }
+
+  contact(a: any): void {
+    const slug = this.getSlug(a);
+    if (slug) window.location.href = `/messages?slug=${slug}`;
   }
 }
