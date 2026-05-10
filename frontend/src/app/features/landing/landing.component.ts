@@ -28,6 +28,10 @@ export class LandingComponent implements OnInit, AfterViewInit {
   latestOffres: any[] = [];
 
   ngOnInit(): void {
+    if (this.auth.isAuthenticated$()) {
+      this.router.navigate(['/annonces']);
+      return;
+    }
     this.api.get<HomeResponse>('v1/home/', { country: 'FR' }).subscribe({
       next: (data) => {
         this.latestAnnonce = data.latest_annonce ?? null;
