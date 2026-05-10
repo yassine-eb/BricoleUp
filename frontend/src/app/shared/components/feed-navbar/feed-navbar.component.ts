@@ -262,7 +262,7 @@ import { filter } from 'rxjs/operators';
   `],
   template: `
     <!-- NAVBAR MOBILE TOP -->
-    <div class="mobile-top-nav">
+    <div class="mobile-top-nav" *ngIf="!isMessages()">
       <button class="mtn-logo" (click)="goHome()" style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:none;border:none;cursor:pointer;padding:0">
         <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
         <span class="mtn-location">
@@ -304,7 +304,7 @@ import { filter } from 'rxjs/operators';
     </div>
 
     <!-- NAVBAR DESKTOP (haut) — cachée sur mobile via JS -->
-    <nav class="navbar desktop-only" [class.scrolled]="scrolled()" id="navbar">
+    <nav class="navbar desktop-only" [class.scrolled]="scrolled()" id="navbar" *ngIf="!isMessages()">
       <div class="navbar-inner">
 
         <button class="nav-logo" (click)="goHome()">
@@ -426,7 +426,7 @@ import { filter } from 'rxjs/operators';
     </nav>
 
     <!-- BARRE MOBILE (bas) — Accueil, Prestataires, +Publier, Favoris, Messages -->
-    <div class="mobile-nav">
+    <div class="mobile-nav" *ngIf="!isMessages()">
       <button class="mobile-nav-tab" [class.active]="activeTab()==='accueil'" (click)="navigate('/annonces','accueil')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Accueil
@@ -472,25 +472,27 @@ export class FeedNavbarComponent implements OnInit {
   notifications    = signal<any[]>([]);
   notifOpen        = signal(false);
   notifShowAll     = signal(false);
+  isMessages       = signal(false);
 
   private notifInterval: any = null;
 
   ngOnInit(): void {
     window.addEventListener('scroll', () => this.scrolled.set(window.scrollY > 10));
 
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
-      const url = e.urlAfterRedirects;
+    const updateRoute = (url: string) => {
+      const onMsg = url.startsWith('/messages');
+      this.isMessages.set(onMsg);
       if (url.startsWith('/profil/') || url === '/profil') this.activeTab.set('moi');
       else if (url === '/annonces') this.activeTab.set('accueil');
-      else if (url.startsWith('/messages')) this.activeTab.set('messages');
+      else if (onMsg) this.activeTab.set('messages');
       else if (url === '/favoris') this.activeTab.set('favoris');
       else this.activeTab.set('');
+    };
+
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
+      updateRoute(e.urlAfterRedirects);
     });
-    // Lire l'URL actuelle au démarrage
-    const cur = this.router.url;
-    if (cur.startsWith('/messages')) this.activeTab.set('messages');
-    else if (cur.startsWith('/profil')) this.activeTab.set('moi');
-    else if (cur === '/favoris') this.activeTab.set('favoris');
+    updateRoute(this.router.url);
 
     this.loadVille();
     this.loadUser();

@@ -44,7 +44,7 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
     * { box-sizing:border-box; margin:0; padding:0; }
 
     .msg-page {
-      display:flex; height:calc(100vh - 60px);
+      display:flex; height:100vh;
       max-width:1080px; margin:0 auto;
       background:#F8FAFC;
       font-family:'DM Sans',sans-serif;
