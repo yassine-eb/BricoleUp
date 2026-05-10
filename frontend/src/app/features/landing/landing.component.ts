@@ -364,12 +364,13 @@ export class LandingComponent implements OnInit, AfterViewInit {
     };
     (window as any).dPrevStep = () => {
       document.getElementById('d-step-2')!.style.display = 'none';
-      document.getElementById('d-step-1')!.style.display = 'block';
+      document.getElementById('d-step-1')!.style.display = 'grid';
       document.getElementById('d-step-text')!.textContent = 'Étape 1/2 — Identité';
       document.getElementById('d-rsm-2')!.classList.remove('active');
       document.getElementById('d-rsm-1')!.classList.add('active');
       document.getElementById('d-rsm-1')!.classList.remove('done');
       document.getElementById('d-rsm-1')!.textContent = '1';
+      document.getElementById('modal-d')?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // ===== STEPPER MODAL-E AUTO-ENTREPRENEUR =====
@@ -391,12 +392,13 @@ export class LandingComponent implements OnInit, AfterViewInit {
     };
     (window as any).ePrevStep = () => {
       document.getElementById('e-step-2')!.style.display = 'none';
-      document.getElementById('e-step-1')!.style.display = 'block';
+      document.getElementById('e-step-1')!.style.display = 'grid';
       document.getElementById('e-step-text')!.textContent = 'Étape 1/2 — Identité';
       document.getElementById('e-rsm-2')!.classList.remove('active');
       document.getElementById('e-rsm-1')!.classList.add('active');
       document.getElementById('e-rsm-1')!.classList.remove('done');
       document.getElementById('e-rsm-1')!.textContent = '1';
+      document.getElementById('modal-e')?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // ===== STEPPER MODAL-F ENTREPRISE =====
@@ -418,12 +420,13 @@ export class LandingComponent implements OnInit, AfterViewInit {
     };
     (window as any).fPrevStep = () => {
       document.getElementById('f-step-2')!.style.display = 'none';
-      document.getElementById('f-step-1')!.style.display = 'block';
+      document.getElementById('f-step-1')!.style.display = 'grid';
       document.getElementById('f-step-text')!.textContent = 'Étape 1/2 — Identité';
       document.getElementById('f-rsm-2')!.classList.remove('active');
       document.getElementById('f-rsm-1')!.classList.add('active');
       document.getElementById('f-rsm-1')!.classList.remove('done');
       document.getElementById('f-rsm-1')!.textContent = '1';
+      document.getElementById('modal-f')?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // Helper inscription générique avec fetch
