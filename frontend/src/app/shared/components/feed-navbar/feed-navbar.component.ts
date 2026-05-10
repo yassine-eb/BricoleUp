@@ -48,7 +48,7 @@ import { filter } from 'rxjs/operators';
     .nav-tab-heart.active svg { fill:var(--orange); stroke:var(--orange); }
     .fav-badge { position:absolute; top:4px; right:10px; min-width:16px; height:16px; background:var(--orange); color:#fff; border-radius:50px; font-size:.6rem; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid #fff; }
     .nav-avatar { width:30px; height:30px; background:var(--bleu); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.72rem; font-weight:800; font-family:'Poppins',sans-serif; }
-    .nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:16px; }
+    .nav-right { display:none; }
     .nav-icon-btn { width:38px; height:38px; border-radius:10px; border:1.5px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--gris); transition:all .15s; position:relative; }
     .nav-icon-btn:hover,.nav-icon-btn.active { border-color:var(--bleu); color:var(--bleu); background:var(--bleu-light); }
     .nav-notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--orange); border-radius:50%; border:2px solid #fff; }
