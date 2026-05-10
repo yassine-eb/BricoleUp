@@ -275,14 +275,14 @@ export class LandingComponent implements OnInit, AfterViewInit {
         setBtnLoading(btn, true, 'Connexion');
         try {
           const res = await ajaxPost(`${environment.apiUrl}/v1/auth/login/`, { email, password });
-          this.auth.setTokens(res.access, res.refresh);
+          this.auth.setTokens(res.access, res.refresh, res.user);
           setBtnLoading(btn, false, 'Connexion');
           showToast('Bienvenue ! Connexion réussie 👋');
           fermerModal();
           setTimeout(() => {
             if (res.admin) { this.router.navigate(['/admin']); return; }
-            this.router.navigate([res.redirect === 'dashboard' ? '/dashboard' : '/annonces']);
-          }, 600);
+            this.router.navigate(['/annonces']);
+          }, 400);
         } catch (err: any) {
           setBtnLoading(btn, false, 'Connexion');
           const code = err?.code;
@@ -459,7 +459,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
         try {
           const res = await ajaxPost(`${environment.apiUrl}/v1/auth/register/`, payload);
-          this.auth.setTokens(res.access, res.refresh);
+          this.auth.setTokens(res.access, res.refresh, res.user);
 
           // Infos profil complémentaires en arrière-plan (non bloquant)
           const profileData: any = {};
@@ -510,7 +510,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       };
       try {
         const res = await ajaxPost(`${environment.apiUrl}/v1/auth/register/`, payload);
-        this.auth.setTokens(res.access, res.refresh);
+        this.auth.setTokens(res.access, res.refresh, res.user);
         const profileData: any = {};
         const phone = val(formParticulier, 'phone_number');
         if (phone) profileData.phone_number = phone;
