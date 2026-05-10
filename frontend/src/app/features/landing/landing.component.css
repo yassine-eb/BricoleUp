@@ -331,6 +331,33 @@ blockquote { margin: 0 0 18px; color: var(--bleu); font-size: 1.25rem; font-styl
 .checkboxes label { display: flex; align-items: flex-start; gap: 10px; color: var(--texte-gris); font-size: 0.84rem; line-height: 1.4; }
 .checkboxes input { margin-top: 2px; accent-color: var(--bleu); flex-shrink: 0; }
 .checkboxes a { color: var(--bleu); text-decoration: underline; }
+.field-textarea {
+  width: 100%; border: 2px solid #E2E8F0; border-radius: 14px;
+  padding: 14px 16px; font: 0.95rem "DM Sans", system-ui, sans-serif;
+  color: #0F172A; background: #fff; resize: vertical; min-height: 80px;
+  box-sizing: border-box; transition: border-color .2s, box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(15,23,42,.05);
+}
+.field-textarea:focus { border-color: #F97316; outline: none; box-shadow: 0 0 0 4px rgba(249,115,22,.12); }
+
+.field-select {
+  width: 100%; border: 2px solid #E2E8F0; border-radius: 14px;
+  padding: 16px 16px; font: 0.95rem "DM Sans", system-ui, sans-serif;
+  color: #0F172A; background: #fff; appearance: none;
+  box-shadow: 0 2px 8px rgba(15,23,42,.05);
+  transition: border-color .2s, box-shadow .2s; cursor: pointer;
+}
+.field-select:focus { border-color: #F97316; outline: none; box-shadow: 0 0 0 4px rgba(249,115,22,.12); }
+
+.step-btns { display: flex; gap: 10px; margin-top: 8px; }
+.step-btn-back {
+  flex: 1; background: #F1F5F9; color: #64748B;
+  border-radius: 14px; padding: 14px; font-weight: 700; border: none;
+  transition: background .2s;
+}
+.step-btn-back:hover { background: #E2E8F0; }
+.step-btn-next { flex: 2; border-radius: 14px; }
+
 .modal-submit {
   width: 100%; margin-top: 6px; padding: 15px;
   border-radius: 14px; font-size: 1rem; font-weight: 800; letter-spacing: .01em;
