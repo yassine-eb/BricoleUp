@@ -164,19 +164,16 @@ export class PrestatairesComponent implements AfterViewInit {
   load(): void {
     if (this.loading || this.allLoaded) return;
     this.loading = true;
-    this.http.get<any>(`${environment.apiUrl}/v1/annonces/?page=${this.page}&limit=20`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/v1/prestataires/?page=${this.page}&limit=10`).subscribe({
       next: (res) => {
-        const all: any[] = Array.isArray(res) ? res : (res.results ?? res.annonces ?? []);
-        const newOffres = all.filter((a: any) =>
-          a.category?.id === 2 || a.category?.name_fr?.toLowerCase().includes('offre')
-        );
-        this.offres = [...this.offres, ...newOffres];
-        this.total = this.offres.length;
-        this.verifies = this.offres.filter(a => a.created_by?.profile?.is_verified).length;
+        const all: any[] = Array.isArray(res) ? res : (res.results ?? res.prestataires ?? []);
+        this.offres = [...this.offres, ...all];
+        this.total = res.total ?? this.offres.length;
+        this.verifies = this.offres.filter(a => a.is_verified || a.profile?.is_verified).length;
         this.buildSkillList();
         this.applyFilters();
         this.page++;
-        if (all.length < 20) this.allLoaded = true;
+        if (all.length < 10) this.allLoaded = true;
         this.loading = false;
       },
       error: () => { this.loading = false; }
@@ -187,7 +184,11 @@ export class PrestatairesComponent implements AfterViewInit {
 
   private buildSkillList(): void {
     const skills = new Set<string>();
-    this.offres.forEach(a => a.skills?.forEach((s: any) => { if (s.name_fr) skills.add(s.name_fr); }));
+    this.offres.forEach(a => {
+      // format profil prestataire
+      const sk = a.skills ?? a.profile?.skills ?? [];
+      sk.forEach((s: any) => { if (s.name_fr) skills.add(s.name_fr); });
+    });
     this.skillList = Array.from(skills).slice(0, 14);
   }
 
@@ -203,29 +204,59 @@ export class PrestatairesComponent implements AfterViewInit {
 
   private applyFilters(): void {
     this.filtered = this.offres.filter(a => {
-      const matchSkill = !this.activeSkill || a.skills?.some((s: any) => s.name_fr === this.activeSkill);
+      const skills = a.skills ?? a.profile?.skills ?? [];
+      const username = a.username || a.user?.username || '';
+      const city = a.city?.name_fr || a.profile?.city?.name_fr || '';
+      const desc = a.bio || a.profile?.bio || a.description || '';
+      const matchSkill = !this.activeSkill || skills.some((s: any) => s.name_fr === this.activeSkill);
       const matchSearch = !this.searchQuery ||
-        (a.description || '').toLowerCase().includes(this.searchQuery) ||
-        (a.created_by?.username || '').toLowerCase().includes(this.searchQuery) ||
-        (a.city?.name_fr || '').toLowerCase().includes(this.searchQuery) ||
-        (a.skills?.[0]?.name_fr || '').toLowerCase().includes(this.searchQuery);
+        desc.toLowerCase().includes(this.searchQuery) ||
+        username.toLowerCase().includes(this.searchQuery) ||
+        city.toLowerCase().includes(this.searchQuery);
       return matchSkill && matchSearch;
     });
   }
 
-  getImg(a: any): string | null { return a.image1 || null; }
+  getImg(a: any): string | null {
+    return a.image1 || a.profile?.image1 || a.portfolio?.[0]?.image1 || null;
+  }
 
   getExtraImgs(a: any): string[] {
-    return [a.image2, a.image3].filter(Boolean);
+    return [a.image2, a.image3, a.profile?.image2, a.profile?.image3].filter(Boolean);
   }
 
   getProfilePic(a: any): string | null {
-    const url = a.created_by?.profile?.profile_picture_url;
+    const url = a.profile_picture_url || a.profile?.profile_picture_url || a.created_by?.profile?.profile_picture_url;
     return url && !url.includes('defaultprofile') ? url : null;
   }
 
+  getUsername(a: any): string {
+    return a.username || a.user?.username || a.created_by?.username || 'Prestataire';
+  }
+
+  getCity(a: any): string {
+    return a.city?.name_fr || a.profile?.city?.name_fr || '';
+  }
+
+  getSkill(a: any): string {
+    const skills = a.skills ?? a.profile?.skills ?? [];
+    return skills[0]?.name_fr || '';
+  }
+
+  getDesc(a: any): string {
+    return a.bio || a.profile?.bio || a.description || '';
+  }
+
+  getSlug(a: any): string {
+    return a.slug || a.profile?.slug || a.created_by?.profile?.slug || '';
+  }
+
+  isVerified(a: any): boolean {
+    return a.is_verified || a.profile?.is_verified || a.created_by?.profile?.is_verified || false;
+  }
+
   getColor(a: any): string {
-    return this.colorFor(a.created_by?.username || '');
+    return this.colorFor(this.getUsername(a));
   }
 
   cleanDesc(desc: string): string {
