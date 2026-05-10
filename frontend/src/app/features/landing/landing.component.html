@@ -270,11 +270,11 @@
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
   <h2 id="modal-a-title">Je m'inscris en tant que :</h2>
   <div class="modal-stack" style="margin-top:8px">
-    <button class="role-btn" type="button" data-open="modal-g">
+    <button class="role-btn" type="button" data-open="modal-g" onclick="setOrigin('particulier')">
       🏠 Particulier
     </button>
     <div class="divider">ou</div>
-    <button class="role-btn" type="button" data-open="modal-g">
+    <button class="role-btn" type="button" data-open="modal-g" onclick="setOrigin('entreprise')">
       🏢 Entreprise
     </button>
   </div>
@@ -287,14 +287,14 @@
   <button class="modal-close" type="button" aria-label="Fermer">×</button>
   <h2 id="modal-g-title">Je souhaite :</h2>
   <div class="modal-stack" style="margin-top:8px">
-    <button class="role-btn role-btn-card" type="button" data-open="modal-d">
+    <button class="role-btn role-btn-card" type="button" onclick="choixClient()">
       <span class="role-btn-icon">🔍</span>
       <span class="role-btn-text">
         <span class="role-btn-title">Chercher des services</span>
         <span class="role-btn-sub">Je recherche un prestataire pour mes besoins</span>
       </span>
     </button>
-    <button class="role-btn role-btn-card" type="button" data-open="modal-e">
+    <button class="role-btn role-btn-card" type="button" onclick="choixPrestataire()">
       <span class="role-btn-icon">💼</span>
       <span class="role-btn-text">
         <span class="role-btn-title">Proposer des services</span>

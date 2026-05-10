@@ -312,6 +312,12 @@ export class LandingComponent implements OnInit, AfterViewInit {
       ).subscribe();
     };
 
+    // ===== ORIGINE (particulier ou entreprise) =====
+    let origine = 'particulier';
+    (window as any).setOrigin = (o: string) => { origine = o; };
+    (window as any).choixClient = () => ouvrirModal('modal-d');
+    (window as any).choixPrestataire = () => ouvrirModal(origine === 'entreprise' ? 'modal-f' : 'modal-e');
+
     // ===== STEPPER MODAL-D PARTICULIER =====
     (window as any).dNextStep = () => {
       const prenom = (document.getElementById('d-prenom') as HTMLInputElement)?.value?.trim();
