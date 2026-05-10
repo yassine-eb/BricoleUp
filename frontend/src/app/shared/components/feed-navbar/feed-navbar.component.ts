@@ -88,7 +88,7 @@ import { filter } from 'rxjs/operators';
 
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
     @media (max-width: 900px) {
-      .navbar { height: 62px; border-bottom: 1px solid var(--border); }
+      .navbar { display: none; }
       .nav-tabs { display: none; }
       .nav-right { display: none; }
       .nav-logo {
@@ -127,9 +127,9 @@ import { filter } from 'rxjs/operators';
         position: fixed; top: 58px; left: 8px; right: 8px; width: auto;
       }
 
-      /* Barre du bas — cachée sur mobile, on garde seulement la navbar du haut */
+      /* Barre du bas */
       .mobile-nav {
-        display: none !important;
+        display: flex !important;
         position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
         background: #fff;
         border-top: 1.5px solid var(--border);
