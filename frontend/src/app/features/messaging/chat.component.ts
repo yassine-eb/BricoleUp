@@ -44,10 +44,11 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
     * { box-sizing:border-box; margin:0; padding:0; }
 
     .msg-page {
-      display:flex; height:100vh;
+      display:flex; height:100dvh;
       max-width:1080px; margin:0 auto;
       background:#F8FAFC;
       font-family:'DM Sans',sans-serif;
+      overflow:hidden;
     }
 
     /* ── SIDEBAR ── */
@@ -253,11 +254,15 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
     }
 
     @media(max-width:768px) {
-      .msg-page { max-width:100%; }
+      .msg-page { max-width:100%; height:100dvh; }
       .msg-left { width:100%; }
       .msg-left.conv-open { display:none; }
       .msg-right { display:none; }
       .msg-right.conv-open { display:flex; }
+      .chat-input-area {
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+        position:sticky; bottom:0;
+      }
     }
   `],
   template: `
