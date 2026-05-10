@@ -286,22 +286,23 @@ blockquote { margin: 0 0 18px; color: var(--bleu); font-size: 1.25rem; font-styl
 .input-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .field { position: relative; }
 .field input {
-  width: 100%; border: 2px solid #E8EDF5; border-radius: 14px;
-  padding: 16px 18px 6px; color: var(--texte);
-  font: 0.95rem "DM Sans", system-ui, sans-serif;
+  width: 100%; border: 2px solid #E8EDF5; border-radius: 16px;
+  padding: 22px 18px 8px; color: var(--texte);
+  font: 600 0.97rem "DM Sans", system-ui, sans-serif;
   background: #F8FAFC;
   transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,.03);
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  min-height: 62px;
 }
-.field input:focus { border-color: #1B3C6B; outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(27,60,107,.08); }
+.field input:focus { border-color: #1B3C6B; outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(27,60,107,.09); }
 .field label {
-  position: absolute; top: 50%; left: 16px; padding: 0 4px;
-  background: transparent; color: #94A3B8; pointer-events: none;
-  transform: translateY(-50%); font-size: .92rem;
+  position: absolute; top: 50%; left: 18px; padding: 0 2px;
+  background: transparent; color: #A0AEC0; pointer-events: none;
+  transform: translateY(-50%); font-size: .95rem; font-weight: 500;
   transition: top 0.18s ease, font-size 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 .field input:focus + label, .field input:not(:placeholder-shown) + label {
-  top: 10px; transform: none; color: #1B3C6B; font-size: 0.7rem; font-weight: 700; letter-spacing: .03em;
+  top: 13px; transform: none; color: #1B3C6B; font-size: 0.68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
 }
 .password-field input { padding-right: 54px; }
 .toggle-password { position: absolute; top: 50%; right: 12px; border: 0; background: transparent; font-size: 1rem; cursor: pointer; transform: translateY(-50%); }
