@@ -280,8 +280,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
           showToast('Bienvenue ! Connexion réussie 👋');
           fermerModal();
           setTimeout(() => {
-            if (res.admin) { this.router.navigate(['/admin']); return; }
-            this.router.navigate(['/annonces']);
+            if (res.admin) { window.location.href = '/admin'; return; }
+            window.location.href = '/annonces';
           }, 400);
         } catch (err: any) {
           setBtnLoading(btn, false, 'Connexion');
@@ -479,7 +479,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
           setBtnLoading(btn, false, 'M\'inscrire');
           showToast('Compte créé avec succès ! Bienvenue 🎉');
           fermerModal();
-          setTimeout(() => this.router.navigate([redirect]), 700);
+          setTimeout(() => { window.location.href = redirect; }, 600);
         } catch (err: any) {
           setBtnLoading(btn, false, 'M\'inscrire');
           const msg = err?.email?.[0] || err?.password?.[0] || err?.username?.[0] || err?.error || 'Erreur lors de l\'inscription.';
@@ -526,7 +526,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
         setBtnLoading(btn, false, 'M\'inscrire');
         showToast('Compte créé avec succès ! Bienvenue 🎉');
         fermerModal();
-        setTimeout(() => this.router.navigate(['/annonces']), 700);
+        setTimeout(() => { window.location.href = '/annonces'; }, 600);
       } catch (err: any) {
         setBtnLoading(btn, false, 'M\'inscrire');
         const msg = err?.email?.[0] || err?.password?.[0] || err?.username?.[0] || err?.error || 'Erreur lors de l\'inscription.';
