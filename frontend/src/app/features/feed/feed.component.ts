@@ -936,7 +936,7 @@ export class FeedComponent implements AfterViewInit {
     const hasMore = descFull.length > 120;
     const desc = descShort;
     const msgs = a.messages_sent || 0;
-    const budget = a.a_convenir ? 'À convenir' : (a.budget_min && a.budget_max ? `${a.budget_min} – ${a.budget_max} €` : (a.budget_min ? `${a.budget_min} €` : 'À convenir'));
+    const budget = a.a_convenir ? 'À convenir' : (a.budget_min ? `${a.budget_min} €` : 'À convenir');
     const timeAgo = this.timeAgo(a.created_at);
     const color = this.colorFor(username);
     const categorie = skill.toLowerCase().replace(/\s+/g, '');
