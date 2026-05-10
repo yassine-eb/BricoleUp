@@ -88,18 +88,18 @@ import { filter } from 'rxjs/operators';
 
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
     @media (max-width: 900px) {
-      .navbar { height: 52px; border-bottom: 1px solid var(--border); }
+      .navbar { height: 62px; border-bottom: 1px solid var(--border); }
       .nav-tabs { display: none; }
       .nav-right { display: none; }
       .nav-logo {
         margin: 0;
-        display: flex; flex-direction: row; align-items: center; gap: 0;
+        display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
       }
-      .nav-logo-title { font-size: 1.2rem; letter-spacing: -.03em; }
+      .nav-logo-title { font-size: 1.25rem; letter-spacing: -.03em; line-height: 1; }
       .nav-logo-location {
-        font-size: .71rem; font-weight: 600; color: var(--gris);
-        background: var(--gris-light); border: 1px solid var(--border);
-        border-radius: 50px; padding: 3px 9px; margin-top: 0;
+        font-size: .68rem; font-weight: 700; color: var(--orange);
+        background: #FFF7ED; border: 1.5px solid #FDBA74;
+        border-radius: 50px; padding: 2px 8px; margin-top: 0;
         display: flex; align-items: center; gap: 3px;
       }
       .navbar-inner { justify-content: space-between; padding: 0 16px; align-items: center; }
