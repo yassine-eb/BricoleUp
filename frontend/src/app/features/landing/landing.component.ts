@@ -314,7 +314,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
     // ===== ORIGINE (particulier ou entreprise) =====
     let origine = 'particulier';
-    (window as any).setOrigin = (o: string) => { origine = o; };
+    (window as any).setOrigin = (o: string) => { origine = o; ouvrirModal('modal-g'); };
     (window as any).choixClient = () => {
       const titre = document.getElementById('modal-d-title');
       if (titre) titre.innerHTML = origine === 'entreprise'
