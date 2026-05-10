@@ -60,7 +60,8 @@ export class FeedComponent implements AfterViewInit {
         btn.dataset['color'] || '#1B3C6B',
         btn.dataset['init'] || '?',
         btn.dataset['summary'] || '',
-        btn.dataset['slug'] || ''
+        btn.dataset['slug'] || '',
+        btn.dataset['budget'] || ''
       );
     });
 
@@ -88,11 +89,19 @@ export class FeedComponent implements AfterViewInit {
       document.body.style.overflow = 'hidden';
     };
 
-    (window as any).contactOpenReponse = (name: string, color: string, init: string, summary: string, slug: string) => {
+    (window as any).contactOpenReponse = (name: string, color: string, init: string, summary: string, slug: string, budget: string = '') => {
       const el = (id: string) => document.getElementById(id);
       (el('rep-title') as HTMLElement).textContent = 'Répondre à ' + name;
       const av = el('rep-av') as HTMLElement; av.textContent = init; av.style.background = color;
       (el('contact-rep-summary') as HTMLElement).textContent = summary;
+      const budgetBadge = el('contact-rep-budget') as HTMLElement;
+      const budgetVal = el('contact-rep-budget-val') as HTMLElement;
+      if (budget && budget !== 'À convenir' && budgetBadge && budgetVal) {
+        budgetVal.textContent = 'Budget : ' + budget;
+        budgetBadge.style.display = 'flex';
+      } else if (budgetBadge) {
+        budgetBadge.style.display = 'none';
+      }
       (el('contact-rep-success-sub') as HTMLElement).textContent = name + ' sera notifié(e) et vous répondra bientôt.';
       // Stocker le slug pour l'envoi
       const modal = el('contact-modal-reponse') as HTMLElement;
@@ -1041,7 +1050,7 @@ export class FeedComponent implements AfterViewInit {
               <button class="${likeClass}" data-card="${cardData}" data-slug="${profileSlug}">
                 ${likeIcon} J'aime
               </button>
-              <button class="fc-btn-primary-sm btn-repondre" data-name="${username}" data-color="${color}" data-init="${initials}" data-slug="${profileSlug}" data-summary="${skill ? skill + ' · ' : ''}${city}${budget !== 'À convenir' ? ' · ' + budget : ''}">Répondre →</button>
+              <button class="fc-btn-primary-sm btn-repondre" data-name="${username}" data-color="${color}" data-init="${initials}" data-slug="${profileSlug}" data-budget="${budget}" data-summary="${skill ? skill + ' · ' : ''}${city}">Répondre →</button>
             </div>
           </div>
         </div>`;
