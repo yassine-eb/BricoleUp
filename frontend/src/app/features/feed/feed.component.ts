@@ -961,13 +961,14 @@ export class FeedComponent implements AfterViewInit {
         ${city}
       </div>` : '';
 
+    const descFull64 = btoa(unescape(encodeURIComponent(descFull)));
     const descHtml = `
       <div class="fc-desc-block">
-        <p class="fc-desc" id="fc-desc-${a.id}">${desc}${hasMore ? '<span class="fc-desc-dots"> …</span>' : ''}</p>
-        ${hasMore ? `<button class="fc-read-more" onclick="
-          var p=document.getElementById('fc-desc-${a.id}');
+        <p class="fc-desc">${desc}${hasMore ? '<span class="fc-desc-dots"> …</span>' : ''}</p>
+        ${hasMore ? `<button class="fc-read-more" data-full="${descFull64}" onclick="
+          var p=this.previousElementSibling;
           p.classList.add('expanded');
-          p.innerHTML='${descFull.replace(/'/g,"&#39;").replace(/"/g,"&quot;")}';
+          p.textContent=decodeURIComponent(escape(atob(this.dataset.full)));
           this.remove();
         ">Lire la suite →</button>` : ''}
       </div>`;
