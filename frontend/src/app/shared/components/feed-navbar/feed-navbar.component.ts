@@ -277,7 +277,7 @@ import { filter } from 'rxjs/operators';
             @if (notifCount() > 0) { <span class="mtn-badge">{{ notifCount() }}</span> }
           </button>
           @if (notifOpen()) {
-            <div class="notif-panel">
+            <div class="notif-panel" style="left:auto;right:0;top:calc(100% + 8px)">
               <div class="notif-panel-head">
                 <span class="notif-panel-title">Notifications</span>
                 @if (notifCount() > 0) { <button class="notif-read-all" (click)="markAllRead()">Tout marquer lu</button> }
@@ -299,6 +299,7 @@ import { filter } from 'rxjs/operators';
             <div class="notif-backdrop" (click)="notifOpen.set(false)"></div>
           }
         </div>
+        <button class="nav-avatar" style="border:none;cursor:pointer;width:34px;height:34px;font-size:.75rem" (click)="navigate('/profil','moi')">{{ avatarInitials() }}</button>
       </div>
     </div>
 
