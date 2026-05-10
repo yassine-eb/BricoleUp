@@ -101,16 +101,17 @@ import { filter } from 'rxjs/operators';
         align-items: center;
         justify-content: space-between;
       }
-      .mtn-logo { display: flex; flex-direction: column; gap: 2px; cursor: pointer; background: none; border: none; padding: 0; }
+      .mtn-logo { display: flex; flex-direction: row; align-items: center; gap: 8px; cursor: pointer; background: none; border: none; padding: 0; }
       .mtn-logo-title { font-family:'Poppins',sans-serif; font-size:1.2rem; font-weight:900; letter-spacing:-.03em; line-height:1; }
       .mtn-logo-title .bricole { color: var(--bleu); }
       .mtn-logo-title .up { color: var(--orange); }
       .mtn-location {
-        font-size:.65rem; font-weight:700; color: var(--orange);
-        background:#FFF7ED; border:1.5px solid #FDBA74;
-        border-radius:50px; padding:2px 8px;
-        display:flex; align-items:center; gap:3px;
+        font-size:.6rem; font-weight:700; color: #64748B;
+        background:#F8FAFC; border:1px solid #E2E8F0;
+        border-radius:50px; padding:2px 7px;
+        display:flex; align-items:center; gap:2px;
       }
+      .mtn-location svg { color: var(--orange); }
       .mtn-right { display:flex; align-items:center; gap:8px; }
       .mtn-notif-btn {
         width:36px; height:36px; border-radius:10px;
@@ -262,13 +263,15 @@ import { filter } from 'rxjs/operators';
   template: `
     <!-- NAVBAR MOBILE TOP -->
     <div class="mobile-top-nav">
-      <button class="mtn-logo" (click)="goHome()">
-        <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="mtn-logo" (click)="goHome()">
+          <span class="mtn-logo-title"><span class="bricole">Bricole</span><span class="up">Up</span></span>
+        </button>
         <span class="mtn-location">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           {{ ville() || 'Ma position' }}
         </span>
-      </button>
+      </div>
       <div class="mtn-right">
         <div class="notif-wrap">
           <button class="mtn-notif-btn" (click)="toggleNotif()">
