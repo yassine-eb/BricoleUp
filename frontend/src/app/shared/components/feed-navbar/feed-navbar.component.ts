@@ -425,11 +425,20 @@ import { filter } from 'rxjs/operators';
       </div>
     </nav>
 
-    <!-- BARRE MOBILE (bas) -->
+    <!-- BARRE MOBILE (bas) — Accueil, Prestataires, +Publier, Favoris, Messages -->
     <div class="mobile-nav">
       <button class="mobile-nav-tab" [class.active]="activeTab()==='accueil'" (click)="navigate('/annonces','accueil')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Accueil
+      </button>
+      <button class="mobile-nav-tab" [class.active]="activeTab()==='prestataires'" (click)="navigate('/prestataires','prestataires')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Prestataires
+      </button>
+      <button class="mobile-nav-create" (click)="openCreate()">
+        <div class="mobile-create-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
       </button>
       <button class="mobile-nav-tab mobile-nav-fav" [class.active]="activeTab()==='favoris'" (click)="navigate('/favoris','favoris')">
         <div class="mobile-fav-wrap">
@@ -438,21 +447,12 @@ import { filter } from 'rxjs/operators';
         </div>
         Favoris
       </button>
-      <button class="mobile-nav-create" (click)="openCreate()">
-        <div class="mobile-create-circle">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </div>
-      </button>
       <button class="mobile-nav-tab" [class.active]="activeTab()==='messages'" (click)="navigate('/messages','messages')">
         <div class="mobile-fav-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           @if (unreadCount() > 0) { <span class="mobile-nav-badge">{{ unreadCount() }}</span> }
         </div>
         Messages
-      </button>
-      <button class="mobile-nav-tab" [class.active]="activeTab()==='prestataires'" (click)="navigate('/prestataires','prestataires')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Prestataires
       </button>
     </div>
   `,
