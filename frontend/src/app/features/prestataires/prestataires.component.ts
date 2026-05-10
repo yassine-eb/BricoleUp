@@ -12,7 +12,6 @@ import { FeedNavbarComponent } from '../../shared/components/feed-navbar/feed-na
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./prestataires.component.css'],
   template: `
-    <app-feed-navbar></app-feed-navbar>
 
     <!-- HERO -->
     <div class="ps-hero">
