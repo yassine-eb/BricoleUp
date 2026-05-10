@@ -422,7 +422,18 @@ class PrestatairesListAPI(APIView):
             queryset = queryset.filter(is_verified=True)
 
 
-        profiles = list(queryset)  # ✅ ensure list of Profile objects
+        # Stats depuis queryset avant pagination
+        total = queryset.count()
+        verifies_count = queryset.filter(is_verified=True).count()
+
+        # Pagination directe sur queryset (sans city_param)
+        try:
+            page = max(1, int(request.GET.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
+        limit = 10
+
+        profiles = list(queryset)  # pour filtrage distance si city_param
 
         if city_param:
            
@@ -463,16 +474,6 @@ class PrestatairesListAPI(APIView):
 
 
 
-        # Stats réelles depuis le queryset (avant pagination)
-        total = queryset.count()
-        verifies = queryset.filter(is_verified=True).count()
-
-        # Pagination 10 par page
-        try:
-            page = max(1, int(request.GET.get('page', 1)))
-        except (ValueError, TypeError):
-            page = 1
-        limit = 10
         offset = (page - 1) * limit
         profiles_page = profiles[offset:offset + limit]
 
@@ -480,9 +481,9 @@ class PrestatairesListAPI(APIView):
         return Response({
             'results': serializer.data,
             'total': total,
-            'verifies': verifies,
+            'verifies': verifies_count,
             'page': page,
-            'has_next': page * limit < total,
+            'has_next': offset + limit < len(profiles),
         }, status=status.HTTP_200_OK)
 
 class SkillsAPI(APIView):
