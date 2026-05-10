@@ -264,13 +264,13 @@ export class LandingComponent implements OnInit, AfterViewInit {
     });
 
     // ===== CONNEXION (modal-b) =====
-    const formLogin = document.querySelector('#modal-b .auth-form') as HTMLFormElement;
+    const formLogin = document.querySelector('#form-login') as HTMLFormElement;
     if (formLogin) {
       formLogin.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearError('login-error');
-        const email    = (formLogin.querySelector('input[type="email"]') as HTMLInputElement)?.value.trim();
-        const password = (formLogin.querySelector('input[type="password"]') as HTMLInputElement)?.value;
+        const email    = (document.getElementById('login-email') as HTMLInputElement)?.value.trim();
+        const password = (document.getElementById('login-password') as HTMLInputElement)?.value;
         const btn      = formLogin.querySelector('.modal-submit') as HTMLButtonElement;
         setBtnLoading(btn, true, 'Connexion');
         try {
