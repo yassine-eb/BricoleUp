@@ -88,9 +88,10 @@ import { filter } from 'rxjs/operators';
 
     /* ── MOBILE : barre en bas style app native (fond blanc) ── */
     @media (max-width: 900px) {
-      .navbar { display: none; }
-      .nav-tabs { display: none; }
-      .nav-right { display: none; }
+      .navbar { display: none !important; }
+      .desktop-only { display: none !important; }
+      .nav-tabs { display: none !important; }
+      .nav-right { display: none !important; }
       .nav-logo {
         margin: 0;
         display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
@@ -215,8 +216,8 @@ import { filter } from 'rxjs/operators';
     }
   `],
   template: `
-    <!-- NAVBAR DESKTOP (haut) -->
-    <nav class="navbar" [class.scrolled]="scrolled()" id="navbar">
+    <!-- NAVBAR DESKTOP (haut) — cachée sur mobile via JS -->
+    <nav class="navbar desktop-only" [class.scrolled]="scrolled()" id="navbar">
       <div class="navbar-inner">
 
         <button class="nav-logo" (click)="goHome()">
