@@ -41,232 +41,219 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
   imports: [CommonModule, FormsModule],
   encapsulation: ViewEncapsulation.None,
   styles: [`
-    :root {
-      --bleu:#1B3C6B; --bleu-dark:#132d52; --bleu-light:#EFF6FF;
-      --orange:#F97316; --orange-light:#FFF7ED;
-      --vert:#22C55E; --vert-light:#F0FDF4;
-      --rouge:#EF4444; --rouge-light:#FEF2F2;
-      --gris:#64748B; --gris-light:#F8FAFC;
-      --border:#E2E8F0; --texte:#0F172A;
-    }
-    * { box-sizing: border-box; }
+    * { box-sizing:border-box; margin:0; padding:0; }
 
     .msg-page {
-      display: flex;
-      height: calc(100vh - 64px);
-      max-width: 1100px;
-      margin: 0 auto;
-      overflow: hidden;
-      background: #fff;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
+      display:flex; height:calc(100vh - 60px);
+      max-width:1080px; margin:0 auto;
+      background:#F8FAFC;
+      font-family:'DM Sans',sans-serif;
     }
 
-    /* ── COLONNE GAUCHE ── */
+    /* ── SIDEBAR ── */
     .msg-left {
-      width: 340px; flex-shrink: 0;
-      background: #fff; border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; height: 100%;
+      width:320px; flex-shrink:0; background:#fff;
+      border-right:1px solid #E2E8F0;
+      display:flex; flex-direction:column; height:100%;
     }
-    .msg-left-head { padding: 18px 16px 0; flex-shrink: 0; }
+    .msg-left-head { padding:20px 16px 0; }
     .msg-left-title {
-      font-family:"Poppins",sans-serif; font-size:1.2rem;
-      font-weight:700; color:var(--bleu); margin-bottom:12px;
+      font-family:'Poppins',sans-serif; font-size:1.15rem;
+      font-weight:800; color:#0F172A; margin-bottom:14px;
     }
-    .msg-search-wrap { position:relative; margin-bottom:10px; }
-    .msg-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--gris); }
+    .msg-search-wrap { position:relative; margin-bottom:12px; }
+    .msg-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; pointer-events:none; }
     .msg-search {
-      width:100%; border:none; border-radius:50px;
-      background:var(--gris-light); padding:9px 16px 9px 36px;
-      font-size:.85rem; color:var(--texte); outline:none; font-family:inherit;
+      width:100%; border:none; border-radius:10px;
+      background:#F1F5F9; padding:10px 14px 10px 36px;
+      font-size:.85rem; color:#0F172A; outline:none; font-family:inherit;
     }
-    .msg-tabs { display:flex; border-bottom:1px solid var(--border); }
+    .msg-search::placeholder { color:#94A3B8; }
+    .msg-tabs { display:flex; gap:4px; margin-bottom:4px; }
     .msg-tab {
-      border:none; background:transparent; padding:9px 14px;
-      font-size:.78rem; font-weight:600; color:var(--gris);
-      cursor:pointer; border-bottom:2px solid transparent;
-      white-space:nowrap; font-family:inherit; transition:color .15s;
+      flex:1; border:none; background:transparent; padding:8px 10px;
+      font-size:.78rem; font-weight:700; color:#64748B;
+      cursor:pointer; border-radius:8px; font-family:inherit; transition:all .15s;
     }
-    .msg-tab.active { color:var(--bleu); border-bottom-color:var(--orange); }
-    .msg-tab:hover:not(.active) { color:var(--bleu); }
+    .msg-tab.active { background:#EFF6FF; color:#1B3C6B; }
+    .msg-tab:hover:not(.active) { background:#F8FAFC; }
 
-    .conv-list { flex:1; overflow-y:auto; }
+    .conv-list { flex:1; overflow-y:auto; padding:8px 0; }
+    .conv-list::-webkit-scrollbar { width:4px; }
+    .conv-list::-webkit-scrollbar-thumb { background:#E2E8F0; border-radius:4px; }
 
     .conv-loading {
       display:flex; align-items:center; gap:10px;
-      padding:24px 16px; color:var(--gris); font-size:.85rem;
+      padding:24px 16px; color:#94A3B8; font-size:.85rem;
     }
     .spin {
-      width:18px; height:18px; border:2px solid var(--border);
-      border-top-color:var(--bleu); border-radius:50%;
+      width:16px; height:16px; border:2px solid #E2E8F0;
+      border-top-color:#1B3C6B; border-radius:50%;
       animation:spin .7s linear infinite; flex-shrink:0;
     }
     @keyframes spin { to { transform:rotate(360deg); } }
 
     .conv-empty {
       display:flex; flex-direction:column; align-items:center;
-      padding:48px 20px; text-align:center; color:var(--gris);
+      padding:48px 20px; text-align:center; color:#94A3B8; gap:10px;
     }
-    .conv-empty p { font-size:.9rem; margin-top:10px; }
+    .conv-empty p { font-size:.88rem; }
 
     .conv-item {
-      display:flex; align-items:flex-start; gap:10px;
-      padding:14px 16px; cursor:pointer;
-      border-left:3px solid transparent; transition:background .15s;
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px; cursor:pointer; border-radius:12px;
+      margin:2px 8px; transition:background .15s;
     }
-    .conv-item:hover { background:var(--gris-light); }
-    .conv-item.active { background:var(--bleu-light); border-left-color:var(--bleu); }
-    .conv-item + .conv-item { border-top:1px solid var(--border); }
+    .conv-item:hover { background:#F8FAFC; }
+    .conv-item.active { background:#EFF6FF; }
 
     .conv-av-wrap { position:relative; flex-shrink:0; }
     .conv-av {
-      width:44px; height:44px; border-radius:50%;
+      width:46px; height:46px; border-radius:50%;
       display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:800; font-size:.88rem; overflow:hidden;
+      color:#fff; font-weight:800; font-size:.9rem; overflow:hidden;
     }
     .conv-av img { width:100%; height:100%; object-fit:cover; }
     .unread-dot {
-      position:absolute; top:-3px; right:-3px;
-      min-width:18px; height:18px; background:var(--orange);
+      position:absolute; top:-2px; right:-2px;
+      min-width:18px; height:18px; background:#F97316;
       color:#fff; border-radius:50px; font-size:.6rem; font-weight:800;
       display:flex; align-items:center; justify-content:center;
       padding:0 4px; border:2px solid #fff;
     }
     .conv-info { flex:1; min-width:0; }
-    .conv-name-row { display:flex; align-items:center; gap:6px; margin-bottom:3px; }
-    .conv-name { font-weight:700; font-size:.88rem; color:var(--texte); }
-    .conv-role { font-size:.68rem; font-weight:700; border-radius:50px; padding:1px 7px; background:var(--gris-light); color:var(--gris); }
+    .conv-name { font-weight:700; font-size:.88rem; color:#0F172A; margin-bottom:3px; }
     .conv-last {
-      font-size:.78rem; color:var(--gris);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;
+      font-size:.78rem; color:#94A3B8;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .conv-meta { display:flex; align-items:center; justify-content:space-between; }
-    .conv-time { font-size:.7rem; color:var(--gris); }
+    .conv-time-col { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+    .conv-time { font-size:.68rem; color:#94A3B8; white-space:nowrap; }
+    .conv-unread-badge {
+      background:#F97316; color:#fff; border-radius:50px;
+      font-size:.6rem; font-weight:800; padding:2px 6px; min-width:18px;
+      text-align:center;
+    }
 
-    /* ── COLONNE DROITE ── */
+    /* ── ZONE CHAT ── */
     .msg-right {
       flex:1; display:flex; flex-direction:column;
-      height:100%; overflow:hidden; background:var(--gris-light);
+      height:100%; overflow:hidden; background:#F8FAFC;
     }
+
     .chat-back-btn {
-      display: none; width:36px; height:36px; border-radius:50%;
-      border:none; background:var(--gris-light); color:var(--bleu);
-      align-items:center; justify-content:center; cursor:pointer;
-      flex-shrink:0;
+      display:none; width:32px; height:32px; border-radius:50%;
+      border:none; background:#F1F5F9; color:#1B3C6B;
+      align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
     }
     @media(max-width:768px) { .chat-back-btn { display:flex; } }
+
     .chat-head {
-      background:#fff; border-bottom:1px solid var(--border);
-      padding:14px 20px; display:flex; align-items:center;
-      gap:12px; flex-shrink:0;
+      background:#fff; border-bottom:1px solid #E2E8F0;
+      padding:12px 20px; display:flex; align-items:center;
+      gap:12px; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,.04);
     }
     .chat-av {
-      width:40px; height:40px; border-radius:50%; overflow:hidden;
+      width:42px; height:42px; border-radius:50%; overflow:hidden;
       display:flex; align-items:center; justify-content:center;
       color:#fff; font-weight:800; font-size:.9rem; flex-shrink:0;
     }
     .chat-av img { width:100%; height:100%; object-fit:cover; }
-    .chat-name { font-family:"Poppins",sans-serif; font-weight:700; font-size:.95rem; color:var(--texte); }
-    .chat-status { font-size:.75rem; color:var(--gris); }
-    .chat-head-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
-    .chat-head-right button {
-      border:1px solid var(--border); border-radius:8px;
-      padding:6px 12px; background:#fff; font-size:.78rem;
-      font-weight:600; color:var(--bleu); cursor:pointer; font-family:inherit;
+    .chat-head-info { flex:1; min-width:0; }
+    .chat-name { font-weight:700; font-size:.95rem; color:#0F172A; }
+    .chat-status { font-size:.75rem; color:#94A3B8; margin-top:1px; }
+    .chat-head-right { display:flex; align-items:center; gap:6px; }
+    .chat-head-btn {
+      width:36px; height:36px; border-radius:10px; border:1px solid #E2E8F0;
+      background:#fff; display:flex; align-items:center; justify-content:center;
+      color:#64748B; cursor:pointer; transition:all .15s;
     }
-    .chat-head-right button:hover { background:var(--bleu-light); }
-    .chat-more {
-      width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
-      background:#fff; font-size:1.1rem; display:flex; align-items:center;
-      justify-content:center; color:var(--gris); cursor:pointer;
-    }
+    .chat-head-btn:hover { background:#EFF6FF; color:#1B3C6B; border-color:#1B3C6B; }
 
+    /* Messages */
     .chat-messages {
-      flex:1; overflow-y:auto; padding:20px;
-      display:flex; flex-direction:column; gap:10px;
+      flex:1; overflow-y:auto; padding:20px 24px;
+      display:flex; flex-direction:column; gap:6px;
     }
+    .chat-messages::-webkit-scrollbar { width:4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background:#E2E8F0; border-radius:4px; }
+
     .date-sep {
       align-self:center; background:#E2E8F0; border-radius:50px;
-      padding:3px 14px; font-size:.72rem; color:var(--gris); margin:8px 0;
+      padding:4px 14px; font-size:.7rem; color:#64748B; margin:10px 0 4px;
     }
 
-    .msg-recv { display:flex; align-items:flex-end; gap:8px; max-width:80%; }
-    .msg-send { display:flex; justify-content:flex-end; max-width:80%; align-self:flex-end; }
+    .msg-recv { display:flex; align-items:flex-end; gap:8px; max-width:72%; }
+    .msg-send { display:flex; justify-content:flex-end; max-width:72%; align-self:flex-end; }
 
     .msg-av-sm {
-      width:28px; height:28px; border-radius:50%; overflow:hidden;
+      width:30px; height:30px; border-radius:50%; overflow:hidden;
       display:flex; align-items:center; justify-content:center;
       color:#fff; font-weight:800; font-size:.65rem; flex-shrink:0;
     }
     .msg-av-sm img { width:100%; height:100%; object-fit:cover; }
 
     .bub-recv {
-      background:#fff; border-radius:0 16px 16px 16px;
-      padding:11px 14px; box-shadow:0 2px 8px rgba(0,0,0,.06);
+      background:#fff; border-radius:4px 18px 18px 18px;
+      padding:10px 14px; box-shadow:0 1px 4px rgba(0,0,0,.06);
     }
     .bub-send {
-      background:var(--bleu); color:#fff;
-      border-radius:16px 0 16px 16px; padding:11px 14px;
+      background:linear-gradient(135deg,#1B3C6B,#2a5298); color:#fff;
+      border-radius:18px 4px 18px 18px; padding:10px 14px;
     }
-    .msg-text { font-size:.88rem; line-height:1.6; }
-    .msg-time-recv { font-size:.68rem; color:var(--gris); margin-top:4px; }
-    .msg-time-send { font-size:.68rem; color:rgba(255,255,255,.65); margin-top:4px; text-align:right; }
+    .msg-text { font-size:.88rem; line-height:1.55; word-break:break-word; }
+    .msg-time-recv { font-size:.65rem; color:#94A3B8; margin-top:3px; padding-left:2px; }
+    .msg-time-send { font-size:.65rem; color:rgba(255,255,255,.6); margin-top:3px; text-align:right; padding-right:2px; }
 
-    .typing-bub {
-      display:flex; align-items:flex-end; gap:8px; max-width:120px;
-    }
-    .typing-dots { display:flex; gap:4px; padding:12px 16px; background:#fff; border-radius:0 16px 16px 16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-    .typing-dots span { width:7px; height:7px; border-radius:50%; background:var(--gris); animation:bounce .9s infinite; }
-    .typing-dots span:nth-child(2) { animation-delay:.2s; }
-    .typing-dots span:nth-child(3) { animation-delay:.4s; }
-    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    .typing-bub { display:flex; align-items:flex-end; gap:8px; }
+    .typing-dots { display:flex; gap:5px; padding:13px 18px; background:#fff; border-radius:4px 18px 18px 18px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+    .typing-dots span { width:7px; height:7px; border-radius:50%; background:#94A3B8; animation:bounce .9s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay:.18s; }
+    .typing-dots span:nth-child(3) { animation-delay:.36s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
 
-    /* Zone saisie */
+    /* Saisie */
     .chat-input-area {
-      background:#fff; border-top:1px solid var(--border);
+      background:#fff; border-top:1px solid #E2E8F0;
       padding:12px 16px; display:flex; align-items:flex-end;
-      gap:10px; flex-shrink:0;
+      gap:8px; flex-shrink:0;
     }
-    .attach-btn {
-      width:38px; height:38px; border-radius:50%; border:none;
-      background:var(--gris-light); color:var(--gris);
-      display:flex; align-items:center; justify-content:center;
-      font-size:1.1rem; cursor:pointer; flex-shrink:0; transition:background .15s;
-    }
-    .attach-btn:hover { background:var(--border); }
     .chat-textarea {
-      flex:1; border:1.5px solid var(--border); border-radius:20px;
-      padding:10px 16px; font-size:.9rem; color:var(--texte);
+      flex:1; border:1.5px solid #E2E8F0; border-radius:22px;
+      padding:10px 18px; font-size:.9rem; color:#0F172A;
       outline:none; resize:none; max-height:120px; overflow-y:hidden;
-      line-height:1.5; font-family:inherit; background:#fff;
-      transition:border-color .2s;
+      line-height:1.5; font-family:inherit; background:#F8FAFC;
+      transition:border-color .2s, background .2s;
     }
-    .chat-textarea:focus { border-color:var(--bleu); }
+    .chat-textarea:focus { border-color:#1B3C6B; background:#fff; }
+    .chat-textarea::placeholder { color:#94A3B8; }
     .send-btn {
-      width:42px; height:42px; border-radius:50%; border:none;
-      background:var(--gris-light); color:var(--gris); display:flex;
+      width:44px; height:44px; border-radius:50%; border:none;
+      background:#E2E8F0; color:#94A3B8; display:flex;
       align-items:center; justify-content:center; flex-shrink:0;
       cursor:pointer; transition:all .2s;
     }
-    .send-btn.active { background:var(--bleu); color:#fff; }
-    .send-btn.active:hover { background:var(--orange); transform:scale(1.05); }
+    .send-btn.active { background:linear-gradient(135deg,#1B3C6B,#2a5298); color:#fff; box-shadow:0 4px 12px rgba(27,60,107,.3); }
+    .send-btn.active:hover { transform:scale(1.08); }
 
+    /* Vide */
     .chat-empty {
       flex:1; display:flex; flex-direction:column;
       align-items:center; justify-content:center;
-      color:var(--gris); text-align:center; padding:40px;
+      color:#94A3B8; text-align:center; padding:40px; gap:12px;
     }
-    .chat-empty svg { opacity:.2; margin-bottom:16px; }
-    .chat-empty h3 { font-family:"Poppins",sans-serif; font-size:1.1rem; font-weight:700; color:var(--bleu); margin:0 0 8px; }
-    .chat-empty p { font-size:.88rem; margin:0; }
+    .chat-empty-icon { width:72px; height:72px; border-radius:50%; background:#EFF6FF; display:flex; align-items:center; justify-content:center; }
+    .chat-empty h3 { font-family:'Poppins',sans-serif; font-size:1rem; font-weight:700; color:#1B3C6B; }
+    .chat-empty p { font-size:.84rem; max-width:240px; }
 
     .msg-error {
-      background:var(--rouge-light); color:var(--rouge);
-      border-radius:8px; padding:10px 14px; font-size:.82rem;
+      background:#FEF2F2; color:#EF4444; border:1px solid #FECACA;
+      border-radius:10px; padding:10px 14px; font-size:.82rem;
       font-weight:600; margin:8px 16px; text-align:center;
     }
 
-    @media (max-width:768px) {
+    @media(max-width:768px) {
+      .msg-page { max-width:100%; }
       .msg-left { width:100%; }
       .msg-left.conv-open { display:none; }
       .msg-right { display:none; }
@@ -276,7 +263,7 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
   template: `
     <div class="msg-page">
 
-      <!-- ── GAUCHE : liste conversations ── -->
+      <!-- ── SIDEBAR conversations ── -->
       <div class="msg-left" [class.conv-open]="!!activeConv()">
         <div class="msg-left-head">
           <div class="msg-left-title">Messages</div>
@@ -287,7 +274,7 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
           <div class="msg-tabs">
             <button class="msg-tab" [class.active]="tab==='all'" (click)="tab='all'; filterConvs()">Tous</button>
             <button class="msg-tab" [class.active]="tab==='unread'" (click)="tab='unread'; filterConvs()">
-              Non lus{{ totalUnread() > 0 ? ' (' + totalUnread() + ')' : '' }}
+              Non lus{{ totalUnread() > 0 ? ' · ' + totalUnread() : '' }}
             </button>
           </div>
         </div>
@@ -297,27 +284,25 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
             <div class="conv-loading"><div class="spin"></div> Chargement…</div>
           } @else if (filteredConvs().length === 0) {
             <div class="conv-empty">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <p>Aucune conversation</p>
             </div>
           } @else {
             @for (c of filteredConvs(); track c.id) {
               <div class="conv-item" [class.active]="activeConv()?.id === c.id" (click)="openConv(c)">
-                <div class="conv-av-wrap" (click)="goToProfile(c, $event)" style="cursor:pointer" title="Voir le profil">
+                <div class="conv-av-wrap" (click)="goToProfile(c, $event)" title="Voir le profil">
                   <div class="conv-av" [style.background]="c.color">
                     @if (c.avatar) { <img [src]="c.avatar" [alt]="c.name"> }
                     @else { {{ c.init }} }
                   </div>
-                  @if (c.unread > 0) { <span class="unread-dot">{{ c.unread }}</span> }
                 </div>
                 <div class="conv-info">
-                  <div class="conv-name-row">
-                    <span class="conv-name">{{ c.name }}</span>
-                  </div>
+                  <div class="conv-name">{{ c.name }}</div>
                   <div class="conv-last">{{ c.lastMsg }}</div>
-                  <div class="conv-meta">
-                    <span class="conv-time">{{ c.time }}</span>
-                  </div>
+                </div>
+                <div class="conv-time-col">
+                  <span class="conv-time">{{ c.time }}</span>
+                  @if (c.unread > 0) { <span class="conv-unread-badge">{{ c.unread }}</span> }
                 </div>
               </div>
             }
@@ -325,37 +310,37 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
         </div>
       </div>
 
-      <!-- ── DROITE : chat ── -->
+      <!-- ── ZONE CHAT ── -->
       <div class="msg-right" [class.conv-open]="!!activeConv()">
 
         @if (activeConv(); as conv) {
-          <!-- Header -->
+
           <div class="chat-head">
             <button class="chat-back-btn" (click)="activeConv.set(null)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <div class="chat-av" [style.background]="conv.color">
               @if (conv.avatar) { <img [src]="conv.avatar" [alt]="conv.name"> }
               @else { {{ conv.init }} }
             </div>
-            <div>
+            <div class="chat-head-info">
               <div class="chat-name">{{ conv.name }}</div>
-              <div class="chat-status">{{ conv.role }}</div>
+              <div class="chat-status">Prestataire</div>
             </div>
             <div class="chat-head-right">
-              <button class="chat-more">⋮</button>
+              <button class="chat-head-btn" (click)="goToProfile(conv, $event)" title="Voir le profil">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </button>
             </div>
           </div>
 
-          <!-- Erreur -->
           @if (msgError()) {
             <div class="msg-error">{{ msgError() }}</div>
           }
 
-          <!-- Messages -->
           <div class="chat-messages" #msgContainer>
             @if (loadingMsgs()) {
-              <div style="align-self:center;padding:20px;color:var(--gris);font-size:.85rem;display:flex;gap:8px;align-items:center">
+              <div style="align-self:center;padding:24px;color:#94A3B8;font-size:.85rem;display:flex;gap:8px;align-items:center">
                 <div class="spin"></div> Chargement…
               </div>
             } @else {
@@ -392,10 +377,7 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
             }
           </div>
 
-          <!-- Saisie -->
           <div class="chat-input-area">
-            <button class="attach-btn" title="Joindre">📎</button>
-            <button class="attach-btn" title="Photo">📷</button>
             <textarea
               class="chat-textarea"
               #chatTA
@@ -415,9 +397,11 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
 
         } @else {
           <div class="chat-empty">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <h3>Sélectionnez une conversation</h3>
-            <p>Vos échanges avec les prestataires et clients apparaissent ici.</p>
+            <div class="chat-empty-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C6B" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3>Vos messages</h3>
+            <p>Sélectionnez une conversation pour commencer à échanger.</p>
           </div>
         }
 
