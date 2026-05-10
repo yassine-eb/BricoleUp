@@ -232,6 +232,7 @@ export class FeedComponent implements AfterViewInit {
     this.loadDemandes();
     this.loadVille();
     this.loadProfil();
+    this.loadFavorisFromApi();
     this.loadSkills();
 
     // ===== LIGHTBOX IMAGE =====
@@ -813,6 +814,25 @@ export class FeedComponent implements AfterViewInit {
         const ville = res?.profile?.city?.name_fr || res?.city?.name_fr;
         if (ville) this.setVilleLabel(ville);
       },
+    });
+  }
+
+  private loadFavorisFromApi(): void {
+    const token = this.auth.getAccessToken();
+    if (!token) { localStorage.removeItem('bu_liked_cards'); return; }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get<any>(`${environment.apiUrl}/v1/favorites/`, { headers }).subscribe({
+      next: (res) => {
+        const items = res?.results || res || [];
+        const cards = items.map((f: any) => ({
+          id: f.id || f.announcement?.id,
+          type: f.type || 'offre',
+          slug: f.slug || f.profile?.slug,
+        }));
+        localStorage.setItem('bu_liked_cards', JSON.stringify(cards));
+        window.dispatchEvent(new CustomEvent('bu:favcount', { detail: cards.length }));
+      },
+      error: () => {},
     });
   }
 
