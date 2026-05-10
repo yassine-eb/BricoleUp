@@ -536,10 +536,10 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
     // ===== INSCRIPTION AUTO-ENTREPRENEUR (modal-e) =====
     const formAE = document.querySelector('#form-autoentrepreneur') as HTMLFormElement;
-    if (formAE) registerForm(formAE, 'reg-ae-error', 'prestataire', 'e-city', '/dashboard', ['bio']);
+    if (formAE) registerForm(formAE, 'reg-ae-error', 'prestataire', 'e-city', '/annonces', ['bio']);
 
     // ===== INSCRIPTION ENTREPRISE (modal-f) =====
     const formEntreprise = document.querySelector('#form-entreprise') as HTMLFormElement;
-    if (formEntreprise) registerForm(formEntreprise, 'reg-ent-error', 'prestataire', 'f-city', '/dashboard', ['bio', 'siret']);
+    if (formEntreprise) registerForm(formEntreprise, 'reg-ent-error', 'prestataire', 'f-city', '/annonces', ['bio', 'siret']);
   }
 }
