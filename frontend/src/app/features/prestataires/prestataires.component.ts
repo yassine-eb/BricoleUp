@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, ViewEncapsulation, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -126,6 +126,7 @@ import { environment } from '../../../environments/environment';
 })
 export class PrestatairesComponent implements AfterViewInit {
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   offres: any[] = [];
   filtered: any[] = [];
@@ -256,6 +257,6 @@ export class PrestatairesComponent implements AfterViewInit {
 
   contact(a: any): void {
     const slug = this.getSlug(a);
-    if (slug) window.location.href = `/messages?slug=${slug}`;
+    if (slug) this.router.navigate(['/messages'], { queryParams: { slug } });
   }
 }
