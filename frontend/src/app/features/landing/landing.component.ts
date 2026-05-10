@@ -312,6 +312,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
       ).subscribe();
     };
 
+    (window as any).ouvrirModalPublic = (id: string) => ouvrirModal(id);
+
     // ===== ORIGINE (particulier ou entreprise) =====
     let origine = 'particulier';
     (window as any).setOrigin = (o: string) => { origine = o; ouvrirModal('modal-g'); };
