@@ -63,6 +63,7 @@ export class AuthService {
     localStorage.setItem(this.ACCESS_KEY, access);
     if (refresh) localStorage.setItem(this.REFRESH_KEY, refresh);
     if (user) { localStorage.setItem('bricoleup_user', JSON.stringify(user)); this._currentUser.set(user); }
+    localStorage.removeItem('bu_liked_cards');
   }
 
   updateCurrentUser(user: User): void {
