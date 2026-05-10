@@ -459,6 +459,15 @@ export class FeedComponent implements AfterViewInit {
     (window as any).puGoStep    = puGoStep;
     (window as any).puNextStep  = (prefix: string, current: number) => puGoStep(prefix, current + 1);
 
+    (window as any).toggleCatMore = (prefix: string, btn: HTMLElement) => {
+      const grid = document.getElementById(`${prefix}-cat-grid`);
+      const items = grid?.querySelectorAll('.pu-cat-more');
+      const expanded = btn.dataset['expanded'] === '1';
+      items?.forEach((el: any) => el.style.display = expanded ? 'none' : '');
+      btn.textContent = expanded ? 'Voir plus ↓' : 'Voir moins ↑';
+      btn.dataset['expanded'] = expanded ? '0' : '1';
+    };
+
     (window as any).puSelectCat = (el: HTMLElement, prefix: string) => {
       const grid = el.closest('.pu-cat-grid');
       grid?.querySelectorAll('.pu-cat').forEach(c => c.classList.remove('pu-selected'));
