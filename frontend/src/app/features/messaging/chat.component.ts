@@ -190,8 +190,8 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
       padding:3px 14px; font-size:.72rem; color:var(--gris); margin:8px 0;
     }
 
-    .msg-recv { display:flex; align-items:flex-end; gap:8px; max-width:68%; }
-    .msg-send { display:flex; justify-content:flex-end; max-width:68%; align-self:flex-end; }
+    .msg-recv { display:flex; align-items:flex-end; gap:8px; max-width:80%; }
+    .msg-send { display:flex; justify-content:flex-end; max-width:80%; align-self:flex-end; }
 
     .msg-av-sm {
       width:28px; height:28px; border-radius:50%; overflow:hidden;
@@ -588,7 +588,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         const msgs: Msg[] = (res.messages || []).map((m: any) => ({
           id: m.id,
           body: m.body,
-          mine: Number(m.sender) === myId,
+          mine: Number(m.sender_id ?? m.sender?.id ?? m.sender) === myId,
           time: this.toTime(m.timestamp),
           timestamp: m.timestamp,
         }));
