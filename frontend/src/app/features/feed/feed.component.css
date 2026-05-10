@@ -530,13 +530,16 @@
 }
 .fc-desc.expanded {
   display: block; -webkit-line-clamp: unset;
+  overflow: visible;
 }
 .fc-desc-dots { color: #CBD5E1; }
 .fc-read-more {
   background: none; border: none; cursor: pointer;
-  color: var(--orange); font-size: .78rem; font-weight: 700;
-  padding: 4px 0 0; font-family: "DM Sans", sans-serif;
-  display: inline-flex; align-items: center; gap: 3px;
+  color: var(--orange); font-size: .8rem; font-weight: 800;
+  padding: 0; font-family: "DM Sans", sans-serif;
+  display: inline; vertical-align: baseline;
+  letter-spacing: .01em;
+  text-decoration: none;
 }
 .fc-read-more:hover { text-decoration: underline; }
 
