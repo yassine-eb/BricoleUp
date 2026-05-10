@@ -300,11 +300,17 @@
       <label class="pu-label">Description</label>
       <textarea class="pu-textarea" id="o-desc" placeholder="Décrivez vos services, votre expérience..."></textarea>
     </div>
-    <div class="pu-field pu-row2">
-      <div>
-        <label class="pu-label">Tarif (€/h)</label>
-        <input class="pu-input" type="number" id="o-tarif" placeholder="50">
+    <div class="pu-field">
+      <label class="pu-label">Tarif (€/h)</label>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input class="pu-input" type="number" id="o-tarif" placeholder="50" style="flex:1">
+        <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;color:#64748B;font-weight:600;white-space:nowrap;cursor:pointer">
+          <input type="checkbox" id="o-a-convenir" onchange="document.getElementById('o-tarif').disabled=this.checked;document.getElementById('o-tarif').value='';" style="accent-color:#F97316">
+          À convenir
+        </label>
       </div>
+    </div>
+    <div class="pu-field pu-row2" style="display:none">
       <div>
         <label class="pu-label">Rayon (km)</label>
         <input class="pu-input" type="number" id="o-rayon" placeholder="20">

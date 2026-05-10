@@ -562,7 +562,9 @@ export class FeedComponent implements AfterViewInit {
           return;
         }
         body.description = titre ? `${titre}\n\n${desc}` : desc;
-        body.budget_min  = val('o-tarif') || null;
+        const oConvenir = (document.getElementById('o-a-convenir') as HTMLInputElement)?.checked;
+        body.budget_min  = oConvenir ? null : (val('o-tarif') || null);
+        body.a_convenir  = oConvenir;
       }
 
       this.http.post<any>(
