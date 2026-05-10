@@ -1248,7 +1248,7 @@ def create_project_api(request):
     return Response({
         "success": True,
         "project": {
-            "id": project.id,
+            "id": project.id , 
             "description": project.description,
         }
     })
