@@ -488,7 +488,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const token = this.auth.getAccessToken();
       if (!token) return -1;
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.user_id || -1;
+      return payload.user_id || payload.id || -1;
     } catch { return -1; }
   }
 
@@ -588,7 +588,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         const msgs: Msg[] = (res.messages || []).map((m: any) => ({
           id: m.id,
           body: m.body,
-          mine: Number(m.sender_id ?? m.sender?.id ?? m.sender) === myId,
+          mine: Number(m.sender) === myId,
           time: this.toTime(m.timestamp),
           timestamp: m.timestamp,
         }));
