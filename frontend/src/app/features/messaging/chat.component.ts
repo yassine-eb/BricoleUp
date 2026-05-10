@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 import { Subject, takeUntil } from 'rxjs';
 import { WebSocketService } from '../../core/services/websocket.service';
+import { ActivatedRoute } from '@angular/router';
 
 interface Conv {
   id: number;
@@ -430,6 +431,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private http    = inject(HttpClient);
   private auth    = inject(AuthService);
   private ws      = inject(WebSocketService);
+  private route   = inject(ActivatedRoute);
   private destroy$ = new Subject<void>();
 
   loadingConvs  = signal(true);
@@ -534,7 +536,27 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.filteredConvs.set(mapped);
         this.loadingConvs.set(false);
         localStorage.setItem('bu_convs', JSON.stringify(mapped));
-        if (mapped.length > 0 && !this.activeConv()) this.openConv(mapped[0]);
+
+        // Ouvre directement la conv si ?slug= dans l'URL
+        const targetSlug = this.route.snapshot.queryParamMap.get('slug');
+        if (targetSlug) {
+          const found = mapped.find(c => c.slug === targetSlug);
+          if (found) {
+            this.openConv(found);
+          } else {
+            // Crée une nouvelle conv avec ce slug
+            const newConv: Conv = {
+              id: 0, slug: targetSlug,
+              name: targetSlug, init: targetSlug.slice(0, 2).toUpperCase(),
+              color: COLORS[0], role: '', lastMsg: '', time: '', unread: 0, online: false, avatar: null,
+            };
+            this.convs.update(l => [newConv, ...l]);
+            this.filteredConvs.update(l => [newConv, ...l]);
+            this.openConv(newConv);
+          }
+        } else if (mapped.length > 0 && !this.activeConv()) {
+          this.openConv(mapped[0]);
+        }
       },
       error: () => { this.loadingConvs.set(false); },
     });
