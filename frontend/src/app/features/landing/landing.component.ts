@@ -368,7 +368,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
     // ===== STEPPER MODAL-F ENTREPRISE =====
     (window as any).fNextStep = () => {
-      const prenom = (document.getElementById('f-prenom') as HTMLInputElement)?.value?.trim();
+      const prenom = (document.getElementById('f-nom-commercial') as HTMLInputElement)?.value?.trim();
       const email  = (document.getElementById('f-email') as HTMLInputElement)?.value?.trim();
       const pwd    = (document.getElementById('f-password') as HTMLInputElement)?.value;
       if (!prenom || !email || !pwd) {
