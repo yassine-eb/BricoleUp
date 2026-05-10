@@ -409,9 +409,6 @@ class PrestatairesListAPI(APIView):
 
         queryset = Profile.objects.filter(
             type="towork",
-            city__isnull=False,
-            bio__isnull=False,
-            skills__id__in=skill_ids,
         ).distinct().select_related(
             'user', 'city'
         ).prefetch_related(
@@ -456,7 +453,7 @@ class PrestatairesListAPI(APIView):
             else:
                 profiles = sorted(filtered_profiles, key=lambda p: p.distance)
         else:
-            queryset = queryset.filter(profile_picture__isnull=False).order_by('-id')
+            queryset = queryset.order_by('-id')
             profiles = list(queryset)
             if sort_by == 'rating':
                 
