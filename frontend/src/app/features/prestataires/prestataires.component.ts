@@ -148,13 +148,32 @@ export class PrestatairesComponent implements AfterViewInit {
   load(): void {
     if (this.loading || this.allLoaded) return;
     this.loading = true;
+
+    // Affichage immédiat depuis cache localStorage (page 1 seulement)
+    if (this.page === 1) {
+      try {
+        const cached = localStorage.getItem('bu_prestataires_p1');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          this.offres = parsed.results ?? [];
+          this.total = parsed.total ?? this.offres.length;
+          this.verifies = parsed.verifies ?? 0;
+          this.buildSkillList();
+          this.applyFilters();
+        }
+      } catch {}
+    }
+
     this.http.get<any>(`${environment.apiUrl}/v1/prestataires/?page=${this.page}`).subscribe({
       next: (res) => {
         const all: any[] = Array.isArray(res) ? res : (res.results ?? []);
-        this.offres = [...this.offres, ...all];
         if (this.page === 1) {
+          this.offres = all;
           this.total = res.total ?? all.length;
           this.verifies = res.verifies ?? all.filter((p: any) => p.is_verified).length;
+          try { localStorage.setItem('bu_prestataires_p1', JSON.stringify({ results: all, total: this.total, verifies: this.verifies })); } catch {}
+        } else {
+          this.offres = [...this.offres, ...all];
         }
         this.buildSkillList();
         this.applyFilters();

@@ -391,6 +391,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 class PrestatairesListAPI(APIView):
     def get(self, request):
+        from django.core.cache import cache as _cache
         skills_param = request.GET.get('skills', '')
         city_param = request.GET.get('city', '')
         sort_by = request.GET.get('sort_by', 'date')
@@ -403,11 +404,18 @@ class PrestatairesListAPI(APIView):
         except ValueError:
             search_radius = 50
 
-        if skills_param:
-            skill_ids = [int(sid) for sid in skills_param.split(',') if sid]
-        else:
-            skill_ids = Skill.objects.all().values_list('id', flat=True)
+        try:
+            page = max(1, int(request.GET.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
 
+        # Cache uniquement pour les requêtes sans filtres géo
+        _no_filters = not skills_param and not city_param and not account_type and not verified
+        _cache_key = f'prestataires_p{page}' if _no_filters else None
+        if _cache_key:
+            cached = _cache.get(_cache_key)
+            if cached:
+                return Response(cached)
 
         queryset = Profile.objects.filter(
             type="towork",
@@ -418,65 +426,48 @@ class PrestatairesListAPI(APIView):
         )
         if account_type:
             queryset = queryset.filter(statut__in=account_type)
-
-        # Filter by verification
         if verified:
             queryset = queryset.filter(is_verified=True)
-
 
         total = queryset.count()
         verifies_count = queryset.filter(is_verified=True).count()
 
         if city_param:
-
             city = City.objects.get(id=int(city_param))
             profiles = list(queryset)
             filtered_profiles = []
-
             for profile in profiles:
                 lat = profile.latitude or profile.city.latitude
                 lng = profile.longitude or profile.city.longitude
-
                 if lat and lng:
-                    distance = haversine(
-                        city.latitude,
-                        city.longitude,
-                        lat,
-                        lng
-                    )
-
+                    distance = haversine(city.latitude, city.longitude, lat, lng)
                     if distance <= search_radius:
-                        profile.distance = round(distance, 2)  # ✅ attach
+                        profile.distance = round(distance, 2)
                         filtered_profiles.append(profile)
-
-            # Apply sorting
             if sort_by == 'rating':
-                
-                profiles = sorted(filtered_profiles,key=lambda p: p.average_rating() or 0, reverse=True)
+                profiles = sorted(filtered_profiles, key=lambda p: p.average_rating() or 0, reverse=True)
             else:
                 profiles = sorted(filtered_profiles, key=lambda p: p.distance)
         else:
             # Vérifiés en premier, puis non vérifiés, triés par -id
             profiles = list(queryset.order_by('-is_verified', '-id'))
 
-        # Pagination 50 par page
-        try:
-            page = max(1, int(request.GET.get('page', 1)))
-        except (ValueError, TypeError):
-            page = 1
         limit = 50
         offset = (page - 1) * limit
         total_profiles = len(profiles)
         profiles_page = profiles[offset:offset + limit]
 
         serializer = PrestataireListSerializer(profiles_page, many=True)
-        return Response({
+        response_data = {
             'results': serializer.data,
             'total': total,
             'verifies': verifies_count,
             'page': page,
             'has_next': offset + limit < total_profiles,
-        }, status=status.HTTP_200_OK)
+        }
+        if _cache_key:
+            _cache.set(_cache_key, response_data, 90)  # 90s cache
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class SkillsAPI(APIView):
     def get(self, request):
@@ -907,22 +898,29 @@ def my_project_delete_api(request, project_id):
 @api_view(['GET'])
 def projects_list_api(request):
     from app.models import Project
-    qs = Project.objects.select_related('user', 'user__profile').prefetch_related('skills').order_by('-id')
-    total = qs.count()
+    from django.core.cache import cache as _cache
     try:
         page = max(1, int(request.GET.get('page', 1)))
     except (ValueError, TypeError):
         page = 1
+    _cache_key = f'projects_p{page}'
+    cached = _cache.get(_cache_key)
+    if cached:
+        return Response(cached)
+    qs = Project.objects.select_related('user', 'user__profile').prefetch_related('skills').order_by('-id')
+    total = qs.count()
     limit = 20
     offset = (page - 1) * limit
     projects = qs[offset:offset + limit]
     serializer = ProjectSerializer(projects, many=True, context={'request': request})
-    return Response({
+    data = {
         'results': serializer.data,
         'total': total,
         'page': page,
         'has_next': offset + limit < total,
-    })
+    }
+    _cache.set(_cache_key, data, 60)  # 60s
+    return Response(data)
 
 
 # ===== reviews/user/:id/ — avis reçus par un user =====
