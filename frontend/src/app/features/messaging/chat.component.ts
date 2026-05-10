@@ -143,10 +143,12 @@ const COLORS = ['#1B3C6B','#EA580C','#16A34A','#7C3AED','#D97706','#0891B2','#DC
     }
 
     .chat-back-btn {
-      display:none; width:32px; height:32px; border-radius:50%;
-      border:none; background:#F1F5F9; color:#1B3C6B;
+      display:none; width:38px; height:38px; border-radius:50%;
+      border:none; background:#EFF6FF; color:#1B3C6B;
       align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+      box-shadow:0 1px 4px rgba(27,60,107,.15);
     }
+    .chat-back-btn:active { background:#DBEAFE; transform:scale(.93); }
     @media(max-width:768px) { .chat-back-btn { display:flex; } }
 
     .chat-head {
