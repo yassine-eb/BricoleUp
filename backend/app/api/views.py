@@ -463,9 +463,9 @@ class PrestatairesListAPI(APIView):
 
 
 
-        # Stats réelles sur tout le queryset
-        total = len(profiles)
-        verifies = sum(1 for p in profiles if p.is_verified)
+        # Stats réelles depuis le queryset (avant pagination)
+        total = queryset.count()
+        verifies = queryset.filter(is_verified=True).count()
 
         # Pagination 10 par page
         try:
